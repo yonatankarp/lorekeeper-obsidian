@@ -1,6 +1,6 @@
 {
+  "data_version": 2,
   "templates_folder": "Templates",
-  "trigger_on_file_creation": true,
   "trigger_on_file_creation_mode": "folder",
   "folder_templates": [
     { "folder": "/", "template": "_lorekeeper/templates/pick-kind.md" },
@@ -13,6 +13,12 @@
     { "folder": "Lore", "template": "Templates/Lore.md" }
   ],
   "user_scripts_folder": "_lorekeeper/scripts/templater",
-  "ignore_folders_on_creation": ["Sessions", "Templates", "_lorekeeper", "Attachments", "Private"],
+  "ignore_folders_on_creation": [
+    { "folder": "Sessions" },
+    { "folder": "Templates" },
+    { "folder": "_lorekeeper" },
+    { "folder": "Attachments" },
+    { "folder": "Private" }
+  ],
   "enable_system_commands": false
 }

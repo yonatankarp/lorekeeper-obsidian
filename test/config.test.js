@@ -30,3 +30,22 @@ test("Home embeds only bases that exist", () => {
   assert.equal(embeds.length, 3);
   for (const e of embeds) assert.ok(fs.existsSync(path.join(ROOT, e)), e);
 });
+
+test("Templater settings are in the v2 format, so nothing is migrated on first load", () => {
+  const data = json(".obsidian/plugins/templater-obsidian/data.json");
+  assert.equal(data.data_version, 2);
+  assert.ok(!("trigger_on_file_creation" in data));
+  assert.equal(data.trigger_on_file_creation_mode, "folder");
+  assert.ok(data.ignore_folders_on_creation.length > 0);
+  for (const entry of data.ignore_folders_on_creation) assert.ok(entry && typeof entry === "object" && entry.folder, JSON.stringify(entry));
+});
+
+test("every built-in template has its folder template", () => {
+  const folders = { PC: "PCs", NPC: "NPCs", Location: "Locations", Item: "Items", Faction: "Factions", Quest: "Quests", Lore: "Lore" };
+  const pairs = json(".obsidian/plugins/templater-obsidian/data.json").folder_templates;
+  for (const file of fs.readdirSync(path.join(ROOT, "Templates"))) {
+    const kind = file.replace(/\.md$/, "");
+    if (!(kind in folders)) continue;
+    assert.ok(pairs.some((p) => p.folder === folders[kind] && p.template === `Templates/${file}`), kind);
+  }
+});
