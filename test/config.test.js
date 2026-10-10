@@ -66,3 +66,9 @@ test("Obsidian Git ships off, backing up every 30 minutes (not debounced) once t
   assert.equal(g.autoBackupAfterFileChange, false);
   assert.equal(g.autoPullOnBoot, true);
 });
+
+test("installed.json stays out of the template", () => {
+  const { execFileSync } = require("node:child_process");
+  assert.equal(execFileSync("git", ["ls-files", "_lorekeeper/installed.json"], { cwd: ROOT }).toString(), "");
+  assert.ok(fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8").split("\n").includes("_lorekeeper/installed.json"));
+});
