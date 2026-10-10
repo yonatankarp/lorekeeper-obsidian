@@ -42,7 +42,7 @@ Share the vault with your group through Relay or Obsidian Sync, and each player'
 
 ## Not here yet
 
-Roles, invites, who's online and time zones from the Lorekeeper app (see the roadmap in `docs/superpowers/specs/`).
+Roles, invites, who's online and time zones aren't in the vault (Lorekeeper's app has them).
 
 ## Development
 

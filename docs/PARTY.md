@@ -41,24 +41,25 @@ Details worth knowing:
 Relay shares folders between vaults and merges edits live.
 
 - Share the campaign's folders with everyone: `Sessions`, `PCs`, `NPCs`, `Locations`, `Items`, `Factions`, `Quests`, `Lore` and `Attachments`.
-- Share each `Private/<name>` folder with that player and the DM only. That is how the DM sees private notes.
+- Share each `Private/<name>` folder with that player and the DM only, and that is how the DM sees private notes. Turn **Private** on for that shared folder, then add the player and the DM with **Add Users**. Private folders need a paid Relay Server plan, and the people you add must be Members or Owners of that server. Steps: https://docs.relay.md/guides/private-shared-folders
+- **Warning:** without the **Private** toggle, a shared folder goes to everyone who has the server's Share Key, so private notes would be exposed to the whole party.
 - Don't share `_lorekeeper/` or `.obsidian/`. Updates and settings stay per vault.
 
 ## Obsidian Sync
 
 Obsidian Sync shares the whole vault, so **`Private/` is not private** unless you exclude it.
 
-- On every device, open **Settings > Sync > Excluded folders** and add `Private`. Private notes then stay on the device that wrote them.
+- On every device, open **Settings > Sync > Excluded folders > Manage** and add `Private`. This setting doesn't sync between devices, so set it on every device. Private notes then stay on the device that wrote them.
 - The DM can't see players' private notes this way, and there are no DM-only notes.
 
 ## What each can and can't do
 
 | | Relay | Obsidian Sync |
 |---|---|---|
-| Private notes the DM can see | Yes, share `Private/<name>` with player and DM | No |
+| Private notes the DM can see | Yes, with **Private** turned on for the folder (paid server plan) | No |
 | Private notes stay on one device | Yes, don't share the folder | Yes, exclude `Private` on every device |
-| DM-only notes | Share a `Private/DM` folder with nobody | Same, kept on the DM's device only |
-| End-to-end encrypted | No | Yes, per Obsidian |
+| DM-only notes | Don't share `Private/DM` | Don't share `Private/DM` |
+| End-to-end encrypted | No, on Relay's cloud hosting (self-hosting keeps notes off Relay's servers) | Yes, by default for new vaults |
 | Conflicts | Edits merge live | Obsidian merges, or keeps both copies |
 
 Because each player writes their own file, conflicts are rare. They happen on shared pages such as NPCs, where two people editing the same page at once is the sync's job to merge.
