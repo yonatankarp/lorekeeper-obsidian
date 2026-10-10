@@ -6,7 +6,13 @@ Date: 2026-10-10. Status: draft for review.
 
 A vault you clone and open in Obsidian that gives one player Lorekeeper's workflow and look: quick notes from anywhere during the game, sessions read as a Timeline and a Journal, a campaign vault of NPCs, PCs, places, items, factions, quests and lore, and the Tome and Dungeon themes. No Lorekeeper app needed.
 
-v1 is solo. Party play comes later, so nothing in v1 may block it.
+**The end goal is to replace Lorekeeper completely** with an Obsidian vault. v1 is the first milestone: one player, no sync. Nothing in v1 may block the later milestones (see Roadmap).
+
+**Accepted losses** (decided 2026-10-10). Replacing Lorekeeper may give these up, so none of them justifies a plugin of our own:
+- End-to-end encrypted sharing. A sync service that can read the notes (for example Relay) is acceptable.
+- Party admin: roles, one-time invite links, re-invites, removing players, who's online.
+- Timelines shown in each reader's own time zone. Times are the writer's local time.
+- D&D Beyond refresh as Lorekeeper does it. The third-party importer (public characters only), or PCs typed by hand, is acceptable.
 
 Success means: during a game you can jot `@Mirela, shifty innkeeper` over Discord without Discord losing focus, and after the game the vault reads and looks like Lorekeeper.
 
@@ -63,6 +69,7 @@ The behaviour follows Lorekeeper's `docs/GUIDE.md`. The files are designed for O
 - **The current session** is the highest N, counting both `Session N.md` files and `Session N/` folders. With no session yet, the first note starts Session 1.
 - **The next session:** when the last note in the current session is more than 12 hours old, capture offers to start the next one.
 - **Per-author files** `Sessions/Session N/<PC>.md` (with an `author` property) are read by every view, so party play needs no migration. v1 never writes them.
+- **Private notes** (party play, not in v1) will live in one folder per player, `Private/<PC>/`, mirroring the vault inside it (`Private/<PC>/Sessions/Session N.md`, `Private/<PC>/NPCs/…`). One folder per player is what folder-based sharing needs to show a player's private notes to the DM only. The views must not assume `Private/` is absent.
 - **Pages** come from seven templates with the same properties and sections as Lorekeeper's (PC, NPC, Location, Item, Faction, Quest, Lore), written in Templater syntax. Dates are typed date properties. Typed by `type`. Quest `status`: open, in progress, done, failed. NPC `status`: alive, dead, missing, unknown. NPC `attitude`: friendly, neutral, hostile, unknown. Empty means unknown.
 - **Images** go in `Attachments/` and embed as `![[name.png]]`, with an optional `|300` width.
 
@@ -143,15 +150,38 @@ Pinned in `plugin-versions.txt`, with each plugin's `main.js`, `manifest.json`, 
   - a new page from `⌘N` and from clicking an unresolved link;
   - Home and a session page on a demo campaign.
 
-## Out of scope for v1 (the v2 list)
+## Roadmap
 
-- Status markers in the file list (hostile NPCs red, dead ones crossed out, done quests ticked): Supercharged Links or a Lorekeeper Kit plugin.
-- Kind colours on the raw note lines while editing: a plugin's editor extension.
-- Coin icons in properties.
-- `[[` suggestions and `↑` in the system input box.
-- Party play: a shared vault (Obsidian Sync, or Relay for DM-only notes), per-author capture, `~` private notes, time zones. A shared session would be a `Session N/` folder of per-author files plus the `Session N.md` view; the views already read per-author files.
-- D&D Beyond import.
-- Backups: Obsidian Git or a cloud drive, set up by the user.
+Every feature in Lorekeeper's `docs/GUIDE.md`, the milestone that delivers it, and how. M1 is this spec. M2 finishes solo parity. M3 is party play.
+
+| Lorekeeper feature | Milestone | In the vault |
+|---|---|---|
+| Note box hotkey, save selection, note symbols | M1 | system input box + `lk-note`, QuickAdd in Obsidian |
+| Offer the next session after 12 hours | M1 | `lk-note` exit code, asked by the Shortcut |
+| New session and New page hotkeys | M1 | QuickAdd commands; system hotkey for New session via `lk-note --next` |
+| Timeline and Journal, open quests on sessions | M1 | view block in each session |
+| New page by kind, custom templates, unresolved links | M1 | `new-page.js`, Templater folder templates and on-create trigger |
+| Quest status, NPC status and attitude | M1 | properties with Custom Selectors |
+| Home: open quests, NPCs, sessions, coin icons | M1 | Bases, `coins.js` |
+| Live-preview editor, rename, move, backlinks, search, images | M1 | Obsidian itself |
+| Session titles | M1 | `title` property, shown by the views and Bases |
+| Connections map | M1 | graph view with a saved filter |
+| Cheat sheet | M1 | `Cheat Sheet.md` |
+| Tome and Dungeon themes, text size | M1 | the theme, Obsidian's font size setting |
+| Several campaigns | M1 | one vault each, Obsidian's vault switcher |
+| Status markers in the file list | M2 | Supercharged Links |
+| `[[` suggestions and `↑` in the system note box | M2 | try a richer input (Raycast extension); else accepted loss |
+| D&D Beyond import | M2 | the third-party D&D Beyond Importer |
+| Backups to a folder, Dropbox, Google Drive or GitHub | M2 | Obsidian Git, or the vault in a cloud drive; documented in the README |
+| Automatic updates | M2 | `scripts/update-plugins.sh` and pulling the template repo; Obsidian updates itself |
+| Sharing with the party, notes with their author | M3 | a shared vault (choose Relay or Obsidian Sync then), per-author capture into `Sessions/Session N/<PC>.md` |
+| Private notes, `~` in the note box | M3 | `Private/<PC>/`, capture routes `~` notes there |
+| Private notes visible to the DM | M3 | share `Private/<PC>/` with the DM (needs folder-level sharing, so Relay) |
+| `~` lines in the editor moving to private notes | M3 | a QuickAdd command on the current line; moving on save is an accepted loss |
+| Sync conflicts | M3 | none with Relay (live merging); Obsidian Sync merges |
+| Roles, invites, online, time zones | none | accepted losses |
+
+**Plugin decision point:** after M2, list what's still missing or clumsy. Write a Lorekeeper Kit plugin only if that list matters more than the cost of maintaining one.
 
 ## Risks
 
