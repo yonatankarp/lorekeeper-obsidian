@@ -24,15 +24,17 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
   } catch (e) {
     return new obsidian.Notice(e.message, 8000);
   }
-  const labels = found.map((c) => (c.error ? `${c.name}: ${c.error}` : c.name));
-  const ticked = await asked(quickAddApi.checkboxPrompt(labels, labels.filter((_, i) => !found[i].error)));
+  // QuickAdd hands back the ticked labels, so they're made unique and mapped back by position.
+  const named = found.map((c) => (c.error ? `${c.name}: ${c.error}` : c.name));
+  const labels = named.map((l, i) => (named.filter((x) => x === l).length > 1 ? `${l} (#${found[i].id})` : l));
+  const ticked = await asked(quickAddApi.checkboxPrompt(labels, labels.filter((_, i) => !found[i].error), "Untick any you don't want."));
   if (!ticked) return;
   let imported = 0;
   const problems = [];
   for (let i = 0; i < found.length; i++) {
     if (!ticked.includes(labels[i])) continue;
     if (found[i].error) {
-      problems.push(labels[i]);
+      problems.push(named[i]);
       continue;
     }
     try {
@@ -44,6 +46,6 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
       problems.push(`${found[i].name}: ${e.message}`);
     }
   }
-  const summary = `Imported ${imported} character${imported === 1 ? "" : "s"}.`;
+  const summary = imported ? `Imported ${imported} character${imported === 1 ? "" : "s"}.` : "Nothing imported.";
   new obsidian.Notice(problems.length ? `${summary}\n${problems.join("\n")}` : summary, problems.length ? 10000 : 5000);
 };

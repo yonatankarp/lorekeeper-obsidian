@@ -8,7 +8,7 @@ const cleanCookie = (input) => String(input ?? "").trim().replace(/^CobaltSessio
 function signIn(secretStorage, input) {
   if (!secretStorage?.setSecret) throw new Error("Signing in needs Obsidian's secret storage (Obsidian 1.13 or later).");
   const cookie = cleanCookie(input);
-  if (!cookie) throw new Error("Paste your CobaltSession cookie to sign in (see docs/DNDBEYOND.md).");
+  if (!cookie) throw new Error("Paste your CobaltSession cookie to sign in (see docs/DNDBEYOND.md in this vault).");
   secretStorage.setSecret(SECRET_ID, cookie);
 }
 
@@ -16,4 +16,12 @@ function signOut(secretStorage) {
   secretStorage?.setSecret?.(SECRET_ID, "");
 }
 
-module.exports = { SECRET_ID, cleanCookie, signIn, signOut };
+// After checking a new cookie: null keeps it; otherwise the secret to store instead and what to say. An expired cookie
+// signs out; any other failure (offline, D&D Beyond down) puts back the sign-in that was there before.
+function afterVerify(error, previous, expiredMessage) {
+  if (!error) return null;
+  if (error.message === expiredMessage) return { keep: "", message: expiredMessage };
+  return { keep: previous ?? "", message: `Couldn't check the sign-in: ${error.message.replace(/\.$/, "")}. Your previous sign-in is kept.` };
+}
+
+module.exports = { SECRET_ID, cleanCookie, signIn, signOut, afterVerify };

@@ -10,7 +10,7 @@ Public characters work without signing in. Characters set to Campaign Only need 
 
 ## Signing in
 
-D&D Beyond doesn't let other apps sign you in, so you copy your sign-in cookie from your browser once. It's your D&D Beyond session: treat it like a password and don't share it. Lorekeeper keeps it in Obsidian's secret storage, never in a file in your vault, so backups never include it.
+D&D Beyond doesn't let other apps sign you in, so you copy your sign-in cookie from your browser once. It's your D&D Beyond session: treat it like a password and don't share it. Lorekeeper keeps it in Obsidian's secret storage, never in a file in your vault, so backups never include it. Obsidian's secret storage is shared by your plugins, so only use plugins you trust. Signing in needs Obsidian 1.13 or later.
 
 1. Sign in at dndbeyond.com in your browser.
 2. Open the developer tools: **Chrome** `⌥⌘I` / `Ctrl+Shift+I`, then **Application > Cookies > https://www.dndbeyond.com**. **Firefox** `⌥⌘I` / `Ctrl+Shift+I`, then **Storage > Cookies**. **Safari**: turn on **Settings > Advanced > Show features for web developers**, then `⌥⌘I` and **Storage > Cookies**.

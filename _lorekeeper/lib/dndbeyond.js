@@ -7,9 +7,9 @@ const MESSAGES = {
   expired: "Your D&D Beyond sign-in expired. Run Sign in to D&D Beyond again.",
   notShared: "D&D Beyond won't share this character. Run Sign in to D&D Beyond, or set the character to Public.",
   unreachable: "Couldn't reach D&D Beyond. Check your internet connection.",
-  badLink: "That isn't a link to a D&D Beyond character or campaign.",
+  badLink: "That isn't a link to a D&D Beyond character.",
   campaign: "Paste a link to a character in the campaign instead: its party comes along.",
-  invite: "That's a campaign invite. Paste the campaign's own page link (dndbeyond.com/campaigns/<number>).",
+  invite: "That's a campaign invite. Paste a link to a character in the campaign instead: its party comes along.",
 };
 const ALIGNMENTS = ["Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil"];
 

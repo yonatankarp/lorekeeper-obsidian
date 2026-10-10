@@ -8,10 +8,10 @@ test("parseLink accepts character links, campaign links and bare ids, strictly",
   assert.deepEqual(d.parseLink("dndbeyond.com/characters/5"), { character: 5 });
   assert.deepEqual(d.parseLink("https://www.dndbeyond.com/profile/vexer/characters/6"), { character: 6 });
   assert.throws(() => d.parseLink("https://www.dndbeyond.com/campaigns/42"), { message: d.MESSAGES.campaign });
-  assert.throws(() => d.parseLink("https://www.dndbeyond.com/campaigns/join/abc"), /campaign invite/);
+  assert.throws(() => d.parseLink("https://www.dndbeyond.com/campaigns/join/abc"), { message: "That's a campaign invite. Paste a link to a character in the campaign instead: its party comes along." });
   for (const bad of ["https://evil.com/characters/5", "https://dndbeyond.com.evil.net/characters/5", "ftp://www.dndbeyond.com/characters/5",
     "https://www.dndbeyond.com/monsters/5", "", "1234567890123456"])
-    assert.throws(() => d.parseLink(bad), /isn't a link to a D&D Beyond character or campaign/, bad);
+    assert.throws(() => d.parseLink(bad), { message: "That isn't a link to a D&D Beyond character." }, bad);
 });
 
 test("sheetId and sheetUrl", () => {

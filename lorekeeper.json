@@ -321,7 +321,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/dndbeyond.js": {
-      "sha256": "830df7e2c89342cf26ddb9b612b9ec178b4af3bacea4cdfe1c4067ed40c447fe",
+      "sha256": "4eade30f0de438d47d0009c675d5fc070f7334fb6cbf075aecb4516f361edb63",
       "kind": "managed"
     },
     "_lorekeeper/lib/load.js": {
@@ -349,7 +349,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/signin.js": {
-      "sha256": "8b114fed552f1e4d1285ef4c7fb6a1cde646bdf1939d1043b5fd423233f78e99",
+      "sha256": "50b66964148314d0938c2234b4569fe747a96891841c526b1b6fea15a416f907",
       "kind": "managed"
     },
     "_lorekeeper/lib/update.js": {
@@ -365,15 +365,15 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/dndbeyond-import.js": {
-      "sha256": "e683bd294a834789416fdad16d36cf88ed7c52e0ba8d1cf9673e7e193e3e8fb9",
+      "sha256": "640bf9d5fcf70503afaa203b6f2f37172f4676eefc25d5a12c08e3debf37da12",
       "kind": "managed"
     },
     "_lorekeeper/scripts/dndbeyond-refresh.js": {
-      "sha256": "9c5b148808a7e6b4b608c338db96cafd2ed30f96a978141e21490c33cbcb3d5e",
+      "sha256": "2d77134045615532e8e854ba39ac4c6db0005ca00509c558e0e26e14071910ea",
       "kind": "managed"
     },
     "_lorekeeper/scripts/dndbeyond-signin.js": {
-      "sha256": "4b2596c17936771ae855dbd01619b417c848119e55a62428a6b2bea36d271bf6",
+      "sha256": "abe2d58eeae913515d0cb9cf7b7547b5650a8e179da839a8a140d407b6280922",
       "kind": "managed"
     },
     "_lorekeeper/scripts/dndbeyond-signout.js": {
@@ -425,7 +425,7 @@
       "kind": "managed"
     },
     "docs/DNDBEYOND.md": {
-      "sha256": "24db853044793281eac67f9b4cf78bb360105fea306bd54945030f3707a7acbd",
+      "sha256": "35a57fc97c7b5d7f3624dcd1d6239039beec63ccba9f4eaaf1f0f7d7aec6c32b",
       "kind": "managed"
     }
   }
