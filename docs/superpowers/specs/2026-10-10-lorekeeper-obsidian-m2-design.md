@@ -17,7 +17,7 @@ M2 keeps M1's rules: behaviour follows Lorekeeper's `docs/GUIDE.md`, logic lives
 - **Shared** files start as the template's and may be edited by the player: `Templates/*.md`, `.obsidian/plugins/*/data.json`, `.obsidian/hotkeys.json`, `.obsidian/app.json`, `.obsidian/appearance.json`, `.obsidian/core-plugins.json`, `.obsidian/community-plugins.json`, `.obsidian/graph.json`, `.obsidian/bookmarks.json`, `Home.md`, `Cheat Sheet.md`. An update replaces one only when its current hash equals the hash the last update installed; otherwise it's left alone and listed as edited. Shared JSON settings files are compared on the template's own top-level keys in canonical form, because Obsidian rewrites them on first open; replacing one merges the template's keys over the player's file.
 - Everything else (the player's notes, `README.md`, `docs/superpowers/`, tests, `scripts/`, `theme/` sources) is not in the manifest and is never touched.
 
-**The command: Lorekeeper: Update** (QuickAdd script `update.js`, logic in `lib/update.js`).
+**The command: Update Lorekeeper** (QuickAdd script `update.js`, logic in `lib/update.js`).
 1. Fetch the latest release from `https://api.github.com/repos/yonatankarp/lorekeeper-obsidian/releases/latest`, then its `lorekeeper.json` from `raw.githubusercontent.com` at that tag.
 2. Hash the vault's copies (`crypto.subtle`), read `_lorekeeper/installed.json`, and plan: **new**, **replace**, **kept (you edited it)**, **remove** (a managed or unedited shared file the release no longer ships). A file the player edited is never replaced or removed.
 3. Show the plan (counts plus the edited list) and ask **Update to vX.Y.Z?** Nothing is written before the answer.
@@ -62,7 +62,7 @@ Colouring note lines by their `@`/`#` prefix while editing stays out of M2: acce
 
 Also covered: Obsidian's **File recovery** (on since M1) for local snapshots, and that Obsidian Git on mobile is slow and limited.
 
-A check guards the trap in step 2: **Lorekeeper: Check backup** (QuickAdd script) reads `.git/config` through the adapter and warns when `origin` points at `yonatankarp/lorekeeper-obsidian`. It's linked from BACKUP.md. No cloud-drive option and no restore dialog: accepted.
+A check guards the trap in step 2: **Check backup** (QuickAdd script) reads `.git/config` through the adapter and warns when `origin` points at `yonatankarp/lorekeeper-obsidian`. It's linked from BACKUP.md. No cloud-drive option and no restore dialog: accepted.
 
 ## 4. D&D Beyond import
 
@@ -77,9 +77,9 @@ A port of Lorekeeper's import (`src-tauri/src/dndbeyond.rs` and the code that up
 **Portrait:** only https on `dndbeyond.com` or a subdomain, at most 10 MB, and only a real JPG, PNG, GIF or WebP by its first bytes. Saved to `Attachments/` and set as `portrait`.
 
 **Commands:**
-- **Lorekeeper: Import from D&D Beyond:** asks for a link, lists the characters found (each ticked, untick to skip), imports.
-- **Lorekeeper: Refresh from D&D Beyond:** on the open PC page, reads its `dndbeyond` link and updates it.
-- **Lorekeeper: Sign in to D&D Beyond** / **Sign out of D&D Beyond.**
+- **Import from D&D Beyond:** asks for a link, lists the characters found (each ticked, untick to skip), imports.
+- **Refresh from D&D Beyond:** on the open PC page, reads its `dndbeyond` link and updates it.
+- **Sign in to D&D Beyond** / **Sign out of D&D Beyond.**
 
 **Sign-in (optional).** Import works without it for public characters. Sign-in unlocks "Campaign Only" characters. The player signs in to D&D Beyond in their own browser, copies the `CobaltSession` cookie from the browser's developer tools, and pastes it into the sign-in prompt. `docs/DNDBEYOND.md` gives the steps for Chrome, Safari and Firefox and says what the cookie is (it's their D&D Beyond session: treat it like a password). The cookie is kept only in Obsidian's secret storage (`app.secretStorage`), never in a vault file, so backups never carry it. Each lookup trades it for a short-lived token at `https://auth-service.dndbeyond.com/v1/cobalt-token` (Lorekeeper's `cobalt_token`). An expired cookie gives a clear "Sign in to D&D Beyond again" message. A private character met while signed out says "This character is private: sign in to D&D Beyond to import it".
 

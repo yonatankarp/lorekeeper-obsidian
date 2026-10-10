@@ -9,7 +9,7 @@ Lorekeeper's vault backs up with **Git** (the Obsidian Git plugin): every change
    - A downloaded copy isn't a git repository yet: `git init`, then `git remote add origin git@github.com:<you>/strahd-notes.git`
 
    Then run **Check backup** from the command palette (`⌘P` or `Ctrl+P`): it says whether the vault is ready, and warns if it still points at the template.
-3. **Turn on Git** in **Settings > Community plugins**. It commits and pushes every 30 minutes while notes change, and pulls when Obsidian starts.
+3. **Turn on Git** in **Settings > Community plugins**. It commits and pushes every 30 minutes (a check with nothing new does nothing), and pulls when Obsidian starts.
 4. **To get an older version back:** open the page on github.com and use **History**, or in Obsidian use **Git: Open history view**.
 
 **Short-term undo:** Obsidian's **File recovery** (on since the start, **Settings > File recovery**) keeps local snapshots of each page.
