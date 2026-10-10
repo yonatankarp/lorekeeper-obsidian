@@ -192,3 +192,9 @@ test("import says Nothing imported. when nothing was, plus any errors", async ()
   const none = importLk([character(1, "Vex")]);
   assert.deepEqual(await runScript("dndbeyond-import.js", { lk: none, app: importApp, quickAddApi: { ...quickAddApi, checkboxPrompt: async () => [] } }), ["Nothing imported."]);
 });
+
+test("check-backup.js uses the verbatim boot lines", () => {
+  const src = fs.readFileSync(path.join(DIR, "check-backup.js"), "utf8");
+  assert.ok(src.includes("const lk = await m.exports(app);"));
+  assert.ok(src.includes("lk.backup.backupStatus("));
+});

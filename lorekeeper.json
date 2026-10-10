@@ -361,7 +361,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/check-backup.js": {
-      "sha256": "b2cbaad331b9acff68ad3bcfd079a49e3b5121f11334f03d1fdccf3f7fbe5dab",
+      "sha256": "ef8d5b6496d4b50ffe1f3afb687d9f2d429a2857c4a00e6bdf88ed784ba7340e",
       "kind": "managed"
     },
     "_lorekeeper/scripts/dndbeyond-import.js": {
@@ -417,7 +417,7 @@
       "kind": "managed"
     },
     "docs/BACKUP.md": {
-      "sha256": "65d37788becf6966a7a65d19ac488cdd455864cd179e70f4961e4b68cade4f60",
+      "sha256": "bf803d4b1643443fb79b12370b54db1dc4f9d0884f197877678f4c4c0aad9e19",
       "kind": "managed"
     },
     "docs/CAPTURE.md": {

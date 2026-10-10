@@ -2,7 +2,7 @@
 
 Lorekeeper's vault backs up with **Git** (the Obsidian Git plugin): every change becomes a version in a private GitHub repository of yours, and a page's **History** on github.com shows its older versions. It comes with the vault, turned off.
 
-1. **Create a private repository** on GitHub for this campaign (say `strahd-notes`). Leave it empty.
+1. **Create a private repository** on GitHub for this campaign (say `strahd-notes`). Leave it empty. Don't fork the Lorekeeper repository for your notes: a fork of a public repository is public.
 2. **Point the vault at it.** In a terminal in the vault's folder:
    - A vault you got with `git clone` of the Lorekeeper repository still points at the public template, so your notes would go there: `git remote set-url origin git@github.com:<you>/strahd-notes.git`
    - A vault made with **Use this template** already points at your own repository; check it's private.
