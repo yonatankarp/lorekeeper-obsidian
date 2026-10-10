@@ -23,3 +23,10 @@ test("selectors match the templates' starting values", () => {
   assert.ok(sel.status.includes("open") && fs.readFileSync(path.join(ROOT, "Templates/Quest.md"), "utf8").includes("status: open"));
   assert.ok(sel.condition.includes("alive") && fs.readFileSync(path.join(ROOT, "Templates/NPC.md"), "utf8").includes("condition: alive"));
 });
+
+test("Home embeds only bases that exist", () => {
+  const home = fs.readFileSync(path.join(ROOT, "Home.md"), "utf8");
+  const embeds = [...home.matchAll(/!\[\[([^\]#|]+)/g)].map((m) => m[1]);
+  assert.equal(embeds.length, 3);
+  for (const e of embeds) assert.ok(fs.existsSync(path.join(ROOT, e)), e);
+});

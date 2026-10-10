@@ -1,0 +1,14 @@
+filters:
+  and:
+    - file.folder == "Sessions"
+views:
+  - type: table
+    name: Recent sessions
+    order:
+      - file.name
+      - title
+      - date
+    sort:
+      - property: session
+        direction: DESC
+    limit: 10

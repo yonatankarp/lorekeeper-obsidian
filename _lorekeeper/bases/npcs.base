@@ -1,0 +1,15 @@
+filters:
+  and:
+    - file.inFolder("NPCs")
+views:
+  - type: table
+    name: NPCs
+    groupBy:
+      property: attitude
+      direction: ASC
+    order:
+      - file.name
+      - condition
+      - attitude
+      - role
+      - location

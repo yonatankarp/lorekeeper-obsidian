@@ -1,0 +1,23 @@
+filters:
+  and:
+    - file.inFolder("Quests")
+views:
+  - type: table
+    name: Open quests
+    filters:
+      or:
+        - status == "open"
+        - status == "in progress"
+    order:
+      - file.name
+      - status
+      - giver
+      - reward
+  - type: table
+    name: All quests
+    order:
+      - file.name
+      - status
+      - giver
+      - reward
+      - started
