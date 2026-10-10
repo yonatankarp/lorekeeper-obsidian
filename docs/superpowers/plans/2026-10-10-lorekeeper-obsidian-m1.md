@@ -639,7 +639,7 @@ Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: `_lorekeeper/templates/session.md` (Task 3), with placeholders `{{session}}` and `{{date}}`.
-- Produces: `lk-note [--vault DIR] [--next | --here] [--dialog | --stdin | TEXT…]`. Exit codes: 0 saved (prints the session file's path), 1 cancelled, 2 usage or setup error, 3 quiet session and no way to ask. `--next` always starts the next session, even with no text, so it doubles as the New session hotkey. `LK_VAULT` sets the vault, which otherwise defaults to the folder two levels above the script. `LK_NO_DIALOG=1` forbids dialogs, for tests and Windows.
+- Produces: `lk-note [--vault DIR] [--next | --here] [--dialog | --stdin | TEXT…]`. Exit codes: 0 saved (prints the session file's path), 1 cancelled, 2 usage or setup error, 3 quiet session and no way to ask. `--next` always starts the next session, even with no text, so it doubles as the New session hotkey. `LK_VAULT` sets the vault, which otherwise defaults to the folder two levels above the script. `LK_NO_DIALOG=1` forbids dialogs, for tests and Windows. **Smart hotkey:** with `--dialog`, when the frontmost app is Obsidian, `lk-note` opens `obsidian://quickadd?choice=Quick%20note&vault=<vault folder name>` instead (Quick note inside Obsidian, with `[[` suggestions) and exits 0. `LK_FRONT_APP` overrides the frontmost-app check and `LK_OPEN` the command that opens the URI (default `open`), for tests.
 
 - [ ] **Step 1: Write the failing tests, `test/lk-note.test.js`**
 
@@ -751,6 +751,29 @@ test("not a vault: exit 2", () => {
   assert.match(r.stderr, /isn't a Lorekeeper vault/);
 });
 
+const pct = (s) => Buffer.from(s).toString("hex").replace(/../g, "%$&");
+
+test("smart hotkey: --dialog over Obsidian opens Quick note there", () => {
+  const dir = vault();
+  const r = spawnSync("sh", [SCRIPT, "--vault", dir, "--dialog"], {
+    encoding: "utf8",
+    env: { ...process.env, LK_FRONT_APP: "Obsidian", LK_OPEN: "echo" },
+  });
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), `obsidian://quickadd?choice=${pct("Quick note")}&vault=${pct(path.basename(dir))}`);
+  assert.equal(fs.existsSync(path.join(dir, "Sessions")), false);
+});
+
+test("--dialog over another app with no dialog tool: exit 2", () => {
+  const dir = vault();
+  const r = spawnSync("sh", [SCRIPT, "--vault", dir, "--dialog"], {
+    encoding: "utf8",
+    env: { ...process.env, LK_FRONT_APP: "Discord", LK_NO_DIALOG: "1" },
+  });
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /--dialog needs osascript/);
+});
+
 test("text with % and quotes is saved as typed", () => {
   const dir = vault();
   run(dir, ['"50% off," said Vex']);
@@ -813,6 +836,20 @@ ask() {
   fi
 }
 
+# front_app: the frontmost app's name on macOS (LK_FRONT_APP overrides it), else nothing.
+front_app() {
+  if [ -n "${LK_FRONT_APP+x}" ]; then
+    printf '%s' "$LK_FRONT_APP"
+  elif command -v osascript >/dev/null 2>&1; then
+    osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null || true
+  fi
+}
+
+# urlencode TEXT: every byte as %XX, which is always a valid URL encoding.
+urlencode() {
+  printf '%s' "$1" | od -An -tx1 -v | tr -d ' \n' | sed 's/../%&/g'
+}
+
 # start_next N: succeeds when the player picks Start Session N+1.
 start_next() {
   next=$(($1 + 1))
@@ -829,6 +866,11 @@ start_next() {
 
 case $mode in
   dialog)
+    if [ "$(front_app)" = Obsidian ]; then # the smart hotkey: Quick note inside Obsidian, with [[ suggestions
+      open_cmd=${LK_OPEN:-open}
+      "$open_cmd" "obsidian://quickadd?choice=$(urlencode "Quick note")&vault=$(urlencode "$(basename "$vault")")"
+      exit 0
+    fi
     has_dialog || { echo "lk-note: --dialog needs osascript (macOS) or zenity (Linux)" >&2; exit 2; }
     text=$(ask "Note") || exit 1
     ;;
@@ -877,7 +919,7 @@ printf '%s\n' "$file"
 - [ ] **Step 4: Make it executable and run the tests**
 
 Run: `chmod +x _lorekeeper/capture/lk-note && node --test test/lk-note.test.js`
-Expected: `# pass 10`, `# fail 0`
+Expected: `# pass 12`, `# fail 0`
 
 - [ ] **Step 5: shellcheck**
 
@@ -892,6 +934,7 @@ This tests the spec's focus assumption before anything depends on it.
 3. Expected: the **Lorekeeper** box appears over Discord. Type `@Vex` and press Enter. Discord is frontmost again and its message box still has the cursor. `tail -1 "/tmp/lkv/Sessions/Session 1.md"` shows `- HH:MM @Vex`.
 4. `touch -t 202601010000 "/tmp/lkv/Sessions/Session 1.md"` and repeat. Expected: after the note, **Session 1 went quiet over 12 hours ago.** offers **Keep Session 1** and **Start Session 2**.
 5. Press Esc in the note box. Expected: exit code 1 (`echo $?`) and nothing written.
+6. Open `/tmp/lkv` as a vault in Obsidian (Task 6 adds the plugins; until then expect Obsidian to open and QuickAdd to be missing). Run `sleep 3; sh _lorekeeper/capture/lk-note --vault /tmp/lkv --dialog` and switch to Obsidian within 3 seconds. Expected: no system box, and Obsidian handles an `obsidian://quickadd` link. Repeat this after Task 7 to see Quick note open.
 
 If focus does **not** return to Discord, stop and report it. The fallback is the Shortcuts **Ask for Input** action (spec Risks), which changes Task 10.
 
@@ -2408,6 +2451,7 @@ Install `zenity` (and `xclip` for saving the selection on X11). In your desktop'
 In `docs/superpowers/specs/2026-10-10-lorekeeper-obsidian-design.md`, replace `- **macOS:** two Shortcuts in the repo.` with `- **macOS:** two Shortcuts, built from the steps in \`docs/CAPTURE.md\` (an exported Shortcut would hold its author's vault path).`
 
 - [ ] **Step 4: USER CHECKPOINT: capture on macOS.** An agent stops here and asks the user to follow `docs/CAPTURE.md` with the repo vault:
+0. With Obsidian frontmost, `⌘⌥N` runs **Quick note** inside Obsidian (a new `- HH:MM ` line with `[[` suggestions), not the system box.
 1. In Discord's message box, press `⌘⌥N`, type `!Find the missing miners` and press Enter. Discord keeps focus, and the note is the last line of the newest session.
 2. Select a sentence in Safari and press `⌘⇧S`. The sentence is saved as one line.
 3. With nothing selected, `⌘⇧S` saves the clipboard.

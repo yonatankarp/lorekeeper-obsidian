@@ -100,6 +100,7 @@ Obsidian's own layout (tabs, ribbon, status bar) stays. The target is the same b
 **From outside Obsidian (the hotkeys).** The system shows its own input box and `_lorekeeper/capture/lk-note` appends the line to the file. Obsidian never takes focus, and it works with Obsidian closed.
 
 - `lk-note [--vault DIR] [--next | --here] [--dialog | --stdin | TEXT…]` finds the current session, or starts one from `_lorekeeper/templates/session.md`, and appends `- HH:MM text`. A session counts as quiet when its file hasn't changed in 12 hours, as in Lorekeeper. Then it exits 3 unless `--next` (start the next session) or `--here` (keep this one) says what to do.
+- **One key everywhere (macOS):** with `--dialog`, when Obsidian is the frontmost app, `lk-note` runs **Quick note** inside Obsidian through `obsidian://quickadd` instead of showing the system box.
 - `--dialog` asks for the note in the system's own box, and asks "Start Session N+1?" when the session is quiet: `osascript` on macOS, `zenity` on Linux. `--stdin` reads the note from standard input, for saving the selection, and asks about a quiet session the same way.
 - **macOS:** two Shortcuts in the repo. **Lorekeeper Note** (`⌘⌥N`) runs `lk-note --dialog`. **Lorekeeper Save Selection** (`⌘⇧S`) is a Quick Action that passes the selected text to `lk-note --stdin`.
 - **Windows:** an AutoHotkey v2 script that asks for the note and runs `lk-note` with Git for Windows' `sh`. **Linux:** the desktop's shortcut settings run `lk-note --dialog`. Both are untested in v1, and the README says so.
