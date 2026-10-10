@@ -143,3 +143,46 @@ test("rawUrl encodes each path segment", () => {
     "https://raw.githubusercontent.com/yonatankarp/lorekeeper-obsidian/v0.2.0/Cheat%20Sheet.md");
   assert.equal(u.rawUrl("a/b", "v1", ".obsidian/plugins/x/main.js"), "https://raw.githubusercontent.com/a/b/v1/.obsidian/plugins/x/main.js");
 });
+
+test("canonical ignores key order and whitespace", () => {
+  assert.equal(u.canonical(JSON.parse('{"b":1,"a":[{"d":2,"c":3}]}')), '{"a":[{"c":3,"d":2}],"b":1}');
+});
+
+test("jsonView ignores keys outside `keys` and formatting", () => {
+  assert.equal(
+    u.jsonView('{\n "theme": "system",\n "cssTheme": "Lorekeeper",\n "accentColor": ""\n}', ["theme", "cssTheme"]),
+    u.jsonView('{"cssTheme":"Lorekeeper","theme":"system"}', null),
+  );
+});
+
+test("mergeJson keeps extra keys and takes the template's values", () => {
+  assert.equal(u.mergeJson('{"a":1,"x":9}', '{"a":2,"b":3}'), JSON.stringify({ a: 2, x: 9, b: 3 }, null, 2) + "\n");
+});
+
+test("a file the vault never installed is the player's: kept, not replaced", () => {
+  const plan = u.planUpdate({
+    installed: { version: "0.1.0", files: {}, plugins: [] },
+    current: { "Templates/Monster.md": "mine" },
+    release: rel({ "Templates/Monster.md": "t2" }),
+  });
+  assert.deepEqual(plan, { add: [], replace: [], kept: ["Templates/Monster.md"], remove: [], merge: [] });
+});
+
+test("a merged file the vault doesn't have is added, not merged", () => {
+  const plan = u.planUpdate({
+    installed: { version: "0.1.0", files: {}, plugins: [] },
+    current: {},
+    release: rel({ ".obsidian/plugins/quickadd/data.json": "q2" }),
+  });
+  assert.deepEqual(plan.add, [".obsidian/plugins/quickadd/data.json"]);
+  assert.deepEqual(plan.merge, []);
+});
+
+test("never removes a path the template doesn't own", () => {
+  const plan = u.planUpdate({
+    installed: { version: "0.1.0", files: { "NPCs/Mirela.md": "n1" }, plugins: [] },
+    current: { "NPCs/Mirela.md": "n1" },
+    release: rel({}),
+  });
+  assert.deepEqual(plan, { add: [], replace: [], kept: [], remove: [], merge: [] });
+});

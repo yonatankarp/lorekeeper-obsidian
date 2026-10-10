@@ -8,36 +8,98 @@
   ],
   "files": {
     ".obsidian/app.json": {
-      "sha256": "f65e717f0d737bcbfb7336ba36c941a95b0ca2538a7e0c695a15bda5220388b7",
-      "kind": "shared"
+      "sha256": "339eed2eba870398d12bd20b0aa508041581bfe5a195afdc2c69b4c1319e2956",
+      "kind": "shared",
+      "keys": [
+        "alwaysUpdateLinks",
+        "newFileLocation",
+        "attachmentFolderPath",
+        "newLinkFormat",
+        "useMarkdownLinks",
+        "showInlineTitle",
+        "promptDelete",
+        "userIgnoreFilters"
+      ]
     },
     ".obsidian/appearance.json": {
-      "sha256": "0f9bd01a5bb7004c80108411ddbce823ce7df02571a37b54709d99909f291a34",
-      "kind": "shared"
+      "sha256": "e5c37f121d1392c0213434a35815111bfc44a953d138df3aab1e808bcf6a36bc",
+      "kind": "shared",
+      "keys": [
+        "theme",
+        "cssTheme",
+        "baseFontSize"
+      ]
     },
     ".obsidian/bookmarks.json": {
-      "sha256": "b9d4c29ec4de26c6e41cd959a0203552710efacc62e94a130bd13c9817ceaa45",
-      "kind": "shared"
+      "sha256": "3c3d4648b922630465a8997734c2d6b6f90ed5ea75df36dc2e65fb810e2ad40b",
+      "kind": "shared",
+      "keys": [
+        "items"
+      ]
     },
     ".obsidian/community-plugins.json": {
-      "sha256": "768dc952e48b2570cdd3b043229bbc6ce570577b98a2ee4cdeca4da8bf38610d",
+      "sha256": "8b3fe550c69c0a012a7d10abb9eab488e37a48f74636f4c3bae8bd9379ad59c9",
       "kind": "shared"
     },
     ".obsidian/core-plugins.json": {
-      "sha256": "a05e5a012ad7cf4629d9dee779f9a165fcbd28f9f05d0afbb408b28b529b653c",
-      "kind": "shared"
+      "sha256": "2369e17098141d32b8f9a8d57ccb17b52da6c0d06548c7b595f28947503ee7d6",
+      "kind": "shared",
+      "keys": [
+        "file-explorer",
+        "global-search",
+        "switcher",
+        "graph",
+        "backlink",
+        "outgoing-link",
+        "properties",
+        "page-preview",
+        "bookmarks",
+        "bases",
+        "command-palette",
+        "editor-status",
+        "word-count",
+        "templates",
+        "daily-notes",
+        "tag-pane",
+        "canvas",
+        "file-recovery",
+        "sync"
+      ]
     },
     ".obsidian/graph.json": {
-      "sha256": "e9e2ec1fd37cc1b3d03047c273e435be9fb2c60835bf018cc1d0ccafed0d7963",
-      "kind": "shared"
+      "sha256": "ed454f9ef7f0e37b848b44f3dc71bddec53c062a94c170a0d2f55ff1d7a238ff",
+      "kind": "shared",
+      "keys": [
+        "search",
+        "showTags",
+        "showAttachments",
+        "hideUnresolved",
+        "showOrphans",
+        "colorGroups"
+      ]
     },
     ".obsidian/hotkeys.json": {
-      "sha256": "d18081ab02469a0460e80623b97faa6321393ce1f52d5a40082237d55c1c2fb2",
-      "kind": "shared"
+      "sha256": "af0cf6b9a67355a3ca64d7cb641d3ab178cd4c34da3add94aeac1d1407d5935b",
+      "kind": "shared",
+      "keys": [
+        "quickadd:choice:lk-quick-note",
+        "quickadd:choice:lk-current-session",
+        "quickadd:choice:lk-new-page",
+        "quickadd:choice:lk-cheat-sheet",
+        "global-search:open",
+        "graph:open",
+        "workspace:edit-file-title",
+        "editor:insert-link",
+        "file-explorer:new-file",
+        "editor:toggle-comments"
+      ]
     },
     ".obsidian/plugins/custom-selectors/data.json": {
-      "sha256": "058c203e710e6b822e54b5778a47c7daa5264b062c37cc7f993666a5600b7e8f",
-      "kind": "shared"
+      "sha256": "c83ccd5f40aa6b18938e948b3f4652b49763d4c32dd4f54da6b62b07b1be3dc0",
+      "kind": "shared",
+      "keys": [
+        "selectors"
+      ]
     },
     ".obsidian/plugins/custom-selectors/main.js": {
       "sha256": "149936267083caa25f62335a266df7da5c51854e40cd970943b10e05cf454bd3",
@@ -52,8 +114,12 @@
       "kind": "managed"
     },
     ".obsidian/plugins/dataview/data.json": {
-      "sha256": "f9da0da210daf554bdc74dc798e015cf0bc365856a8c693230969faf5db7a022",
-      "kind": "shared"
+      "sha256": "c874ba518ed2eceaaa1df2a69428a31e3de185039906821922ed9bc7c4b8aeb1",
+      "kind": "shared",
+      "keys": [
+        "enableDataviewJs",
+        "enableInlineDataviewJs"
+      ]
     },
     ".obsidian/plugins/dataview/main.js": {
       "sha256": "6bb1cf7010afad830e73575fca0e2bfbd3279c562e3d9d24f2d2f45161eb7d00",
@@ -68,8 +134,12 @@
       "kind": "managed"
     },
     ".obsidian/plugins/quickadd/data.json": {
-      "sha256": "36142db376ab97e95891fbc1ba95593ac39360491244dee2c4709d81f44dfe04",
-      "kind": "shared"
+      "sha256": "c0e98456222cc95dd02e06b5f9b8f1d8b13aad2ccf00a5808fe13e66d32ec96c",
+      "kind": "shared",
+      "keys": [
+        "choices",
+        "migrations"
+      ]
     },
     ".obsidian/plugins/quickadd/main.js": {
       "sha256": "6423b2d14b60bc51fc6b6f61f835e08c5842d28e5a1a43ab5601ccd37b4e44c5",
@@ -88,8 +158,17 @@
       "kind": "managed"
     },
     ".obsidian/plugins/templater-obsidian/data.json": {
-      "sha256": "3e6247cae5df6d0fdc925f115552d2aaf4f7ef39b9104953e7ef40128b90e3fc",
-      "kind": "shared"
+      "sha256": "3bbd7c29e39c615ef88e6adebd3fc1e710b51ca4c169b791b8dca50faa944f69",
+      "kind": "shared",
+      "keys": [
+        "data_version",
+        "templates_folder",
+        "trigger_on_file_creation_mode",
+        "folder_templates",
+        "user_scripts_folder",
+        "ignore_folders_on_creation",
+        "enable_system_commands"
+      ]
     },
     ".obsidian/plugins/templater-obsidian/main.js": {
       "sha256": "eb86d9282694ce1f099154c320286fdd89473e60dc2441ee310f3ac331333e94",
