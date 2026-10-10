@@ -320,8 +320,12 @@
       "sha256": "0766366f067421999f809b85218cde86e1af55afdb1adc825d4cb5b1be3c4017",
       "kind": "managed"
     },
+    "_lorekeeper/lib/dndbeyond.js": {
+      "sha256": "acbb19dd87b201300739a5ca4c88a7fb7e8e2241688b64b9c2a4812d153814b9",
+      "kind": "managed"
+    },
     "_lorekeeper/lib/load.js": {
-      "sha256": "0bf770fab625d7b3fd2185832449341943a5ca76aa9e9c02cb4ae1954fd9964e",
+      "sha256": "d524d9181b33dca5934444e45c805199e4540de9f6b87babaf6aed91ed891433",
       "kind": "managed"
     },
     "_lorekeeper/lib/notes.js": {
