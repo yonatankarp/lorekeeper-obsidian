@@ -162,7 +162,7 @@
       "kind": "managed"
     },
     ".obsidian/plugins/quickadd/data.json": {
-      "sha256": "2e1bcae67a9660347fe8276f9a3e1440c202e07ace052e88b338b5962eac3004",
+      "sha256": "0c63c35888c3c259db3c0840538e73fb3a8becf81110114e47d0bc2a8f8c97b0",
       "kind": "shared",
       "keys": [
         "choices",
@@ -324,8 +324,12 @@
       "sha256": "4eade30f0de438d47d0009c675d5fc070f7334fb6cbf075aecb4516f361edb63",
       "kind": "managed"
     },
+    "_lorekeeper/lib/identity.js": {
+      "sha256": "7dcdbba516785e059b33686c0e120fe65865b35cc8aaf4e631c69302086c6c39",
+      "kind": "managed"
+    },
     "_lorekeeper/lib/load.js": {
-      "sha256": "74216d2d2ec965e35e487f04f3cd1ae3b929ad2ee29735ff1bef60dc908c3e5a",
+      "sha256": "489c3ad956ab766200320f1ea29ea60f0073fb37f134c1108db9731421926518",
       "kind": "managed"
     },
     "_lorekeeper/lib/notes.js": {
@@ -398,6 +402,10 @@
     },
     "_lorekeeper/scripts/open-session.js": {
       "sha256": "b44a342efd862f51e8ed1f961053d67b44bfcd63e2a05980c3f004dff52691dc",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/pick-character.js": {
+      "sha256": "2522726de9c0f339819b56219a99d3ee375d239271df5b3ea9a49a0a3ce9e335",
       "kind": "managed"
     },
     "_lorekeeper/scripts/quick-note.js": {

@@ -219,6 +219,26 @@
           }
         ]
       }
+    },
+    {
+      "id": "lk-pick-character",
+      "name": "Pick your character",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-pick-character-macro",
+        "name": "Pick your character",
+        "commands": [
+          {
+            "id": "lk-pick-character-script",
+            "name": "pick-character",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/pick-character.js",
+            "settings": {}
+          }
+        ]
+      }
     }
   ],
   "migrations": {

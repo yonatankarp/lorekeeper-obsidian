@@ -15,7 +15,7 @@ test("session.js compiles the way dv.view compiles it", () => {
   assert.ok(src.includes(BOOT), "uses the load.js boot lines");
 });
 
-for (const name of ["quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js", "update.js", "check-backup.js", "dndbeyond-import.js", "dndbeyond-refresh.js", "dndbeyond-signin.js", "dndbeyond-signout.js"]) {
+for (const name of ["quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js", "update.js", "check-backup.js", "dndbeyond-import.js", "dndbeyond-refresh.js", "dndbeyond-signin.js", "dndbeyond-signout.js", "pick-character.js"]) {
   test(`${name} compiles as a CommonJS module exporting a function`, () => {
     const src = fs.readFileSync(path.join(DIR, name), "utf8");
     const m = { exports: {} };
@@ -64,9 +64,9 @@ test("every ⌘ or F2 row in the cheat sheet's In Obsidian table is bound or an 
 });
 
 // Runs a QuickAdd script with a fake lk: load.js is swapped for one that hands back globalThis.__lk.
-async function runScript(name, { lk, app = {}, quickAddApi = {}, requestUrl }) {
+async function runScript(name, { lk, app = {}, quickAddApi = {}, requestUrl, platform }) {
   const notices = [];
-  const obsidian = { Notice: class { constructor(m) { notices.push(m); } }, requestUrl: requestUrl ?? (async () => { throw new Error("no network in tests"); }) };
+  const obsidian = { Platform: platform, Notice: class { constructor(m) { notices.push(m); } }, requestUrl: requestUrl ?? (async () => { throw new Error("no network in tests"); }) };
   const src = fs.readFileSync(path.join(DIR, name), "utf8");
   const m = { exports: {} };
   new Function("module", "exports", src)(m, m.exports);
@@ -197,4 +197,52 @@ test("check-backup.js uses the verbatim boot lines", () => {
   const src = fs.readFileSync(path.join(DIR, "check-backup.js"), "utf8");
   assert.ok(src.includes("const lk = await m.exports(app);"));
   assert.ok(src.includes("lk.backup.backupStatus("));
+});
+
+const identity = require("../_lorekeeper/lib/identity.js");
+
+async function pick(choice, { files = ["Vex.md", "Aria.md", "notes.txt"], desktop = true } = {}) {
+  const store = new Map();
+  const written = {};
+  const fakeFs = { readFileSync: () => { throw Object.assign(new Error("x"), { code: "ENOENT" }); }, mkdirSync() {}, writeFileSync: (p, t) => (written[p] = t) };
+  globalThis.window = { require: (n) => (n === "fs" ? fakeFs : n === "os" ? { homedir: () => "/home/me" } : path.posix) };
+  const shown = [];
+  const lk = { party: require("../_lorekeeper/lib/party.js"), identity, io: { list: async () => files } };
+  const app = { vault: { adapter: { basePath: "/V" } }, loadLocalStorage: (k) => store.get(k) ?? null, saveLocalStorage: (k, v) => (v === null ? store.delete(k) : store.set(k, v)) };
+  const notices = await runScript("pick-character.js", { lk, app, quickAddApi: { suggester: async (_d, vals) => { shown.push(vals); return choice(vals); } }, platform: { isDesktopApp: desktop } });
+  delete globalThis.window;
+  return { notices, store, written, shown };
+}
+
+test("pick-character lists PCs sorted, then DM and solo", async () => {
+  const { shown } = await pick(() => null);
+  assert.deepEqual(shown[0], ["Aria", "Vex", "I'm the DM (no character)", "Play solo"]);
+});
+
+test("pick-character: a PC", async () => {
+  const r = await pick(() => "Vex");
+  assert.deepEqual(r.notices, ["You play Vex."]);
+  assert.equal(r.store.get(identity.KEY), "Vex");
+  assert.equal(r.written["/home/me/.config/lorekeeper/me.tsv"], "/V\tVex\n");
+});
+
+test("pick-character: the DM and solo", async () => {
+  const dm = await pick((v) => v.at(-2));
+  assert.deepEqual(dm.notices, ["You're the DM."]);
+  assert.equal(dm.store.get(identity.KEY), "DM");
+  const solo = await pick((v) => v.at(-1));
+  assert.deepEqual(solo.notices, ["Playing solo."]);
+  assert.equal(solo.store.has(identity.KEY), false);
+});
+
+test("pick-character refuses a PC page named DM", async () => {
+  const r = await pick(() => "DM", { files: ["DM.md"] });
+  assert.deepEqual(r.notices, ["A PC page named DM can't be the character you play."]);
+  assert.equal(r.store.has(identity.KEY), false);
+});
+
+test("pick-character off desktop skips the file", async () => {
+  const r = await pick(() => "Vex", { desktop: false });
+  assert.deepEqual(r.written, {});
+  assert.equal(r.store.get(identity.KEY), "Vex");
 });
