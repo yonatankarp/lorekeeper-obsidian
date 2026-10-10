@@ -62,7 +62,7 @@ if (!all.length) {
     return portraits[author];
   };
   const line = (n) =>
-    `${n.time ? `<span class="lk-time">${n.time}</span> ` : ""}${n.text}${n.author ? ` <span class="lk-author">${portrait(n.author)}${n.author}</span>` : ""}`;
+    `${n.time ? `<span class="lk-time">${n.time}</span> ` : ""}${n.text}${notes.showAuthor(n, me) ? ` <span class="lk-author">${portrait(n.author)}${n.author}</span>` : ""}`;
   const cls = (n, kind) => `lk-note lk-kind-${kind}${n.private ? " lk-private" : ""}`;
   for (const n of all) dv.el("div", line(n), { container: timeline, cls: cls(n, n.kind) });
   for (const [kind, label] of notes.SECTIONS) {

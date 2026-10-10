@@ -245,7 +245,7 @@
       "kind": "managed"
     },
     ".obsidian/themes/Lorekeeper/theme.css": {
-      "sha256": "fd905a725f2c79312f5b206afcd9986cf589cec0ab5d34383083fbc9a8abce8f",
+      "sha256": "052d420d20be13b256c73834a3bf3abde3062057f4f7f4e91ba045871c8426fb",
       "kind": "managed"
     },
     "CREDITS.md": {
@@ -333,7 +333,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/notes.js": {
-      "sha256": "6e1c937be3321576a50d72d6ae69329d69926a7cb532b1c68de4c5e12af3034f",
+      "sha256": "ed8a28e49803faf0e09e620624054c79241b49185898e1a0102d00bdc4028f65",
       "kind": "managed"
     },
     "_lorekeeper/lib/pages.js": {
@@ -413,7 +413,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/session.js": {
-      "sha256": "6dd0fec957c4dc287cf80337672ee327b08ec08dcd8ea10ae00d70284bd01e34",
+      "sha256": "f865ae2da41142ea4fbb115005130f9b8606e99398e96f30deae92d56ccf5d7a",
       "kind": "managed"
     },
     "_lorekeeper/scripts/update.js": {

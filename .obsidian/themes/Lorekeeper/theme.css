@@ -220,7 +220,7 @@ button.mod-cta {
 .lk-time { font-family: var(--font-interface-theme); font-variant-numeric: tabular-nums; color: var(--lk-muted); font-size: 0.85em; margin-right: 0.3em; }
 .lk-author { font-family: var(--font-interface-theme); color: var(--lk-muted); font-size: 0.85em; }
 .lk-author::before { content: "· "; }
-.lk-private::before {
+.lk-private > p:first-child::before {
   content: ""; display: inline-block; width: 0.85em; height: 0.85em; margin-right: 0.35em; vertical-align: -0.1em; color: var(--lk-muted);
   background: currentColor; -webkit-mask: var(--lk-icon-lock) center / contain no-repeat; mask: var(--lk-icon-lock) center / contain no-repeat;
 }

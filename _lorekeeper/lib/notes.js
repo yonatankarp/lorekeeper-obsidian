@@ -85,4 +85,7 @@ function portraitTarget(value) {
   return (m ? m[1] : v).trim();
 }
 
-module.exports = { SECTIONS, PREFIX, notesOf, journal, merge, mergeWithPrivate, sessionNumber, portraitTarget };
+// Whether a note shows its author: always, except your own private notes (only the DM sees whose private note it is).
+const showAuthor = (note, me) => !!note.author && (!note.private || me === "DM");
+
+module.exports = { showAuthor, SECTIONS, PREFIX, notesOf, journal, merge, mergeWithPrivate, sessionNumber, portraitTarget };

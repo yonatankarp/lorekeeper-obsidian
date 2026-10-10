@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { SECTIONS, notesOf, journal, merge, mergeWithPrivate, sessionNumber, portraitTarget } = require("../_lorekeeper/lib/notes.js");
+const { SECTIONS, notesOf, journal, merge, mergeWithPrivate, showAuthor, sessionNumber, portraitTarget } = require("../_lorekeeper/lib/notes.js");
 
 const SESSION = `---
 session: 4
@@ -120,4 +120,11 @@ test("portraitTarget handles embeds, links and paths", () => {
   assert.equal(portraitTarget("![[img/Demus.jpg|100]]"), "img/Demus.jpg");
   assert.equal(portraitTarget("img/Demus.jpg"), "img/Demus.jpg");
   assert.equal(portraitTarget(undefined), "");
+});
+
+test("showAuthor hides the name on a player's own private notes, not for the DM", () => {
+  assert.equal(showAuthor({ author: "Vex", private: true }, "Vex"), false);
+  assert.equal(showAuthor({ author: "Vex", private: true }, "DM"), true);
+  assert.equal(showAuthor({ author: "Vex" }, "Vex"), true);
+  assert.equal(showAuthor({ author: "", private: true }, "DM"), false);
 });
