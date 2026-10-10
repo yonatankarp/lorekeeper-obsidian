@@ -143,3 +143,9 @@ test("meFromTsv with CRLF and trailing slashes", () => {
   assert.equal(p.meFromTsv("/a/vault/\tVex\n", "/a/vault"), "");
   assert.equal(p.meFromTsv("/a/vault/\tVex\n", "/a/vault/"), "Vex");
 });
+
+test("sessionOf reads N from a session page or a per-author file, else 0", () => {
+  assert.equal(p.sessionOf("Sessions/Session 4.md"), 4);
+  assert.equal(p.sessionOf("Sessions/Session 12/Vex.md"), 12);
+  for (const other of ["NPCs/Session 4.md", "Sessions/Session 4/a/b.md", "Private/Vex/Sessions/Session 4.md", "Sessions/Notes.md"]) assert.equal(p.sessionOf(other), 0, other);
+});

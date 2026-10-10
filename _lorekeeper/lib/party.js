@@ -31,6 +31,9 @@ const privatePath = (path, name) => `Private/${name}/${path}`;
 const sharedPath = (path) => path.replace(/^Private\/[^/]+\//, "");
 const privateOwner = (path) => (path.match(/^Private\/([^/]+)\//) || [])[1] || "";
 
+// The session N a file belongs to: Sessions/Session N.md or Sessions/Session N/<x>.md; 0 for any other file.
+const sessionOf = (path) => Number((String(path).match(/^Sessions\/Session (\d+)(?:\.md|\/[^/]+\.md)$/) || [])[1]) || 0;
+
 const canPick = (name) => name !== DM;
 
 // A leading ~ marks a note private ("~~" is strikethrough, not private).
@@ -98,6 +101,6 @@ function visiblePrivate({ me, isDM, paths }) {
 }
 
 module.exports = {
-  DM, TEMPLATE, meFromTsv, tsvWith, partPath, privateSessionPath, privatePath, sharedPath, privateOwner,
+  DM, TEMPLATE, meFromTsv, tsvWith, partPath, privateSessionPath, privatePath, sharedPath, privateOwner, sessionOf,
   canPick, privateNote, joinOrNext, quietParty, takeLines, privatizeLines, visiblePrivate,
 };

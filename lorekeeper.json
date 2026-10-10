@@ -80,13 +80,14 @@
       ]
     },
     ".obsidian/hotkeys.json": {
-      "sha256": "af0cf6b9a67355a3ca64d7cb641d3ab178cd4c34da3add94aeac1d1407d5935b",
+      "sha256": "b1d9a6272a83a553188d3dbf46cb46554f59232249fdd65e22049aaa670b099c",
       "kind": "shared",
       "keys": [
         "quickadd:choice:lk-quick-note",
         "quickadd:choice:lk-current-session",
         "quickadd:choice:lk-new-page",
         "quickadd:choice:lk-cheat-sheet",
+        "quickadd:choice:lk-line-private",
         "global-search:open",
         "graph:open",
         "workspace:edit-file-title",
@@ -162,7 +163,7 @@
       "kind": "managed"
     },
     ".obsidian/plugins/quickadd/data.json": {
-      "sha256": "0c63c35888c3c259db3c0840538e73fb3a8becf81110114e47d0bc2a8f8c97b0",
+      "sha256": "739d1f6f51fdd5b2ec39686bfb18c07d26b790416645968538797dbe06f9d383",
       "kind": "shared",
       "keys": [
         "choices",
@@ -341,7 +342,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/party.js": {
-      "sha256": "7ae6d54e9827fc64d7bfc472ad4185fafdedd17d5cbb65efe19bc9f24030e463",
+      "sha256": "cd5c2dd36b13fb6a2db3648456a8e8cf9f5a425dcf2ee62f315698684fa62386",
       "kind": "managed"
     },
     "_lorekeeper/lib/pcpage.js": {
@@ -388,8 +389,20 @@
       "sha256": "4cf661d6028cbee2bed678b865276d4f98aa17bf2aaa10ca4c72721b6ba135b0",
       "kind": "managed"
     },
+    "_lorekeeper/scripts/make-line-private.js": {
+      "sha256": "4e65bef834bec4e5e1ae9f422732a13d3c6a6083e40ab41d7703d34a47d5b641",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/make-private.js": {
+      "sha256": "6f5413aee309c2bdfa31dbd10d5ac8aa23a3cef1b79da74849df8bb27906f26c",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/make-shared.js": {
+      "sha256": "32b5cba5ffc6f64dd2eee0797deb16a82a4988d7983ec469a08cce062db52c16",
+      "kind": "managed"
+    },
     "_lorekeeper/scripts/new-page.js": {
-      "sha256": "e7d916048c59c390a35c6efdf4553787f0243a2d3ed7558783f887e272b0d60c",
+      "sha256": "c2f7963bcd896385c48b7f675acb15585b2ba64478a8cd2f49048f5113d273fb",
       "kind": "managed"
     },
     "_lorekeeper/scripts/new-session.js": {

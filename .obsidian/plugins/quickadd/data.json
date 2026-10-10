@@ -239,6 +239,66 @@
           }
         ]
       }
+    },
+    {
+      "id": "lk-line-private",
+      "name": "Make line private",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-line-private-macro",
+        "name": "Make line private",
+        "commands": [
+          {
+            "id": "lk-line-private-script",
+            "name": "make-line-private",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/make-line-private.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-make-private",
+      "name": "Make private",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-make-private-macro",
+        "name": "Make private",
+        "commands": [
+          {
+            "id": "lk-make-private-script",
+            "name": "make-private",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/make-private.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-make-shared",
+      "name": "Make shared",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-make-shared-macro",
+        "name": "Make shared",
+        "commands": [
+          {
+            "id": "lk-make-shared-script",
+            "name": "make-shared",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/make-shared.js",
+            "settings": {}
+          }
+        ]
+      }
     }
   ],
   "migrations": {
