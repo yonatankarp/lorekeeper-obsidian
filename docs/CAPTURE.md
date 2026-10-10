@@ -40,4 +40,6 @@ Install `zenity` (and `xclip` for saving the selection on X11). In your desktop'
 
 ## What lk-note does
 
-`lk-note [--vault DIR] [--next | --here] [--dialog | --stdin | TEXT…]` appends `- HH:MM text` to the newest `Sessions/Session N.md`, starting Session 1 if there's none. When the session hasn't changed in 12 hours, it asks **Start Session N+1?**, or exits with code 3 when it can't ask: run it again with `--next` to start the next session or `--here` to keep the current one.
+`lk-note [--vault DIR] [--me NAME] [--next | --here] [--dialog | --stdin | TEXT…]` appends `- HH:MM text` to the newest `Sessions/Session N.md`, starting Session 1 if there's none. When the session hasn't changed in 12 hours, it asks **Start Session N+1?**, or exits with code 3 when it can't ask: run it again with `--next` to start the next session or `--here` to keep the current one.
+
+In a shared campaign it writes your own file, `Sessions/Session N/<your name>.md`, and a note starting with `~` goes to your private notes instead. Your name comes from **Pick your character**, or from `--me NAME` (`--me DM` for the DM). If it can't tell who you are, it still saves an ordinary note to `Sessions/Session N.md`, but it refuses a `~` note (exit code 2) once the vault has a `Private/` folder or a `Sessions/Session N/` folder, because the note would be shared. See [PARTY.md](PARTY.md).

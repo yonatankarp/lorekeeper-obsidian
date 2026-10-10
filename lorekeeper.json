@@ -306,7 +306,7 @@
       "kind": "managed"
     },
     "_lorekeeper/capture/lk-note": {
-      "sha256": "5971e3ab5670c6fad6b0a7da30b0dc4e4188a2f5adf2fa8f79d67b2d83213ccb",
+      "sha256": "62506bd4905ea784223c9420d6cf2daf35667ea315b7bce1ee5a0c03f47a3069",
       "kind": "managed"
     },
     "_lorekeeper/capture/windows/lorekeeper.ahk": {
@@ -450,7 +450,7 @@
       "kind": "managed"
     },
     "docs/CAPTURE.md": {
-      "sha256": "018b4f65f74197b03dd1a7a196039f7318a5c2507bf65558922bfbe5826185b2",
+      "sha256": "0474d9e8653e7f1d5fc00df24c918a282765db8c8d67a33beeaa0df9802e5890",
       "kind": "managed"
     },
     "docs/DNDBEYOND.md": {

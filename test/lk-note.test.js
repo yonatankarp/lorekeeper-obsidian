@@ -261,3 +261,79 @@ test("party: an author name with sed characters is kept as typed", () => {
   assert.equal(runAs(dir, "Tom & Jerry | Co", ["hi"]).status, 0);
   assert.match(rel(dir, "Sessions/Session 1/Tom & Jerry | Co.md"), /\nauthor: "\[\[Tom & Jerry \| Co\]\]"\n/);
 });
+
+// Fail closed: with no identity, a ~ note in a vault that shows party play would land in the shared session page.
+const REFUSE = "lk-note: pick your character in Obsidian first (this note starts with ~, so it would be shared)\n";
+const anyFileHas = (dir, word) => {
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).some((e) => {
+    const p = path.join(d, e.name);
+    return e.isDirectory() ? walk(p) : fs.readFileSync(p, "utf8").includes(word);
+  });
+  return ["Sessions", "Private"].some((s) => fs.existsSync(path.join(dir, s)) && walk(path.join(dir, s)));
+};
+
+for (const sign of ["Private", "Sessions/Session 1"]) {
+  test(`party signs (${sign}/): a ~ note with no identity is refused and writes nothing`, () => {
+    const dir = partyVault();
+    fs.mkdirSync(path.join(dir, sign), { recursive: true });
+    const r = runAs(dir, null, ["~", "secret"], undefined, `${dir}-elsewhere\tVex\n`);
+    assert.equal(r.status, 2);
+    assert.equal(r.stderr, REFUSE);
+    assert.equal(r.stdout, "");
+    assert.equal(anyFileHas(dir, "secret"), false);
+  });
+}
+
+test("party signs: --me \"\" with a ~ note is refused too", () => {
+  const dir = partyVault();
+  fs.mkdirSync(path.join(dir, "Private"));
+  const r = runAs(dir, "Vex", ["--me", "", "~ secret"]);
+  assert.equal(r.status, 2);
+  assert.equal(r.stderr, REFUSE);
+  assert.equal(anyFileHas(dir, "secret"), false);
+});
+
+test("party signs: with no identity a normal note still saves solo", () => {
+  const dir = partyVault();
+  fs.mkdirSync(path.join(dir, "Sessions/Session 1"), { recursive: true });
+  const r = runAs(dir, null, ["plain", "note"], undefined, `${dir}-elsewhere\tVex\n`);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), path.join(dir, "Sessions/Session 1.md"));
+  assert.ok(lastLine(read(dir, 1)).endsWith(" plain note"));
+  for (const t of ["~~struck~~", "~"]) assert.equal(runAs(dir, null, [t], undefined, "").status, 0, t);
+});
+
+test("solo vault (no party signs): a ~ note is kept as typed in Session N.md", () => {
+  const dir = partyVault();
+  const r = runAs(dir, null, ["~ x"], undefined, "");
+  assert.equal(r.status, 0, r.stderr);
+  assert.ok(lastLine(read(dir, 1)).endsWith(" ~ x"));
+});
+
+test("party: me.tsv can name the vault as it was passed (a relative --vault)", () => {
+  const dir = partyVault();
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "lk home "));
+  fs.mkdirSync(path.join(home, ".config/lorekeeper"), { recursive: true });
+  fs.writeFileSync(path.join(home, ".config/lorekeeper/me.tsv"), `${path.basename(dir)}\tVex\n`);
+  const env = { ...process.env, HOME: home, LK_NO_DIALOG: "1" };
+  delete env.XDG_CONFIG_HOME;
+  const r = spawnSync("sh", [SCRIPT, "--vault", path.basename(dir), "hi"], { encoding: "utf8", env, cwd: path.dirname(dir) });
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(fs.existsSync(path.join(dir, "Sessions/Session 1/Vex.md")), true);
+});
+
+test("party: --next with a ~ note goes to the private file of the joined or next session", () => {
+  const dir = partyVault();
+  runAs(dir, "Ivo", ["we begin"]);
+  const r = runAs(dir, "Vex", ["--next", "~ joined secret"]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), path.join(dir, "Private/Vex/Sessions/Session 1.md"));
+  assert.equal(fs.existsSync(path.join(dir, "Sessions/Session 1/Vex.md")), false);
+  runAs(dir, "Vex", ["shared"]);
+  const next = runAs(dir, "Vex", ["--next", "~ next secret"]);
+  assert.equal(next.stdout.trim(), path.join(dir, "Private/Vex/Sessions/Session 2.md"));
+  assert.ok(lastLine(rel(dir, "Private/Vex/Sessions/Session 2.md")).endsWith(" next secret"));
+  assert.equal(fs.existsSync(path.join(dir, "Sessions/Session 2/Vex.md")), false);
+  for (const f of ["Sessions/Session 1.md", "Sessions/Session 1/Ivo.md", "Sessions/Session 1/Vex.md", "Sessions/Session 2.md"])
+    assert.equal(rel(dir, f).includes("secret"), false, f);
+});

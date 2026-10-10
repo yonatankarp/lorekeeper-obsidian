@@ -5,6 +5,7 @@
 # --dialog asks for the note in a system box; --stdin reads it from standard input.
 # Party play: your name comes from --me (--me "" forces solo) or this vault's line in ~/.config/lorekeeper/me.tsv. Then the
 # note goes to Sessions/Session N/<name>.md, or, when it starts with ~, to Private/<name>/Sessions/Session N.md (lib/party.js).
+# With no name, a ~ note in a vault that shows party play (Private/ or a Sessions/Session N/ folder) is refused (exit 2).
 # Exit: 0 saved (prints the session's path), 1 cancelled, 2 usage or setup error,
 # 3 the session went quiet (no change in 12 hours) and there's no dialog to ask: rerun with --next or --here.
 set -eu
@@ -43,8 +44,12 @@ template=$vault/_lorekeeper/templates/session.md
 if [ "$me_set" = 0 ]; then
   me_file=${XDG_CONFIG_HOME:-$HOME/.config}/lorekeeper/me.tsv
   if [ -f "$me_file" ]; then
-    # the vault's absolute path as the app wrote it; also try the symlink-free spelling (macOS /var vs /private/var)
-    for vault_abs in "$(cd "$vault" && pwd)" "$(cd "$vault" && pwd -P)"; do
+    # the vault's absolute path as the app wrote it; also the symlink-free spelling (macOS /var vs /private/var), the
+    # folder as passed, and on Windows (Git Bash) the C:/... and C:\... spellings
+    win=$(cd "$vault" && pwd -W 2>/dev/null) || win=
+    win_back=$(printf '%s' "$win" | sed 's|/|\\|g')
+    for vault_abs in "$(cd "$vault" && pwd)" "$(cd "$vault" && pwd -P)" "$vault" "$win" "$win_back"; do
+      [ -n "$vault_abs" ] || continue
       me=$(V=$vault_abs awk -F'\t' '$1 == ENVIRON["V"] {print $2; exit}' "$me_file" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
       [ -z "$me" ] || break
     done
@@ -108,6 +113,29 @@ case $mode in
   *) text="$*" ;;
 esac
 text=$(printf '%s' "$text" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
+
+# Fail closed: with no name, a ~ note would be saved into the shared session page. Refuse it when the vault shows party
+# play (a Private/ folder or a Sessions/Session N/ folder); a solo vault keeps it as typed, and other notes save solo.
+party_signs() {
+  [ -d "$vault/Private" ] && return 0
+  for d in "$vault"/Sessions/Session\ */; do
+    [ -d "$d" ] || continue
+    d=${d%/}
+    case ${d##*/Session } in '' | *[!0-9]*) ;; *) return 0 ;; esac
+  done
+  return 1
+}
+if [ -z "$me" ]; then
+  case $text in
+    '~~'*) ;;
+    '~'*)
+      if [ -n "$(printf '%s' "${text#\~}" | sed 's/^ //')" ] && party_signs; then
+        echo "lk-note: pick your character in Obsidian first (this note starts with ~, so it would be shared)" >&2
+        exit 2
+      fi
+      ;;
+  esac
+fi
 
 # fresh FILE: succeeds when FILE changed within the last 12 hours.
 fresh() {
