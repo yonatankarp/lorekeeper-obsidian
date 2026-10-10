@@ -321,7 +321,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/dndbeyond.js": {
-      "sha256": "acbb19dd87b201300739a5ca4c88a7fb7e8e2241688b64b9c2a4812d153814b9",
+      "sha256": "830df7e2c89342cf26ddb9b612b9ec178b4af3bacea4cdfe1c4067ed40c447fe",
       "kind": "managed"
     },
     "_lorekeeper/lib/load.js": {

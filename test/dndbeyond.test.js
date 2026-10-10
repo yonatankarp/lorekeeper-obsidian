@@ -7,7 +7,7 @@ test("parseLink accepts character links, campaign links and bare ids, strictly",
   assert.deepEqual(d.parseLink("https://www.dndbeyond.com/characters/137202151/GpDg8C"), { character: 137202151 });
   assert.deepEqual(d.parseLink("dndbeyond.com/characters/5"), { character: 5 });
   assert.deepEqual(d.parseLink("https://www.dndbeyond.com/profile/vexer/characters/6"), { character: 6 });
-  assert.deepEqual(d.parseLink("https://www.dndbeyond.com/campaigns/42"), { campaign: 42 });
+  assert.throws(() => d.parseLink("https://www.dndbeyond.com/campaigns/42"), { message: d.MESSAGES.campaign });
   assert.throws(() => d.parseLink("https://www.dndbeyond.com/campaigns/join/abc"), /campaign invite/);
   for (const bad of ["https://evil.com/characters/5", "https://dndbeyond.com.evil.net/characters/5", "ftp://www.dndbeyond.com/characters/5",
     "https://www.dndbeyond.com/monsters/5", "", "1234567890123456"])
@@ -19,10 +19,6 @@ test("sheetId and sheetUrl", () => {
   assert.equal(d.sheetId("https://www.dndbeyond.com/characters/5"), "5");
   assert.equal(d.sheetId("https://dndbeyond.com/profile/x/characters/7/abc"), "7");
   assert.equal(d.sheetId("https://evil.com/characters/5"), "");
-});
-
-test("characterIds: each once, in page order", () => {
-  assert.deepEqual(d.characterIds('<a href="/characters/5">A</a><a href="/characters/6/x">B</a><a href="/characters/5">A</a>'), [5, 6]);
 });
 
 const DEMUS = { data: {
@@ -82,7 +78,7 @@ test("tokenFrom and characterError", () => {
 test("lookup follows the party, once each, and reports unreadable characters", async () => {
   const replies = { 5: { status: 200, json: DEMUS }, 6: { status: 403, json: null } };
   const getJson = async (url) => replies[url.split("/").pop()];
-  const found = await d.lookup("https://www.dndbeyond.com/characters/5", { getJson, getText: null, token: "" });
+  const found = await d.lookup("https://www.dndbeyond.com/characters/5", { getJson, token: "" });
   assert.deepEqual(found.map((c) => [c.id, c.name, c.player, c.error]), [
     [5, "Demus", "demus_player", ""],
     [6, "Vex", "vexer", d.MESSAGES.notShared],
@@ -91,14 +87,39 @@ test("lookup follows the party, once each, and reports unreadable characters", a
 
 test("lookup sends the token as a bearer header", async () => {
   let seen;
-  await d.lookup("5", { getJson: async (url, headers) => { seen = headers; return { status: 200, json: { data: { name: "A" } } }; }, getText: null, token: "tok" });
+  await d.lookup("5", { getJson: async (url, headers) => { seen = headers; return { status: 200, json: { data: { name: "A" } } }; }, token: "tok" });
   assert.deepEqual(seen, { Authorization: "Bearer tok" });
 });
 
-test("a campaign link needs sign-in, then reads the campaign page", async () => {
-  await assert.rejects(d.lookup("https://www.dndbeyond.com/campaigns/42", { getJson: null, getText: null, token: "" }), { message: d.MESSAGES.signInForCampaign });
-  const getText = async () => ({ status: 200, text: '<a href="/characters/5">x</a>' });
-  const getJson = async () => ({ status: 200, json: { data: { name: "Demus" } } });
-  const found = await d.lookup("https://www.dndbeyond.com/campaigns/42", { getJson, getText, token: "tok", cookie: "c" });
-  assert.deepEqual(found.map((c) => c.id), [5]);
+test("odd numbers in a reply are ignored, not read", () => {
+  const odd = { data: {
+    name: "Odd", age: -3, height: 1.5, eyes: "Grey",
+    classes: [{ level: -1, definition: { name: "Bard" } }, { level: 1.5, definition: { name: "Druid" } }],
+    campaign: { characters: [{ characterId: -1, characterName: "Neg" }, { characterId: 1.5, characterName: "Frac" }, { characterId: 7, characterName: "Ok" }] },
+  } };
+  const c = d.parseCharacter(9, odd);
+  assert.deepEqual([c.appearance, c.classes, c.level], ["Eyes Grey", "Bard 0 / Druid 0", 0]);
+  assert.deepEqual(d.party(odd), [[7, "Ok", ""]]);
+});
+
+test("a reply whose data is a list is a bad reply", async () => {
+  const getJson = async () => ({ status: 200, json: { data: [] } });
+  const [c] = await d.lookup("5", { getJson, token: "" });
+  assert.deepEqual([c.name, c.error], ["Character 5", "D&D Beyond said: unexpected reply (200)"]);
+});
+
+test("a message that is not text is not shown", () => {
+  assert.equal(d.characterError(500, { message: { text: "Boom" } }, 5), "D&D Beyond said: unexpected reply (500)");
+});
+
+test("a character that can't be reached is its own error row, and the lookup goes on", async () => {
+  const getJson = async (url) => {
+    if (url.endsWith("/6")) throw new Error("offline");
+    return { status: 200, json: DEMUS };
+  };
+  const found = await d.lookup("5", { getJson, token: "" });
+  assert.deepEqual(found.map((c) => [c.id, c.name, c.error]), [
+    [5, "Demus", ""],
+    [6, "Vex", d.MESSAGES.unreachable],
+  ]);
 });

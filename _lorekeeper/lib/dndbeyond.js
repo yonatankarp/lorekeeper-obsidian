@@ -1,13 +1,14 @@
 // D&D Beyond: links, character-service replies and portraits, ported from Lorekeeper's src-tauri/src/dndbeyond.rs
-// (32a07f6). Network calls are passed in (getJson, getText) so lookup() is testable.
+// (32a07f6). The network call is passed in (getJson) so lookup() is testable.
 
 const SITE = "https://www.dndbeyond.com";
 const MAX_CHARACTERS = 30;
 const MESSAGES = {
   expired: "Your D&D Beyond sign-in expired. Run Sign in to D&D Beyond again.",
   notShared: "D&D Beyond won't share this character. Run Sign in to D&D Beyond, or set the character to Public.",
-  signInForCampaign: "Run Sign in to D&D Beyond to import from a campaign.",
+  unreachable: "Couldn't reach D&D Beyond. Check your internet connection.",
   badLink: "That isn't a link to a D&D Beyond character or campaign.",
+  campaign: "Paste a link to a character in the campaign instead: its party comes along.",
   invite: "That's a campaign invite. Paste the campaign's own page link (dndbeyond.com/campaigns/<number>).",
 };
 const ALIGNMENTS = ["Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil"];
@@ -16,6 +17,8 @@ const sheetUrl = (id) => `${SITE}/characters/${id}`;
 const sheetId = (url) => String(url ?? "").match(/^https:\/\/(?:www\.)?dndbeyond\.com\/(?:[^?#]*\/)?characters\/(\d+)/)?.[1] ?? "";
 const number = (s) => (/^\d{1,15}$/.test(s) ? Number(s) : null);
 const text = (v) => (typeof v === "string" ? v.trim() : "");
+const count = (v) => Number.isSafeInteger(v) && v >= 0;
+const isObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 
 function parseLink(link) {
   const trimmed = String(link).trim();
@@ -33,31 +36,22 @@ function parseLink(link) {
   if (parts[0] === "characters") found = number(parts[1] ?? "") !== null && { character: number(parts[1]) };
   else if (parts[0] === "profile" && parts[2] === "characters") found = number(parts[3] ?? "") !== null && { character: number(parts[3]) };
   else if (parts[0] === "campaigns" && parts[1] === "join") throw new Error(MESSAGES.invite);
-  else if (parts[0] === "campaigns") found = number(parts[1] ?? "") !== null && { campaign: number(parts[1]) };
+  else if (parts[0] === "campaigns") throw new Error(MESSAGES.campaign);
   if (!found) throw new Error(MESSAGES.badLink);
   return found;
-}
-
-function characterIds(html) {
-  const ids = [];
-  for (const m of html.matchAll(/\/characters\/(\d+)/g)) {
-    const id = number(m[1]);
-    if (id !== null && !ids.includes(id)) ids.push(id);
-  }
-  return ids;
 }
 
 function party(v) {
   const members = v?.data?.campaign?.characters;
   return Array.isArray(members)
-    ? members.filter((m) => Number.isInteger(m?.characterId)).map((m) => [m.characterId, text(m.characterName), text(m.username)])
+    ? members.filter((m) => count(m?.characterId)).map((m) => [m.characterId, text(m.characterName), text(m.username)])
     : [];
 }
 
 function appearance(d) {
   const looks = [["Gender", "gender"], ["Age", "age"], ["Height", "height"], ["Weight", "weight"], ["Eyes", "eyes"], ["Hair", "hair"], ["Skin", "skin"]]
     .map(([label, key]) => {
-      const v = typeof d[key] === "number" ? String(d[key]) : text(d[key]);
+      const v = typeof d[key] === "number" ? (count(d[key]) ? String(d[key]) : "") : text(d[key]);
       return v ? `${label} ${v}` : "";
     })
     .filter(Boolean);
@@ -94,10 +88,10 @@ function imageExt(b) {
 }
 
 function parseCharacter(id, v) {
-  const d = v?.data && typeof v.data === "object" ? v.data : {};
+  const d = isObject(v?.data) ? v.data : {};
   const race = text(d.race?.fullName) || text(d.race?.baseName);
   const classes = (Array.isArray(d.classes) ? d.classes : [])
-    .map((c) => [text(c?.definition?.name), Number.isInteger(c?.level) ? c.level : 0, text(c?.subclassDefinition?.name)])
+    .map((c) => [text(c?.definition?.name), count(c?.level) ? c.level : 0, text(c?.subclassDefinition?.name)])
     .filter(([name]) => name);
   const sub = (s) => (s ? ` (${s})` : "");
   const names = classes.length === 1 ? `${classes[0][0]}${sub(classes[0][2])}` : classes.map(([n, l, s]) => `${n} ${l}${sub(s)}`).join(" / ");
@@ -122,35 +116,37 @@ function tokenFrom(status, json) {
 function characterError(status, json, id) {
   if (status === 401 || status === 403) return MESSAGES.notShared;
   if (status === 404) return `D&D Beyond has no character ${id}.`;
-  return `D&D Beyond said: ${json?.message ?? "unexpected reply"} (${status})`;
+  return `D&D Beyond said: ${typeof json?.message === "string" ? json.message : "unexpected reply"} (${status})`;
 }
 
-async function lookup(link, { getJson, getText, token, cookie }) {
-  const target = parseLink(link);
-  let queue;
-  if (target.character !== undefined) queue = [[target.character, "", ""]];
-  else {
-    if (!token) throw new Error(MESSAGES.signInForCampaign);
-    const page = await getText(`${SITE}/campaigns/${target.campaign}`, { Cookie: `CobaltSession=${cookie}` });
-    const ids = page.status >= 200 && page.status < 300 ? characterIds(page.text) : [];
-    if (!ids.length) throw new Error("D&D Beyond didn't show that campaign's characters. Paste a link to a character in it instead: its party comes along.");
-    queue = ids.map((id) => [id, "", ""]);
-  }
+// A character that couldn't be read: its row says why, and the lookup goes on.
+const failed = (id, name, user, error) => ({
+  id, name: name || `Character ${id}`, race: "", classes: "", level: 0, player: user, url: sheetUrl(id),
+  background: "", alignment: "", appearance: "", personality: "", portrait: "", error,
+});
+
+async function lookup(link, { getJson, token }) {
+  const queue = [[parseLink(link).character, "", ""]];
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const found = [];
   for (let next = 0; next < queue.length && found.length < MAX_CHARACTERS; next++) {
     const [id, name, user] = queue[next];
-    const res = await getJson(`https://character-service.dndbeyond.com/character/v5/character/${id}`, headers);
-    if (res.status >= 200 && res.status < 300 && res.json?.data && typeof res.json.data === "object") {
+    let res;
+    try {
+      res = await getJson(`https://character-service.dndbeyond.com/character/v5/character/${id}`, headers);
+    } catch {
+      found.push(failed(id, name, user, MESSAGES.unreachable));
+      continue;
+    }
+    if (res.status >= 200 && res.status < 300 && isObject(res.json?.data)) {
       for (const member of party(res.json)) if (!queue.some((q) => q[0] === member[0])) queue.push(member);
       const c = parseCharacter(id, res.json);
       found.push({ ...c, player: c.player || user });
     } else {
-      found.push({ id, name: name || `Character ${id}`, race: "", classes: "", level: 0, player: user, url: sheetUrl(id),
-        background: "", alignment: "", appearance: "", personality: "", portrait: "", error: characterError(res.status, res.json, id) });
+      found.push(failed(id, name, user, characterError(res.status, res.json, id)));
     }
   }
   return found;
 }
 
-module.exports = { MESSAGES, MAX_CHARACTERS, ALIGNMENTS, sheetUrl, sheetId, parseLink, characterIds, party, parseCharacter, portraitUrl, imageExt, tokenFrom, characterError, lookup };
+module.exports = { MESSAGES, MAX_CHARACTERS, ALIGNMENTS, sheetUrl, sheetId, parseLink, party, parseCharacter, portraitUrl, imageExt, tokenFrom, characterError, lookup };
