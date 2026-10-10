@@ -131,7 +131,7 @@ Taken from Obsidian as is: **Rename** updates every link (with **Automatically u
 `_lorekeeper/scripts/session.js` renders this through DataviewJS from `lib/notes.js`. Open quests show their reward with coin icons (`lib/coins.js`). The `lk-session` CSS class styles the page.
 
 **`Home.md`:**
-- Bases views of open and in-progress quests with their status, NPCs grouped by attitude in their colours, and recent sessions with their titles.
+- Bases views of open and in-progress quests with their status, NPCs grouped by attitude, and recent sessions with their titles.
 - A **Connections** link to the graph, saved with a filter that hides `Sessions/`.
 
 **`Cheat Sheet.md`** (`⌘/`) lists the note symbols, links and hotkeys of this setup.
@@ -173,6 +173,7 @@ Every feature in Lorekeeper's `docs/GUIDE.md`, the milestone that delivers it, a
 | Tome and Dungeon themes, text size | M1 | the theme, Obsidian's font size setting |
 | Several campaigns | M1 | one vault each, Obsidian's vault switcher |
 | Status markers in the file list | M2 | Supercharged Links |
+| NPC attitude colours on Home | M2 | CSS on Bases group headers if Obsidian exposes a hook, else the plugin decision |
 | Kind colours on note lines while editing | M2 | a CSS snippet if Obsidian exposes the text, else an accepted loss or the plugin decision |
 | `[[` suggestions and `↑` in the system note box | M2 | try a richer input (Raycast extension); else accepted loss |
 | D&D Beyond import | M2 | the third-party D&D Beyond Importer |

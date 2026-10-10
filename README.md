@@ -5,9 +5,10 @@ Session notes for D&D players, as an Obsidian vault: jot things down during the 
 ## Start a campaign
 
 1. On GitHub, **Use this template** (or clone it) and name the copy after your campaign.
-2. In Obsidian, **Open folder as vault** and pick it. Choose **Trust author and enable plugins**: the vault uses QuickAdd, Templater, Dataview and Custom Selectors, already set up.
-3. Open **Home** from the bookmarks.
-4. For notes over Discord without opening Obsidian, set up the hotkeys in [docs/CAPTURE.md](docs/CAPTURE.md).
+2. In Obsidian, **Open folder as vault** and pick it (Obsidian 1.13 or later). Choose **Trust author and enable plugins**: the vault uses QuickAdd, Templater, Dataview and Custom Selectors, already set up.
+3. In **Settings > Templater**, turn on **Trigger Templater on new file creation**. Obsidian keeps it per device, so do this once on each computer.
+4. Open **Home** from the bookmarks.
+5. For notes over Discord without opening Obsidian, set up the hotkeys in [docs/CAPTURE.md](docs/CAPTURE.md). The hotkeys outside Obsidian are tested on macOS; the Windows and Linux setups in that file are untested.
 
 ## During the game
 
@@ -19,7 +20,7 @@ Press `⌘⌥N` (`Ctrl+Alt+N`) and type `@Mirela, shifty innkeeper`. Start a not
 - **New page** (`⌘N` or `Ctrl+N`): pick NPC, PC, Location, Item, Faction, Quest, Lore or your own (any file you add to `Templates/`), and name it. Clicking a link to a page that doesn't exist yet asks the same.
 - Quests have a **status** (open, in progress, done, failed). NPCs have a **condition** (alive, dead, missing, unknown) and an **attitude** (friendly, neutral, hostile, unknown).
 - A session's `title` property names it: "The bridge collapse".
-- **Home** lists open quests, recent sessions and NPCs. The graph (`⌘G`) maps the connections.
+- **Home** lists open quests, recent sessions and NPCs. The graph (`⌘G` or `Ctrl+G`) maps the connections.
 - Everything is in the **Cheat Sheet** (`⌘/` or `Ctrl+/`).
 
 ## Not here yet
@@ -34,4 +35,4 @@ npm run build:theme      # rebuild .obsidian/themes/Lorekeeper/theme.css from th
 scripts/update-plugins.sh  # download the plugin versions in plugin-versions.txt
 ```
 
-Credits: [CREDITS.md](CREDITS.md). Licence: MIT, except the fonts and `theme.css` (CC BY-SA 4.0).
+Credits: [CREDITS.md](CREDITS.md). Licence: MIT, except the fonts and `theme.css` (CC BY-SA 4.0) and the bundled plugins, each under its own licence (Templater is AGPL-3.0).

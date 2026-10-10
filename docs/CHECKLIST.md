@@ -16,3 +16,6 @@ Run before tagging a release, in a fresh copy of the vault (`cp -R` the repo, wi
 - [ ] **Smart hotkey (macOS):** with Obsidian in front, `⌘⌥N` opens Quick note inside Obsidian, not the system box.
 - [ ] **Bases syntax:** `sort` in sessions.base and the `#Open quests` embed on Home work, or use the fallbacks in the plan's Task 8.
 - [ ] **Base64 fonts load** (text isn't in Georgia).
+- [ ] **Templater toggle:** **Settings > Templater > Trigger Templater on new file creation** is on (it is kept per device). On first open no Templater notice appears, and `git status` shows `.obsidian/plugins/templater-obsidian/data.json` unchanged afterwards.
+- [ ] **Quick note into an open session:** type a note in an open session, press `⌘⌥N` within 2 seconds: both notes are there.
+- [ ] **Custom Selectors:** don't rename selectors in its settings (it can turn `status` into `selector.status`); the dropdowns for status, condition and attitude still show.

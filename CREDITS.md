@@ -4,7 +4,7 @@
 
 **Design:** colours, icons and fonts come from [Lorekeeper](https://github.com/yonatankarp/lorekeeper).
 
-**Plugins** (committed under `.obsidian/plugins/`, each under its own licence, all MIT):
+**Plugins** (committed under `.obsidian/plugins/`, each under its own licence: Templater is AGPL-3.0, the others are MIT):
 - QuickAdd by Christian B. B. Houmann, https://github.com/chhoumann/quickadd
 - Templater by SilentVoid13, https://github.com/SilentVoid13/Templater
 - Dataview by Michael Brenan, https://github.com/blacksmithgu/obsidian-dataview
