@@ -1,0 +1,132 @@
+/* Lorekeeper for Obsidian: Tome (light) and Dungeon (dark). The --lk-* tokens come first in theme.css, generated from
+   Lorekeeper's own styles; this maps them onto Obsidian and styles the vault's own views. */
+
+@font-face { font-family: "Bookinsanity"; src: url("fonts/bookinsanity-regular.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Bookinsanity"; src: url("fonts/bookinsanity-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+@font-face { font-family: "Bookinsanity"; src: url("fonts/bookinsanity-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Bookinsanity"; src: url("fonts/bookinsanity-bold-italic.woff2") format("woff2"); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "Mr Eaves Small Caps"; src: url("fonts/mr-eaves-small-caps.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Scaly Sans"; src: url("fonts/scaly-sans-regular.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Scaly Sans"; src: url("fonts/scaly-sans-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+@font-face { font-family: "Scaly Sans"; src: url("fonts/scaly-sans-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Solbera Imitation"; src: url("fonts/solbera-imitation.woff2") format("woff2"); font-display: swap; }
+
+/* On .theme-light and .theme-dark, where Obsidian sets its own colour variables, so ours win. */
+.theme-light, .theme-dark {
+  font-synthesis: none;
+  --lk-font-display: "Mr Eaves Small Caps", "Iowan Old Style", Georgia, serif;
+  --font-text-theme: "Bookinsanity", "Bookman Old Style", "Iowan Old Style", Georgia, serif;
+  --font-interface-theme: "Scaly Sans", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --h1-font: var(--lk-font-display); --h2-font: var(--lk-font-display); --h3-font: var(--lk-font-display);
+  --h4-font: var(--lk-font-display); --h5-font: var(--lk-font-display); --h6-font: var(--lk-font-display);
+  --inline-title-font: var(--lk-font-display);
+
+  --background-primary: var(--lk-bg);
+  --background-primary-alt: var(--lk-panel);
+  --background-secondary: var(--lk-panel);
+  --background-secondary-alt: var(--lk-hover);
+  --background-modifier-border: var(--lk-line);
+  --background-modifier-hover: var(--lk-hover);
+  --background-modifier-form-field: var(--lk-panel);
+  --text-normal: var(--lk-fg);
+  --text-muted: var(--lk-muted);
+  --text-faint: var(--lk-muted);
+  --text-accent: var(--lk-accent-text);
+  --text-accent-hover: var(--lk-accent);
+  --text-on-accent: var(--lk-on-accent);
+  --text-selection: var(--lk-accent-soft);
+  --link-color: var(--lk-link);
+  --link-color-hover: var(--lk-accent);
+  --link-external-color: var(--lk-link);
+  --link-unresolved-color: var(--lk-muted);
+  --interactive-accent: var(--lk-accent);
+  --interactive-accent-hover: var(--lk-seal-hi);
+  --hr-color: var(--lk-rule);
+  --blockquote-border-color: var(--lk-rule);
+  --h1-color: var(--lk-accent-text); --h2-color: var(--lk-accent-text); --h3-color: var(--lk-accent-text);
+  --inline-title-color: var(--lk-fg);
+}
+
+/* The page: aged parchment (Tome) or torchlit stone (Dungeon). */
+.workspace-leaf-content[data-type="markdown"] .view-content,
+.workspace-leaf-content[data-type="bases"] .view-content { background: var(--lk-surface-page); }
+
+/* The leather sidebar, with a stitched seam. */
+.workspace-split.mod-left-split, .workspace-ribbon.mod-left {
+  background: var(--lk-surface-side);
+  --background-secondary: transparent;
+  --background-primary: transparent;
+  --text-normal: var(--lk-side-fg);
+  --text-muted: var(--lk-side-muted);
+  --icon-color: var(--lk-side-muted);
+  --icon-color-hover: var(--lk-side-fg);
+  --nav-item-color: var(--lk-side-fg);
+  --nav-item-color-hover: var(--lk-side-fg);
+  --nav-item-background-hover: var(--lk-side-hover);
+  --nav-item-color-active: var(--lk-selected-text);
+  --nav-item-background-active: var(--lk-selected);
+  --background-modifier-border: var(--lk-side-line);
+  --background-modifier-hover: var(--lk-side-hover);
+  color: var(--lk-side-fg);
+}
+.workspace-split.mod-left-split { border-right: 1px dashed var(--lk-stitch); }
+.mod-left-split :is(.workspace-tab-header-container, .workspace-leaf-content, .nav-header, .view-header) { background: transparent; }
+
+/* The vault's machinery stays out of sight. */
+.nav-folder:has(> .nav-folder-title[data-path="_lorekeeper"]) { display: none; }
+
+/* Kind icons on the campaign folders (the masks are generated after this file). */
+.nav-folder-title[data-path] .nav-folder-title-content::before {
+  display: inline-block; width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px;
+  background: currentColor; -webkit-mask: none center / contain no-repeat; mask: none center / contain no-repeat;
+}
+.nav-folder-title:not([data-path="PCs"], [data-path="NPCs"], [data-path="Locations"], [data-path="Items"], [data-path="Factions"], [data-path="Quests"], [data-path="Lore"], [data-path="Sessions"]) .nav-folder-title-content::before { display: none; }
+
+/* Drop cap on every page title, as on Lorekeeper's session titles. */
+.inline-title::first-letter { font-family: "Solbera Imitation", var(--lk-font-display); color: var(--lk-initial); }
+
+/* Ornamental divider: a fleuron between two rules. */
+.markdown-rendered hr, .markdown-source-view .hr hr {
+  border: 0; height: 14px; margin: 1.5em 0;
+  background:
+    var(--lk-fleuron) center / 44px 14px no-repeat,
+    linear-gradient(var(--lk-rule), var(--lk-rule)) left center / calc(50% - 30px) 1px no-repeat,
+    linear-gradient(var(--lk-rule), var(--lk-rule)) right center / calc(50% - 30px) 1px no-repeat;
+}
+
+/* Wax-seal buttons. */
+button.mod-cta {
+  background: radial-gradient(ellipse 120% 150% at 35% 15%, var(--lk-seal-hi), var(--lk-seal) 55%, var(--lk-seal-lo));
+  color: var(--lk-seal-text); border: 1px solid var(--lk-seal-edge); font-family: var(--lk-font-display);
+}
+
+/* The session view. */
+.lk-session-view { margin-bottom: 1.5em; }
+.lk-session-title { font-family: var(--lk-font-display); font-size: 1.4em; color: var(--lk-accent-text); margin-bottom: 0.4em; }
+.lk-rubric { font-family: var(--lk-font-display); color: var(--lk-accent-text); font-size: 1.15em; margin: 0.8em 0 0.3em; }
+.lk-open-quests { border: 1px solid var(--lk-line); background: var(--lk-surface-panel); border-radius: 4px; padding: 0.4em 0.9em 0.7em; }
+.lk-quest p, .lk-note p { margin: 0; }
+.lk-tabs { display: flex; gap: 6px; margin: 1em 0 0.6em; }
+.lk-tabs button { font-family: var(--lk-font-display); background: transparent; border: 1px solid var(--lk-control-border); color: var(--lk-fg); box-shadow: none; }
+.lk-tabs button.is-active { background: var(--lk-selected); color: var(--lk-selected-text); }
+.lk-timeline[hidden], .lk-journal[hidden] { display: none; }
+.lk-note { border-left: 3px solid var(--k, var(--lk-rule)); padding: 2px 0 2px 10px; margin: 3px 0; }
+.lk-rubric.lk-kind-npc, .lk-rubric.lk-kind-loot, .lk-rubric.lk-kind-quest, .lk-rubric.lk-kind-mystery, .lk-rubric.lk-kind-quote { color: var(--k); }
+.lk-kind-event { --k: var(--lk-rule); }
+.lk-kind-npc { --k: var(--lk-kind-npc); }
+.lk-kind-loot { --k: var(--lk-kind-loot); }
+.lk-kind-quest { --k: var(--lk-kind-quest); }
+.lk-kind-mystery { --k: var(--lk-kind-mystery); }
+.lk-kind-quote { --k: var(--lk-kind-quote); font-style: italic; }
+.lk-time { font-family: var(--font-interface-theme); font-variant-numeric: tabular-nums; color: var(--lk-muted); font-size: 0.85em; margin-right: 0.3em; }
+.lk-author { font-family: var(--font-interface-theme); color: var(--lk-muted); font-size: 0.85em; }
+.lk-author::before { content: "· "; }
+.lk-empty { color: var(--lk-muted); font-style: italic; }
+
+/* Coins in quest rewards. */
+.lk-coin::before { content: ""; display: inline-block; width: 0.75em; height: 0.75em; margin-right: 0.2em; border-radius: 50%; vertical-align: -0.05em; background: var(--c); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25); }
+.lk-coin-pp { --c: #dfe3e8; }
+.lk-coin-gp { --c: #d4a531; }
+.lk-coin-ep { --c: #c2bb98; }
+.lk-coin-sp { --c: #b8bec4; }
+.lk-coin-cp { --c: #b06b3a; }
