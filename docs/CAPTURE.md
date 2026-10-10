@@ -22,7 +22,7 @@ With Obsidian in front, ⌘⌥N opens **Quick note** inside Obsidian instead of 
    ```sh
    sh "/path/to/vault/_lorekeeper/capture/lk-note" --stdin
    ```
-3. **Add Keyboard Shortcut** and press `⌘⇧S`. In apps with a **Save As…** on `⌘⇧S`, the app's own shortcut wins; pick another key if that gets in the way.
+3. Open **System Settings > Keyboard > Keyboard Shortcuts > Services**, find **Lorekeeper Save Selection** under **Text**, and give it `⌘⇧S`. In apps with a **Save As…** on `⌘⇧S`, the app's own shortcut wins; pick another key if that gets in the way.
 
 The first time, macOS asks to let Shortcuts control **System Events**: allow it, since the note box is a System Events dialog.
 
