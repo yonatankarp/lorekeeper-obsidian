@@ -149,3 +149,8 @@ test("sessionOf reads N from a session page or a per-author file, else 0", () =>
   assert.equal(p.sessionOf("Sessions/Session 12/Vex.md"), 12);
   for (const other of ["NPCs/Session 4.md", "Sessions/Session 4/a/b.md", "Private/Vex/Sessions/Session 4.md", "Sessions/Notes.md"]) assert.equal(p.sessionOf(other), 0, other);
 });
+
+test("isEmptyNoteLine: blank, lone ~, and bare bullets are empty; text is not", () => {
+  for (const l of ["", "   ", "~", "- ~", "- 20:05 ~", "- 20:05 "]) assert.equal(p.isEmptyNoteLine(l), true, JSON.stringify(l));
+  for (const l of ["a", "~ a", "- 20:05 ~ a", "~~", "- 20:05 x"]) assert.equal(p.isEmptyNoteLine(l), false, JSON.stringify(l));
+});

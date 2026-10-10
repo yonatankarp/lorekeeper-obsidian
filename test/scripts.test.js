@@ -455,3 +455,28 @@ test("new-page in solo mode never asks Shared or Private", async () => {
   assert.equal(r.asked.length, 1);
   assert.deepEqual(r.created, [["Templates/NPC.md", "NPCs", "Halia"]]);
 });
+
+test("new-page in party mode: Esc on Shared/Private cancels and creates nothing", async () => {
+  const r = newPage({ me: "Vex", choice: null });
+  await runScript("new-page.js", r);
+  assert.deepEqual(r.created, []);
+  assert.deepEqual(r.folders, []);
+});
+
+test("make-line-private deletes nothing when the page changed after the write", async () => {
+  const r = privateRun({ doc: ["a", "b"], from: [0, 0], to: [1, 1] });
+  const write = r.lk.io.write;
+  r.lk.io.write = async (p, t) => { await write(p, t); r.editor.lines[1] = "b typed"; };
+  const notices = await runPrivate(r);
+  assert.deepEqual(notices, ["The page changed while moving: your private notes have the lines, delete them from the page yourself."]);
+  assert.deepEqual(r.editor.lines, ["a", "b typed"]);
+  assert.equal(r.log.includes("editor"), false);
+});
+
+test("make-private refuses sessions, templates and Lorekeeper's own files", async () => {
+  for (const path of ["Sessions/Session 1.md", "Templates/NPC.md", "_lorekeeper/x.md"]) {
+    const r = pageApp({ path });
+    assert.deepEqual(await runScript("make-private.js", r), ["Sessions, templates and Lorekeeper's own files can't be made private."], path);
+    assert.deepEqual(r.renamed, []);
+  }
+});

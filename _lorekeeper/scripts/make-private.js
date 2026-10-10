@@ -8,6 +8,7 @@ module.exports = async ({ app, obsidian }) => {
   const file = app.workspace.getActiveFile();
   if (!file || file.extension !== "md") return new obsidian.Notice("Open the page you want to make private first.");
   if (file.path.startsWith("Private/")) return new obsidian.Notice("That page is already private.");
+  if (/^(Sessions|Templates|_lorekeeper)\//.test(file.path)) return new obsidian.Notice("Sessions, templates and Lorekeeper's own files can't be made private.");
   const target = party.privatePath(file.path, name);
   if (app.vault.getAbstractFileByPath(target)) return new obsidian.Notice(`There's already a private page called ${file.basename}.`);
   const dir = target.split("/").slice(0, -1);

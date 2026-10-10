@@ -342,7 +342,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/party.js": {
-      "sha256": "cd5c2dd36b13fb6a2db3648456a8e8cf9f5a425dcf2ee62f315698684fa62386",
+      "sha256": "e032903d6c875e3262214e0cb843799db67189b1f998b2bec9b56347e4b6f6ae",
       "kind": "managed"
     },
     "_lorekeeper/lib/pcpage.js": {
@@ -390,11 +390,11 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/make-line-private.js": {
-      "sha256": "4e65bef834bec4e5e1ae9f422732a13d3c6a6083e40ab41d7703d34a47d5b641",
+      "sha256": "ac31b4169f2c2a4d766623770d5aa53623552ffd1add126d5ee7b0eeef2782a5",
       "kind": "managed"
     },
     "_lorekeeper/scripts/make-private.js": {
-      "sha256": "6f5413aee309c2bdfa31dbd10d5ac8aa23a3cef1b79da74849df8bb27906f26c",
+      "sha256": "c974d4509831eaa0f1454cfb9c2b659f6ff68307d85a313fd07824e5d3b52a8a",
       "kind": "managed"
     },
     "_lorekeeper/scripts/make-shared.js": {
@@ -402,7 +402,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/new-page.js": {
-      "sha256": "c2f7963bcd896385c48b7f675acb15585b2ba64478a8cd2f49048f5113d273fb",
+      "sha256": "4093ca6291c8a20c0dd294dec063a22e438faa774499f0894b85a69cbbae0ac9",
       "kind": "managed"
     },
     "_lorekeeper/scripts/new-session.js": {

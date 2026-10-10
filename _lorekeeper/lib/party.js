@@ -76,6 +76,9 @@ function linksTo(text, name) {
   return false;
 }
 
+// A line with nothing to make private: blank, or only a bullet, a time and a lone ~.
+const isEmptyNoteLine = (line) => /^\s*(?:[-*+] )?(?:\d{1,2}:\d{2} )?~?\s*$/.test(line);
+
 function privatizeLines(lines, page) {
   const link = page ? `${page.kind === "npc" ? "@" : ""}[[${page.name}]] ` : "";
   return lines.map((raw) => {
@@ -102,5 +105,5 @@ function visiblePrivate({ me, isDM, paths }) {
 
 module.exports = {
   DM, TEMPLATE, meFromTsv, tsvWith, partPath, privateSessionPath, privatePath, sharedPath, privateOwner, sessionOf,
-  canPick, privateNote, joinOrNext, quietParty, takeLines, privatizeLines, visiblePrivate,
+  canPick, privateNote, joinOrNext, quietParty, takeLines, isEmptyNoteLine, privatizeLines, visiblePrivate,
 };

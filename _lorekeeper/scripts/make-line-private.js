@@ -24,9 +24,8 @@ module.exports = async ({ app, obsidian }) => {
     if (close < editor.lineCount() && from <= close) return new obsidian.Notice("The properties at the top of a page can't be made private.");
   }
 
-  const SKIP = /^\s*(?:[-*+] )?(?:\d{1,2}:\d{2} )?~?\s*$/; // blank, or a lone ~: nothing to move
   const picked = [];
-  for (let i = from; i <= to; i++) if (!SKIP.test(editor.getLine(i))) picked.push(i);
+  for (let i = from; i <= to; i++) if (!party.isEmptyNoteLine(editor.getLine(i))) picked.push(i);
   if (!picked.length) return new obsidian.Notice("Nothing to move.");
 
   const now = new Date();
@@ -36,7 +35,8 @@ module.exports = async ({ app, obsidian }) => {
     n = (await session.currentParty(io, party, name, now.getTime())).n || 1;
     page = { name: file.basename, kind: app.metadataCache.getFileCache(file)?.frontmatter?.type ?? "" };
   }
-  const lines = party.privatizeLines(picked.map((i) => editor.getLine(i)), page);
+  const copied = picked.map((i) => editor.getLine(i));
+  const lines = party.privatizeLines(copied, page);
   try {
     const path = await session.startPart(io, party, n, name, now, { privateFile: true });
     let text = await io.read(path);
@@ -45,6 +45,9 @@ module.exports = async ({ app, obsidian }) => {
   } catch (e) {
     return new obsidian.Notice(`Couldn't move the notes: ${e.message}`);
   }
+
+  if (picked.some((i, k) => editor.getLine(i) !== copied[k]))
+    return new obsidian.Notice("The page changed while moving: your private notes have the lines, delete them from the page yourself.");
 
   // Only now take them out of the page, from the bottom up so the line numbers hold.
   for (const i of picked.reverse()) {

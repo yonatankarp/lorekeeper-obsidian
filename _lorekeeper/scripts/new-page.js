@@ -20,7 +20,12 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
     new obsidian.Notice(problem);
   }
   const me = identity.me(app);
-  const isPrivate = me && (await asked(quickAddApi.suggester(["Shared", "Private"], ["Shared", "Private"]))) === "Private";
+  let isPrivate = false;
+  if (me) {
+    const where = await asked(quickAddApi.suggester(["Shared", "Private"], ["Shared", "Private"]));
+    if (!where) return;
+    isPrivate = where === "Private";
+  }
   const folders = app.vault.getRoot().children.filter((f) => "children" in f).map((f) => f.name);
   const kindFolder = pages.folderFor(kind, folders);
   const folder = isPrivate ? [`Private/${me}`, kindFolder].filter(Boolean).join("/") : kindFolder;
