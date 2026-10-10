@@ -19,9 +19,11 @@ Start a note with a symbol to file it. It works in the note box and on any line 
 
 ## Anywhere
 
+After setting up the hotkeys in docs/CAPTURE.md:
+
 | Shortcut | What it does |
 |---|---|
-| `⌘⌥N` / `Ctrl+Alt+N` | Note box over any app (after setting up capture, see the README) |
+| `⌘⌥N` / `Ctrl+Alt+N` | Note box over any app. On macOS, with Obsidian in front, it opens Quick note instead |
 | `⌘⇧S` / `Ctrl+Shift+S` | Saves the selected text, or the clipboard |
 
 ## In Obsidian

@@ -4,6 +4,8 @@
   "quickadd:choice:lk-new-page": [{ "modifiers": ["Mod"], "key": "N" }],
   "quickadd:choice:lk-cheat-sheet": [{ "modifiers": ["Mod"], "key": "/" }],
   "global-search:open": [{ "modifiers": ["Mod"], "key": "K" }],
+  "graph:open": [{ "modifiers": ["Mod"], "key": "G" }],
+  "workspace:edit-file-title": [{ "modifiers": [], "key": "F2" }],
   "editor:insert-link": [],
   "file-explorer:new-file": [],
   "editor:toggle-comments": []
