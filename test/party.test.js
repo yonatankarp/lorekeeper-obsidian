@@ -99,3 +99,47 @@ test("visiblePrivate", () => {
     foreign: [],
   });
 });
+
+test("privatizeLines keeps a trailing \\r and never throws", () => {
+  assert.deepEqual(p.privatizeLines(["- 20:14 ~secret\r"]), ["- 20:14 secret\r"]);
+  assert.deepEqual(p.privatizeLines(["~ deal\r"], { name: "Halia", kind: "npc" }), ["@[[Halia]] deal\r"]);
+  assert.deepEqual(p.privatizeLines(["plain\r", "", "\r"]), ["plain\r", "", "\r"]);
+  assert.deepEqual(p.privatizeLines(["a b", "\u0085"]), ["a b", "\u0085"]);
+});
+
+test("a lone ~ stays as it is", () => {
+  const page = { name: "Halia", kind: "npc" };
+  assert.deepEqual(p.privatizeLines(["~", "- 20:14 ~  ", "  ~ \r"], page), ["~", "- 20:14 ~  ", "  ~ \r"]);
+});
+
+test("privatizeLines keeps indentation", () => {
+  assert.deepEqual(p.privatizeLines(["  - 20:14 ~x"]), ["  - 20:14 x"]);
+});
+
+test("a line that already links the page gets no second link", () => {
+  const page = { name: "Halia", kind: "npc" };
+  for (const body of ["[[halia]]", "[[NPCs/Halia]]", "[[Halia\\|her]]", "[[Halia#Notes]]", "[[Halia|her]]", "@[[HALIA]]"]) {
+    assert.deepEqual(p.privatizeLines([`~ met ${body}`], page), [`met ${body}`], body);
+  }
+  assert.deepEqual(p.privatizeLines(["~ met [[Halia Two]]"], page), ["@[[Halia]] met [[Halia Two]]"]);
+});
+
+test("exactly 12 hours counts as fresh", () => {
+  assert.equal(p.joinOrNext({ n: 4, mine: false, others: [NOW - 12 * H], nowMs: NOW }), 4);
+  assert.equal(p.joinOrNext({ n: 4, mine: false, others: [NOW - 12 * H - 1], nowMs: NOW }), 5);
+  assert.equal(p.quietParty({ mineMtime: NOW - 12 * H, othersMtimes: [], nowMs: NOW }), false);
+  assert.equal(p.quietParty({ mineMtime: NOW - 12 * H - 1, othersMtimes: [], nowMs: NOW }), true);
+});
+
+test("visiblePrivate without a name shows nothing", () => {
+  const paths = ["Private/Vex/Sessions/Session 1.md", "Private/Halia/Sessions/Session 2.md"];
+  assert.deepEqual(p.visiblePrivate({ me: "", isDM: false, paths }), { show: [], foreign: paths });
+});
+
+test("meFromTsv with CRLF and trailing slashes", () => {
+  assert.equal(p.meFromTsv("/a/vault\tVex\r\n/b\tDM\r\n", "/a/vault"), "Vex");
+  assert.equal(p.meFromTsv("/b\tDM\r\n", "/b"), "DM");
+  assert.equal(p.meFromTsv("/a/vault\tVex\n", "/a/vault/"), "");
+  assert.equal(p.meFromTsv("/a/vault/\tVex\n", "/a/vault"), "");
+  assert.equal(p.meFromTsv("/a/vault/\tVex\n", "/a/vault/"), "Vex");
+});

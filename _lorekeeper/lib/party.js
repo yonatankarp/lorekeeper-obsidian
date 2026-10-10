@@ -59,20 +59,30 @@ function takeLines(md, from, to) {
   return { rest: all.join("\n"), lines };
 }
 
-const PRIVATE_LINE = /^(\s*(?:[-*+] )?(?:\d{1,2}:\d{2} )?)~(?!~)\s*(.*)$/;
-const PREFIX = /^(\s*(?:[-*+] )?(?:\d{1,2}:\d{2} )?)(.*)$/;
+const HEAD = String.raw`(\s*(?:[-*+] )?(?:\d{1,2}:\d{2} )?)`;
+const PRIVATE_LINE = new RegExp(`^${HEAD}~(?!~)\\s*(\\S[^]*)$`);
+const LONE_TILDE = new RegExp(`^${HEAD}~\\s*$`);
+const PREFIX = new RegExp(`^${HEAD}([^]*)$`);
 
+// Whether text links page `name`: [[Name]], [[folder/Name]], [[Name|alias]], [[Name\|alias]], [[Name#heading]].
 function linksTo(text, name) {
-  for (const m of text.matchAll(/\[\[([^\]|#]*)/g)) if (m[1].trim() === name) return true;
+  const want = name.trim().toLowerCase();
+  for (const m of text.matchAll(/\[\[([^\]|\\#]*)/g)) {
+    if (m[1].split("/").pop().trim().toLowerCase() === want) return true;
+  }
   return false;
 }
 
 function privatizeLines(lines, page) {
   const link = page ? `${page.kind === "npc" ? "@" : ""}[[${page.name}]] ` : "";
-  return lines.map((line) => {
+  return lines.map((raw) => {
+    const cr = raw.endsWith("\r") ? "\r" : "";
+    const line = cr ? raw.slice(0, -1) : raw;
+    if (LONE_TILDE.test(line)) return raw;
     const m = line.match(PRIVATE_LINE) || line.match(PREFIX);
+    if (!m || !m[2]) return raw;
     const [, head, body] = m;
-    return head + (page && !linksTo(body, page.name) ? link : "") + body;
+    return head + (page && !linksTo(body, page.name) ? link : "") + body + cr;
   });
 }
 
