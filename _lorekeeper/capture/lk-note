@@ -7,7 +7,8 @@
 # note goes to Sessions/Session N/<name>.md, or, when it starts with ~, to Private/<name>/Sessions/Session N.md (lib/party.js).
 # With no name, a ~ note in a vault that shows party play (Private/ or a Sessions/Session N/ folder) is refused (exit 2).
 # Exit: 0 saved (prints the session's path), 1 cancelled, 2 usage or setup error,
-# 3 the session went quiet (no change in 12 hours) and there's no dialog to ask: rerun with --next or --here.
+# 3 the session went quiet (no change in 12 hours) and there's no dialog to ask: rerun with --next or --here,
+# 4 a ~ note refused because no character is picked (with --dialog or --stdin it also shows a dialog with the note).
 set -eu
 
 vault=${LK_VAULT:-$(cd "$(dirname "$0")/../.." && pwd)}
@@ -71,6 +72,16 @@ ask() {
   fi
 }
 
+# refused MESSAGE: shows why a note wasn't saved.
+refused() {
+  if command -v osascript >/dev/null 2>&1; then
+    osascript -e 'on run argv' -e 'tell application "System Events"' -e 'activate' \
+      -e 'display alert "Lorekeeper" message (item 1 of argv)' -e 'end tell' -e 'end run' "$1" >/dev/null
+  else
+    zenity --error --no-markup --title=Lorekeeper --text="$1"
+  fi
+}
+
 # front_app: the frontmost app's name on macOS (LK_FRONT_APP overrides it), else nothing.
 front_app() {
   if [ -n "${LK_FRONT_APP+x}" ]; then
@@ -131,7 +142,10 @@ if [ -z "$me" ]; then
     '~'*)
       if [ -n "$(printf '%s' "${text#\~}" | sed 's/^ //')" ] && party_signs; then
         echo "lk-note: pick your character in Obsidian first (this note starts with ~, so it would be shared)" >&2
-        exit 2
+        if [ "$mode" != args ] && has_dialog; then
+          refused "Pick your character in Obsidian first: this note starts with ~, so it would be shared. Your note: $text" || true
+        fi
+        exit 4
       fi
       ;;
   esac

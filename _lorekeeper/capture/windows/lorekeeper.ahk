@@ -34,6 +34,8 @@ Save(text, flag := "") {
     if (code = 3) {
         answer := MsgBox("This session went quiet over 12 hours ago. Start the next session?", "Lorekeeper", "YesNo")
         Save(text, answer = "Yes" ? "--next" : "--here")
+    } else if (code = 4) {
+        MsgBox("Pick your character in Obsidian first: this note starts with ~, so it would be shared.`n`nYour note: " text, "Lorekeeper")
     } else if (code != 0) {
         MsgBox("Lorekeeper couldn't save the note (code " code "). Check VAULT and SH at the top of lorekeeper.ahk.", "Lorekeeper")
     }

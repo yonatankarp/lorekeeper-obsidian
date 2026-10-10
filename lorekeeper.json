@@ -306,11 +306,11 @@
       "kind": "managed"
     },
     "_lorekeeper/capture/lk-note": {
-      "sha256": "62506bd4905ea784223c9420d6cf2daf35667ea315b7bce1ee5a0c03f47a3069",
+      "sha256": "4c74f262a44e1d82824583fa37a1d7aa6f3b2fd034305d5d599702dc24a1df4b",
       "kind": "managed"
     },
     "_lorekeeper/capture/windows/lorekeeper.ahk": {
-      "sha256": "f5fc9b6673d2f3b51dc85c7b4da7d81dbb7a141e52e3419abe72aacf405c1deb",
+      "sha256": "69e22e85fa057c79a39acf1d19edf9a92b3438cb2d59b6e28e1c57851e068e68",
       "kind": "managed"
     },
     "_lorekeeper/lib/backup.js": {
@@ -454,7 +454,7 @@
       "kind": "managed"
     },
     "docs/CAPTURE.md": {
-      "sha256": "6d2f0d92f71aadf842c4668dcf519a82b627d1060af46d79222fa4a8225c3ebf",
+      "sha256": "30f97f4b952771d49c1918d8d357427a27a50b5dc5295daf5740fdc373cc026e",
       "kind": "managed"
     },
     "docs/DNDBEYOND.md": {

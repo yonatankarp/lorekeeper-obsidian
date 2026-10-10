@@ -277,7 +277,7 @@ for (const sign of ["Private", "Sessions/Session 1"]) {
     const dir = partyVault();
     fs.mkdirSync(path.join(dir, sign), { recursive: true });
     const r = runAs(dir, null, ["~", "secret"], undefined, `${dir}-elsewhere\tVex\n`);
-    assert.equal(r.status, 2);
+    assert.equal(r.status, 4);
     assert.equal(r.stderr, REFUSE);
     assert.equal(r.stdout, "");
     assert.equal(anyFileHas(dir, "secret"), false);
@@ -288,7 +288,7 @@ test("party signs: --me \"\" with a ~ note is refused too", () => {
   const dir = partyVault();
   fs.mkdirSync(path.join(dir, "Private"));
   const r = runAs(dir, "Vex", ["--me", "", "~ secret"]);
-  assert.equal(r.status, 2);
+  assert.equal(r.status, 4);
   assert.equal(r.stderr, REFUSE);
   assert.equal(anyFileHas(dir, "secret"), false);
 });
