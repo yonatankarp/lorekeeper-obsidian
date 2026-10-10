@@ -12,7 +12,7 @@ test("originUrl reads the origin remote only", () => {
 
 test("isTemplateRepo knows the template in every spelling", () => {
   for (const u of ["https://github.com/yonatankarp/lorekeeper-obsidian", "https://github.com/yonatankarp/lorekeeper-obsidian.git",
-    "git@github.com:yonatankarp/lorekeeper-obsidian.git", "ssh://git@github.com/yonatankarp/lorekeeper-obsidian"])
+    "git@github.com:yonatankarp/lorekeeper-obsidian.git", "https://github.com/YonatanKarp/Lorekeeper-Obsidian.git", "ssh://git@github.com/yonatankarp/lorekeeper-obsidian"])
     assert.equal(b.isTemplateRepo(u), true, u);
   for (const u of ["git@github.com:me/strahd.git", "https://github.com/yonatankarp/lorekeeper"]) assert.equal(b.isTemplateRepo(u), false, u);
 });
@@ -23,6 +23,6 @@ test("backupStatus messages", () => {
     { level: "warn", message: "This vault still points at the public Lorekeeper template. Point it at your own private repository before turning on Obsidian Git (docs/BACKUP.md, step 2)." });
   assert.deepEqual(b.backupStatus("[core]\n", false), { level: "warn", message: "This vault has no origin repository to back up to. See docs/BACKUP.md, step 2." });
   assert.deepEqual(b.backupStatus(config("git@github.com:me/strahd.git"), false),
-    { level: "warn", message: "Ready to back up to git@github.com:me/strahd.git: turn on Obsidian Git in Settings > Community plugins." });
+    { level: "warn", message: "Ready to back up to git@github.com:me/strahd.git: turn on Git in Settings > Community plugins." });
   assert.deepEqual(b.backupStatus(config("git@github.com:me/strahd.git"), true), { level: "ok", message: "Backing up to git@github.com:me/strahd.git." });
 });

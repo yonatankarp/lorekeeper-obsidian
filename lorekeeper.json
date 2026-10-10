@@ -135,7 +135,7 @@
       "kind": "managed"
     },
     ".obsidian/plugins/obsidian-git/data.json": {
-      "sha256": "c644412b395b0d97a51a4d4c6274145827a4b0d49ee0948000db22e166b37950",
+      "sha256": "d510f4bf46f681044bdd35f02b5d228d52a5a7ac6be1a0573dcac024b4fe0845",
       "kind": "shared",
       "keys": [
         "commitMessage",
@@ -313,7 +313,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/backup.js": {
-      "sha256": "db334f9c7640aea8ec302b7706145d13aef31e8d0a9bdf90eac0c5f87362d4ba",
+      "sha256": "cf53ce325713811408720c4ecd40f89b0c11563f238e0276b87494787f11b188",
       "kind": "managed"
     },
     "_lorekeeper/lib/coins.js": {
@@ -345,7 +345,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/check-backup.js": {
-      "sha256": "0130da6af987a0c9fc59c69f7c9e34f58f55d0371edcb2955de8c5c12ecf578d",
+      "sha256": "b2cbaad331b9acff68ad3bcfd079a49e3b5121f11334f03d1fdccf3f7fbe5dab",
       "kind": "managed"
     },
     "_lorekeeper/scripts/new-page.js": {
@@ -385,7 +385,7 @@
       "kind": "managed"
     },
     "docs/BACKUP.md": {
-      "sha256": "1bf6d79a675cae5da028e85c88cc9d7cc4ced6aa19c6fd94de10a2df19ff0154",
+      "sha256": "15d7d5829edecf34acdb92c0bf43e9b99204c35afc6f784ed19a6c3595f54fb8",
       "kind": "managed"
     },
     "docs/CAPTURE.md": {

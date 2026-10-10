@@ -59,10 +59,10 @@ test("Supercharged Links watches the three properties, file list on, no generate
   assert.equal(s.activateSnippet, false);
 });
 
-test("Obsidian Git ships off, backing up every 30 minutes once turned on", () => {
+test("Obsidian Git ships off, backing up every 30 minutes (not debounced) once turned on", () => {
   assert.ok(!json(".obsidian/community-plugins.json").includes("obsidian-git"));
   const g = json(".obsidian/plugins/obsidian-git/data.json");
   assert.equal(g.autoSaveInterval, 30);
-  assert.equal(g.autoBackupAfterFileChange, true);
+  assert.equal(g.autoBackupAfterFileChange, false);
   assert.equal(g.autoPullOnBoot, true);
 });

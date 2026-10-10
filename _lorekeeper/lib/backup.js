@@ -13,7 +13,7 @@ function originUrl(gitConfig) {
   return "";
 }
 
-const isTemplateRepo = (url) => /github\.com[:/]yonatankarp\/lorekeeper-obsidian(\.git)?\/?$/.test(url);
+const isTemplateRepo = (url) => /github\.com[:/]yonatankarp\/lorekeeper-obsidian(\.git)?\/?$/i.test(url);
 
 function backupStatus(gitConfig, pluginOn) {
   if (gitConfig === null) return { level: "warn", message: "No backup yet: this vault isn't a git repository. See docs/BACKUP.md." };
@@ -21,7 +21,7 @@ function backupStatus(gitConfig, pluginOn) {
   if (!url) return { level: "warn", message: "This vault has no origin repository to back up to. See docs/BACKUP.md, step 2." };
   if (isTemplateRepo(url))
     return { level: "warn", message: "This vault still points at the public Lorekeeper template. Point it at your own private repository before turning on Obsidian Git (docs/BACKUP.md, step 2)." };
-  if (!pluginOn) return { level: "warn", message: `Ready to back up to ${url}: turn on Obsidian Git in Settings > Community plugins.` };
+  if (!pluginOn) return { level: "warn", message: `Ready to back up to ${url}: turn on Git in Settings > Community plugins.` };
   return { level: "ok", message: `Backing up to ${url}.` };
 }
 
