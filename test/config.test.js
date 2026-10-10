@@ -10,7 +10,7 @@ test("every enabled plugin is pinned and downloaded", () => {
   const pinned = fs.readFileSync(path.join(ROOT, "plugin-versions.txt"), "utf8")
     .split("\n").filter((l) => l && !l.startsWith("#")).map((l) => l.split(" "));
   assert.deepEqual(json(".obsidian/community-plugins.json").sort(), pinned.map(([id]) => id).sort());
-  for (const [id, , version] of pinned) assert.equal(json(`.obsidian/plugins/${id}/manifest.json`).version, version, id);
+  for (const [id, , version, manifest] of pinned) assert.equal(json(`.obsidian/plugins/${id}/manifest.json`).version, manifest || version, id);
 });
 
 test("every folder template exists", () => {

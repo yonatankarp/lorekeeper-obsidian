@@ -2,7 +2,7 @@
 # Downloads the plugin versions in plugin-versions.txt into .obsidian/plugins/<id>/. Settings (data.json) are kept.
 set -eu
 cd "$(dirname "$0")/.."
-grep -v '^#' plugin-versions.txt | while read -r id repo version; do
+grep -v '^#' plugin-versions.txt | while read -r id repo version _manifest; do
   [ -n "$id" ] || continue
   dir=.obsidian/plugins/$id
   mkdir -p "$dir"

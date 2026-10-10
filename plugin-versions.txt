@@ -1,5 +1,5 @@
-# id repo version: scripts/update-plugins.sh downloads these into .obsidian/plugins/<id>/
+# id repo version [manifest-version]: scripts/update-plugins.sh downloads these into .obsidian/plugins/<id>/
 quickadd chhoumann/quickadd 2.32.1
 templater-obsidian SilentVoid13/Templater 2.25.1
-dataview blacksmithgu/obsidian-dataview 0.5.70
+dataview blacksmithgu/obsidian-dataview 0.5.70 0.5.68
 custom-selectors hodie/obsidian-custom-selectors 1.1.0
