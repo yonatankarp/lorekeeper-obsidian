@@ -18,7 +18,12 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
   ].filter(Boolean).join("\n");
   const go = await quickAddApi.yesNoPrompt(`Update to v${release.version}?`, lines).catch(() => false);
   if (!go) return;
-  const out = await lk.updater.apply({ ...ctx, ...prepared });
+  let out;
+  try {
+    out = await lk.updater.apply({ ...ctx, ...prepared });
+  } catch (e) {
+    return new obsidian.Notice(`Couldn't finish the update: ${e.message}. Run Update Lorekeeper again.`, 0);
+  }
   if (out.failed.length) return new obsidian.Notice(`Some files didn't update: ${out.failed.join(", ")}. Run Update Lorekeeper again.`, 0);
   new obsidian.Notice(`Updated to v${release.version}.`);
   if (out.reload && (await quickAddApi.yesNoPrompt("Reload Obsidian?", "Plugins or the theme changed. Reload to use them.").catch(() => false)))

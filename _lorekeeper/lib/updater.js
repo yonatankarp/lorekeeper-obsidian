@@ -64,18 +64,27 @@ async function apply({ adapter, request, subtle, update, tag, release, installed
     }
   }
   for (const p of plan.remove) {
-    await adapter.remove(p);
-    written.push(p);
+    try {
+      await adapter.remove(p);
+      written.push(p);
+    } catch {
+      failed.push(p);
+    }
   }
   for (const p of plan.merge) {
     try {
       const theirs = (await get(request, update.rawUrl(REPO, tag, p))).text;
-      const mine = (await adapter.exists(p)) ? JSON.parse(await adapter.read(p)) : null;
+      const seen = update.isSharedJson(p) ? update.canonical(JSON.parse(theirs)) : theirs;
+      if ((await update.sha256Hex(seen, subtle)) !== release.files[p].sha256) throw new Error("hash mismatch");
+      const mineText = (await adapter.exists(p)) ? await adapter.read(p) : null;
+      const mine = mineText === null ? null : JSON.parse(mineText);
       const merged = !mine ? JSON.parse(theirs)
         : p.endsWith("community-plugins.json") ? update.mergeEnabledPlugins(mine, installed?.plugins ?? [], release.plugins)
         : update.mergeQuickAdd(mine, JSON.parse(theirs));
+      const out = JSON.stringify(merged, null, 2) + "\n";
+      if (out === mineText) continue;
       await ensureFolder(adapter, p);
-      await adapter.write(p, JSON.stringify(merged, null, 2) + "\n");
+      await adapter.write(p, out);
       written.push(p);
     } catch {
       failed.push(p);
@@ -85,9 +94,16 @@ async function apply({ adapter, request, subtle, update, tag, release, installed
     const paths = Object.keys(release.files);
     const files = await hashes(adapter, subtle, update, paths, (p) => release.files[p].keys);
     const keys = Object.fromEntries(paths.filter((p) => update.isSharedJson(p) && release.files[p].keys).map((p) => [p, release.files[p].keys]));
+    // A file the player edited stays an edit: keep what the last install recorded (nothing, if it recorded nothing).
+    for (const p of plan.kept) {
+      const was = installed?.files?.[p];
+      if (was === undefined) delete files[p]; else files[p] = was;
+      const wasKeys = installed?.keys?.[p];
+      if (wasKeys === undefined) delete keys[p]; else keys[p] = wasKeys;
+    }
     await adapter.write(INSTALLED, JSON.stringify({ version: release.version, plugins: release.plugins, keys, files }, null, 2) + "\n");
   }
-  const reload = written.some((p) => p.startsWith(".obsidian/plugins/") || p.startsWith(".obsidian/themes/"));
+  const reload = written.some((p) => p.startsWith(".obsidian/"));
   return { written, failed, reload };
 }
 

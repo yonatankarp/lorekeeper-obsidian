@@ -145,3 +145,69 @@ test("a really edited settings key is kept", async () => {
   assert.deepEqual(prepared.plan.kept, [".obsidian/appearance.json"]);
   assert.deepEqual(prepared.plan.replace, []);
 });
+
+const run = async (adapter, remote, rel) => {
+  const request = fakeRequest({ ...remote, "lorekeeper.json": JSON.stringify(rel) }, rel.tag);
+  const prepared = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
+  const out = prepared.latest ? null : await updater.apply({ adapter, request, subtle: webcrypto.subtle, update, ...prepared });
+  return { prepared, out };
+};
+
+test("an edit you kept stays an edit on the next update", async () => {
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: { "Templates/NPC.md": sha("v1") } }),
+    "Templates/NPC.md": "mine",
+  });
+  const r2 = { ...release({ "Templates/NPC.md": "v2" }, []), version: "0.2.0", tag: "v0.2.0" };
+  const first = await run(adapter, { "Templates/NPC.md": "v2" }, r2);
+  assert.deepEqual(first.prepared.plan.kept, ["Templates/NPC.md"]);
+  const r3 = { ...release({ "Templates/NPC.md": "v3" }, []), version: "0.3.0", tag: "v0.3.0" };
+  const second = await run(adapter, { "Templates/NPC.md": "v3" }, r3);
+  assert.deepEqual(second.prepared.plan.kept, ["Templates/NPC.md"]);
+  assert.equal(adapter.store.get("Templates/NPC.md"), "mine");
+});
+
+test("a tampered merge download fails and installed.json doesn't advance", async () => {
+  const remote = { ".obsidian/community-plugins.json": JSON.stringify(["a"]) };
+  const rel = release(remote, ["a"]);
+  rel.files[".obsidian/community-plugins.json"].sha256 = sha("other");
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", files: {}, plugins: [] }),
+    ".obsidian/community-plugins.json": JSON.stringify(["x"]),
+  });
+  const { out } = await run(adapter, remote, { ...rel, tag: "v0.2.0" });
+  assert.deepEqual(out.failed, [".obsidian/community-plugins.json"]);
+  assert.equal(JSON.parse(adapter.store.get("_lorekeeper/installed.json")).version, "0.1.0");
+});
+
+test("a throwing remove is reported as failed", async () => {
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: { "_lorekeeper/lib/old.js": sha("o") } }),
+    "_lorekeeper/lib/old.js": "o",
+  });
+  adapter.remove = async () => { throw new Error("locked"); };
+  const { out } = await run(adapter, {}, { ...release({}, []), tag: "v0.2.0" });
+  assert.deepEqual(out.failed, ["_lorekeeper/lib/old.js"]);
+  assert.equal(JSON.parse(adapter.store.get("_lorekeeper/installed.json")).version, "0.1.0");
+});
+
+test("reload is false for a template-only update, true when settings change", async () => {
+  const a1 = fakeAdapter({ "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: {} }) });
+  const t = await run(a1, { "Templates/A.md": "a" }, { ...release({ "Templates/A.md": "a" }, []), tag: "v0.2.0" });
+  assert.equal(t.out.reload, false);
+  const a2 = fakeAdapter({ "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: {} }) });
+  const s = await run(a2, { ".obsidian/appearance.json": JSON.stringify({ theme: "x" }) }, { ...release({ ".obsidian/appearance.json": JSON.stringify({ theme: "x" }) }, []), tag: "v0.2.0" });
+  assert.equal(s.out.reload, true);
+});
+
+test("an identical merge is not rewritten", async () => {
+  const remote = { ".obsidian/community-plugins.json": JSON.stringify(["a"]) };
+  const same = JSON.stringify(["a"], null, 2) + "\n";
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", files: {}, plugins: ["a"] }),
+    ".obsidian/community-plugins.json": same,
+  });
+  const { out } = await run(adapter, remote, { ...release(remote, ["a"]), tag: "v0.2.0" });
+  assert.deepEqual(out.written, []);
+  assert.equal(out.reload, false);
+});
