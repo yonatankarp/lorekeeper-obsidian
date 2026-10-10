@@ -4,3 +4,4 @@ templater-obsidian SilentVoid13/Templater 2.25.1
 dataview blacksmithgu/obsidian-dataview 0.5.70 0.5.68
 custom-selectors hodie/obsidian-custom-selectors 1.1.0
 supercharged-links-obsidian mdelobelle/obsidian_supercharged_links 0.14.0
+obsidian-git vinzent03/obsidian-git 2.41.1

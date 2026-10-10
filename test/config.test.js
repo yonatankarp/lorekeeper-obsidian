@@ -6,10 +6,11 @@ const path = require("node:path");
 const ROOT = path.join(__dirname, "..");
 const json = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 
-test("every enabled plugin is pinned and downloaded", () => {
+test("every pinned plugin is downloaded, and every enabled plugin is pinned", () => {
   const pinned = fs.readFileSync(path.join(ROOT, "plugin-versions.txt"), "utf8")
     .split("\n").filter((l) => l && !l.startsWith("#")).map((l) => l.split(" "));
-  assert.deepEqual(json(".obsidian/community-plugins.json").sort(), pinned.map(([id]) => id).sort());
+  const ids = pinned.map(([id]) => id);
+  for (const id of json(".obsidian/community-plugins.json")) assert.ok(ids.includes(id), `${id} is enabled but not pinned`);
   for (const [id, , version, manifest] of pinned) assert.equal(json(`.obsidian/plugins/${id}/manifest.json`).version, manifest || version, id);
 });
 
@@ -56,4 +57,12 @@ test("Supercharged Links watches the three properties, file list on, no generate
   assert.equal(s.enableFileList, true);
   assert.equal(s.enableBases, true);
   assert.equal(s.activateSnippet, false);
+});
+
+test("Obsidian Git ships off, backing up every 30 minutes once turned on", () => {
+  assert.ok(!json(".obsidian/community-plugins.json").includes("obsidian-git"));
+  const g = json(".obsidian/plugins/obsidian-git/data.json");
+  assert.equal(g.autoSaveInterval, 30);
+  assert.equal(g.autoBackupAfterFileChange, true);
+  assert.equal(g.autoPullOnBoot, true);
 });

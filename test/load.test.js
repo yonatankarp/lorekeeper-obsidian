@@ -52,6 +52,7 @@ test("loads every lib module", async () => {
   assert.equal(typeof lk.pages.nameProblem, "function");
   assert.equal(typeof lk.coins.coinsHtml, "function");
   assert.equal(typeof lk.update.planUpdate, "function");
+  assert.equal(typeof lk.backup.backupStatus, "function");
 });
 
 test("io writes through the vault, making folders", async () => {

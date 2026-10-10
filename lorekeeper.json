@@ -134,8 +134,35 @@
       "sha256": "3306dd9032e00f989ba7233a37fd255bc4d3f4340cee661762e952f3f6aa1de9",
       "kind": "managed"
     },
+    ".obsidian/plugins/obsidian-git/data.json": {
+      "sha256": "c644412b395b0d97a51a4d4c6274145827a4b0d49ee0948000db22e166b37950",
+      "kind": "shared",
+      "keys": [
+        "commitMessage",
+        "autoCommitMessage",
+        "autoSaveInterval",
+        "autoPushInterval",
+        "autoPullInterval",
+        "autoPullOnBoot",
+        "autoBackupAfterFileChange",
+        "differentIntervalCommitAndPush",
+        "disablePopupsForNoChanges"
+      ]
+    },
+    ".obsidian/plugins/obsidian-git/main.js": {
+      "sha256": "28a18afcab1d2f152a0d3c89aff38e2a97ad0be1aeaaf99630613233bbec6c1b",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/obsidian-git/manifest.json": {
+      "sha256": "5d4d0f411518636c1d2a4831425a8e3487b925b5bd413be0ca22e6de38a593f7",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/obsidian-git/styles.css": {
+      "sha256": "bfa8fbd45fe49ff340fdb196b84badd631aede5d6f96740f336ea779cd441005",
+      "kind": "managed"
+    },
     ".obsidian/plugins/quickadd/data.json": {
-      "sha256": "98a20f7168eb356fa28beac250c8697fd10d08f0ac818064d68850a9b556cc72",
+      "sha256": "a3295c9c5b044cb8bfac7bbf9d59deb34840d1e570b17fc6d46b59eba93e4fca",
       "kind": "shared",
       "keys": [
         "choices",
@@ -222,7 +249,7 @@
       "kind": "managed"
     },
     "CREDITS.md": {
-      "sha256": "68e1861785e9f7ccbce9f352a4a670921fe23310e6663449d3c996786a61c3b9",
+      "sha256": "c585f77d2543225d36da52aada46a4288ad4e18df6bf2d1d2867e049e9fb4a9a",
       "kind": "managed"
     },
     "Cheat Sheet.md": {
@@ -285,12 +312,16 @@
       "sha256": "f5fc9b6673d2f3b51dc85c7b4da7d81dbb7a141e52e3419abe72aacf405c1deb",
       "kind": "managed"
     },
+    "_lorekeeper/lib/backup.js": {
+      "sha256": "db334f9c7640aea8ec302b7706145d13aef31e8d0a9bdf90eac0c5f87362d4ba",
+      "kind": "managed"
+    },
     "_lorekeeper/lib/coins.js": {
       "sha256": "0766366f067421999f809b85218cde86e1af55afdb1adc825d4cb5b1be3c4017",
       "kind": "managed"
     },
     "_lorekeeper/lib/load.js": {
-      "sha256": "256165212300480f0150a6be771727d8863a7e8b9254c2810e4e9cee52cf8ced",
+      "sha256": "0bf770fab625d7b3fd2185832449341943a5ca76aa9e9c02cb4ae1954fd9964e",
       "kind": "managed"
     },
     "_lorekeeper/lib/notes.js": {
@@ -311,6 +342,10 @@
     },
     "_lorekeeper/lib/updater.js": {
       "sha256": "268578bfc8247c85cce466eb2f5f5d53d31571a325d12ff398f590c7d5511790",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/check-backup.js": {
+      "sha256": "0130da6af987a0c9fc59c69f7c9e34f58f55d0371edcb2955de8c5c12ecf578d",
       "kind": "managed"
     },
     "_lorekeeper/scripts/new-page.js": {
@@ -347,6 +382,10 @@
     },
     "_lorekeeper/templates/session.md": {
       "sha256": "38b70d9d603a76be18382d3c1dc698cb402637f9e2082bf5657d744ff3445e3c",
+      "kind": "managed"
+    },
+    "docs/BACKUP.md": {
+      "sha256": "1bf6d79a675cae5da028e85c88cc9d7cc4ced6aa19c6fd94de10a2df19ff0154",
       "kind": "managed"
     },
     "docs/CAPTURE.md": {

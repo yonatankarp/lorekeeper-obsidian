@@ -1,0 +1,11 @@
+{
+  "commitMessage": "vault backup: {{date}}",
+  "autoCommitMessage": "vault backup: {{date}}",
+  "autoSaveInterval": 30,
+  "autoPushInterval": 0,
+  "autoPullInterval": 0,
+  "autoPullOnBoot": true,
+  "autoBackupAfterFileChange": true,
+  "differentIntervalCommitAndPush": false,
+  "disablePopupsForNoChanges": true
+}

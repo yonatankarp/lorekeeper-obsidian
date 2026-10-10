@@ -119,6 +119,26 @@
           }
         ]
       }
+    },
+    {
+      "id": "lk-check-backup",
+      "name": "Check backup",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-check-backup-macro",
+        "name": "Check backup",
+        "commands": [
+          {
+            "id": "lk-check-backup-script",
+            "name": "check-backup",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/check-backup.js",
+            "settings": {}
+          }
+        ]
+      }
     }
   ],
   "migrations": {
