@@ -15,7 +15,7 @@
 ## Global Constraints
 
 - Repo `~/Projects/_private_projects/lorekeeper-obsidian`; work on branch `m2` from `main`. Never push except in Task 10 after the user says yes.
-- The public repo is `yonatankarp/lorekeeper-obsidian`. M1 is release `v0.1.0` at commit `71dc24b`; M2 ships as `v0.2.0`.
+- The public repo is `yonatankarp/lorekeeper-obsidian`. M1 is release `v0.1.0` at commit `42454d9`; M2 ships as `v0.2.0`.
 - `lib/` modules are CommonJS with no `require`; every new one is added to `MODULES` in `_lorekeeper/lib/load.js`.
 - Entry scripts keep M1's three boot lines verbatim:
   ```js
@@ -400,7 +400,7 @@ In `package.json` add `"version": "0.2.0",` after `"private": true,`, and to `sc
 Run:
 ```bash
 mkdir -p _lorekeeper/baselines
-node scripts/make-manifest.js --ref 71dc24b --version 0.1.0 --out _lorekeeper/baselines/v0.1.0.json
+node scripts/make-manifest.js --ref 42454d9 --version 0.1.0 --out _lorekeeper/baselines/v0.1.0.json
 npm run make:manifest
 ```
 In `.github/workflows/test.yml` add after the `check:theme` step: `      - run: npm run check:manifest`.
@@ -1535,14 +1535,14 @@ git commit -m "feat(Characters): import, refresh and sign in to D&D Beyond from 
 
 **This task changes things outside the repo. Stop before Step 2 and get the user's explicit yes.**
 
-- [ ] **Step 1: Prepare, locally.** Confirm `gh auth status` shows the user's account, `git status` is clean on `main` after merging `m2`, and `npm test`, `check:theme`, `check:manifest` pass. Show the user exactly what will happen: create public repo `yonatankarp/lorekeeper-obsidian`, push `main`, mark it as a template repository, tag `v0.1.0` at `71dc24b` and `v0.2.0` at `main`'s head, and create GitHub releases for both (the Update command reads `releases/latest`).
+- [ ] **Step 1: Prepare, locally.** Confirm `gh auth status` shows the user's account, `git status` is clean on `main` after merging `m2`, and `npm test`, `check:theme`, `check:manifest` pass. Show the user exactly what will happen: create public repo `yonatankarp/lorekeeper-obsidian`, push `main`, mark it as a template repository, tag `v0.1.0` at `42454d9` and `v0.2.0` at `main`'s head, and create GitHub releases for both (the Update command reads `releases/latest`).
 - [ ] **Step 2: STOP. Ask the user to confirm publishing.** Only on a clear yes, continue.
 - [ ] **Step 3: Publish.**
 
 ```bash
 gh repo create yonatankarp/lorekeeper-obsidian --public --source . --remote origin --push --description "Lorekeeper's D&D session notes as an Obsidian vault"
 gh repo edit yonatankarp/lorekeeper-obsidian --template
-git tag -a v0.1.0 71dc24b -m "v0.1.0: solo Lorekeeper in Obsidian"
+git tag -a v0.1.0 42454d9 -m "v0.1.0: solo Lorekeeper in Obsidian"
 git tag -a v0.2.0 -m "v0.2.0: updates, status marks, backups, D&D Beyond"
 git push origin v0.1.0 v0.2.0
 gh release create v0.1.0 --title "v0.1.0" --notes "Solo Lorekeeper in Obsidian: quick notes, sessions with Timeline and Journal, typed pages, Home, Tome and Dungeon themes."

@@ -258,7 +258,7 @@ test("a fresh clone's unedited shared file is replaced next release", async () =
 });
 
 test("an untouched v0.1.0 vault replaces Cheat Sheet.md", async () => {
-  const old = committed("71dc24b");
+  const old = committed("42454d9");
   assert.ok(!("lorekeeper.json" in old) && !("_lorekeeper/installed.json" in old));
   const now = committed("HEAD");
   assert.notEqual(old["Cheat Sheet.md"], now["Cheat Sheet.md"]);
