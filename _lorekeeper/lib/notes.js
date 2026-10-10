@@ -50,8 +50,9 @@ const minutes = (time) => {
   return h * 60 + m;
 };
 
-// Every part's notes in time order. Within a file, a time earlier than the one before means the game went past
-// midnight, and an untimed note sorts with the note before it, so a file's own order never changes.
+// Every part's notes in time order. Within a file, a time more than 12 hours earlier than the one before means the
+// game went past midnight; a smaller step back (a hand-fixed out-of-order note) stays on the same day. An untimed
+// note sorts with the note before it, so a file's own order never changes.
 function merge(parts) {
   const all = [];
   parts.forEach(({ author, text }, p) => {
@@ -60,7 +61,7 @@ function merge(parts) {
     notesOf(text).forEach((n, i) => {
       if (n.time) {
         const t = minutes(n.time);
-        if (last >= 0 && t + day * 1440 < last) day += 1;
+        if (last >= 0 && last - (t + day * 1440) > 720) day += 1;
         last = t + day * 1440;
       }
       all.push({ ...n, author, key: Math.max(last, 0), p, i });

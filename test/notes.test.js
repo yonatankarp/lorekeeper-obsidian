@@ -92,3 +92,11 @@ test("untimed notes stay after the note before them", () => {
   ]);
   assert.deepEqual(merged.map((n) => n.text), ["A", "B without time", "D", "C"]);
 });
+
+test("a small step back in time is not midnight", () => {
+  const merged = merge([
+    { author: "", text: "- 20:10 A\n- 20:05 B\n" },
+    { author: "X", text: "- 20:07 C\n- 20:20 D\n" },
+  ]);
+  assert.deepEqual(merged.map((n) => n.text), ["B", "C", "A", "D"]);
+});
