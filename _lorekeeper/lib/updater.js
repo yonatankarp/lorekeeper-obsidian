@@ -145,8 +145,9 @@ async function apply({ adapter, request, subtle, update, tag, release, installed
     const paths = Object.keys(release.files);
     const files = await hashes(adapter, subtle, update, paths, (p) => release.files[p].keys);
     const keys = Object.fromEntries(paths.filter((p) => update.isSharedJson(p) && release.files[p].keys).map((p) => [p, release.files[p].keys]));
-    // A file the player edited stays an edit: keep what the last install recorded (nothing, if it recorded nothing).
-    for (const p of plan.kept) {
+    // A file the player edited stays an edit: keep what the last install recorded (nothing, if it recorded nothing). A
+    // merged hotkeys file is one of those, so the next update merges it again instead of replacing it.
+    for (const p of [...plan.kept, ...plan.merge.filter((m) => update.MERGED_WHEN_EDITED.includes(m))]) {
       const was = installed?.files?.[p];
       if (was === undefined) delete files[p]; else files[p] = was;
       const wasKeys = installed?.keys?.[p];

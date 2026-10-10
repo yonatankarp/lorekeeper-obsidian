@@ -108,6 +108,6 @@ const rawUrl = (repo, tag, path) =>
   `https://raw.githubusercontent.com/${repo}/${tag}/${path.split("/").map(encodeURIComponent).join("/")}`;
 
 module.exports = {
-  MERGED, categorize, isSharedJson, planUpdate, mergeEnabledPlugins, mergeQuickAdd, mergeHotkeys,
+  MERGED, MERGED_WHEN_EDITED, categorize, isSharedJson, planUpdate, mergeEnabledPlugins, mergeQuickAdd, mergeHotkeys,
   canonical, jsonView, mergeJson, sha256Hex, rawUrl,
 };

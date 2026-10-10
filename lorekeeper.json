@@ -362,11 +362,11 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/update.js": {
-      "sha256": "8a4ff93f60cc863082e885edbf5d13bc8074065cbfccfe16524257ebafffe9ba",
+      "sha256": "c6306f774fc50af25c30d0994a5f5bd4fe5de6b0f00b96b58742f352fa9fe7a1",
       "kind": "managed"
     },
     "_lorekeeper/lib/updater.js": {
-      "sha256": "5efa3b082160713a9c63075f94d131cf772dbefef6e5ad8c8ef7c431fd881c7d",
+      "sha256": "f139d071b3f335a73016867e0e11e6ae21b491bbe431208a1fd88e8b20dfb144",
       "kind": "managed"
     },
     "_lorekeeper/scripts/check-backup.js": {

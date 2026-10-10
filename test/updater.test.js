@@ -122,6 +122,35 @@ test("an edited hotkeys.json gains the release's new commands and keeps the play
   assert.deepEqual(out.failed, []);
   assert.deepEqual(JSON.parse(adapter.store.get(H)), { ...mine, "quickadd:choice:lk-line-private": ship["quickadd:choice:lk-line-private"] });
   assert.equal(out.reload, true);
+  // Still an edit next time: installed.json keeps the earlier record, so a later update merges again instead of replacing.
+  const installed = JSON.parse(adapter.store.get("_lorekeeper/installed.json"));
+  assert.equal(installed.files[H], was);
+  assert.deepEqual(installed.keys[H], ["quickadd:choice:lk-quick-note"]);
+  const ship2 = { ...ship, "quickadd:choice:lk-quick-note": [{ modifiers: ["Mod", "Shift"], key: "N" }] };
+  const remote2 = { [H]: JSON.stringify(ship2) };
+  const rel2 = { ...release(remote2, []), version: "0.3.0" };
+  const request2 = fakeRequest({ ...remote2, "lorekeeper.json": JSON.stringify(rel2) }, "v0.3.0");
+  const prepared2 = await updater.prepare({ adapter, request: request2, subtle: webcrypto.subtle, update });
+  assert.deepEqual(prepared2.plan.merge, [H]);
+  await updater.apply({ adapter, request: request2, subtle: webcrypto.subtle, update, ...prepared2 });
+  assert.deepEqual(JSON.parse(adapter.store.get(H))["quickadd:choice:lk-quick-note"], mine["quickadd:choice:lk-quick-note"]);
+});
+
+test("a hotkeys.json the last install never recorded stays unrecorded after a merge", async () => {
+  const H = ".obsidian/hotkeys.json";
+  const remote = { [H]: JSON.stringify({ "quickadd:choice:lk-line-private": [{ modifiers: ["Mod", "Shift"], key: "P" }] }) };
+  const rel = release(remote, []);
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: {} }),
+    [H]: JSON.stringify({ "my:cmd": [] }),
+  });
+  const request = fakeRequest({ ...remote, "lorekeeper.json": JSON.stringify(rel) });
+  const prepared = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
+  assert.deepEqual(prepared.plan.merge, [H]);
+  await updater.apply({ adapter, request, subtle: webcrypto.subtle, update, ...prepared });
+  const installed = JSON.parse(adapter.store.get("_lorekeeper/installed.json"));
+  assert.equal(H in installed.files, false);
+  assert.equal(H in installed.keys, false);
 });
 
 test("an unedited hotkeys.json takes the release's bindings and keeps keys Obsidian added", async () => {
