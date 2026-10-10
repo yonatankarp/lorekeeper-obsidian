@@ -15,7 +15,7 @@ test("session.js compiles the way dv.view compiles it", () => {
   assert.ok(src.includes(BOOT), "uses the load.js boot lines");
 });
 
-for (const name of ["quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js", "update.js", "check-backup.js", "dndbeyond-import.js", "dndbeyond-refresh.js", "dndbeyond-signin.js", "dndbeyond-signout.js", "pick-character.js", "make-line-private.js", "make-private.js", "make-shared.js"]) {
+for (const name of ["quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js", "update.js", "check-backup.js", "dndbeyond-import.js", "dndbeyond-refresh.js", "dndbeyond-signin.js", "dndbeyond-signout.js", "pick-character.js", "make-line-private.js", "make-private.js", "make-shared.js", "private-note.js"]) {
   test(`${name} compiles as a CommonJS module exporting a function`, () => {
     const src = fs.readFileSync(path.join(DIR, name), "utf8");
     const m = { exports: {} };
@@ -479,4 +479,69 @@ test("make-private refuses sessions, templates and Lorekeeper's own files", asyn
     assert.deepEqual(await runScript("make-private.js", r), ["Sessions, templates and Lorekeeper's own files can't be made private."], path);
     assert.deepEqual(r.renamed, []);
   }
+});
+
+function privateNoteRun({ me = "Vex", mtime = Date.now(), answer = false, openPath = null } = {}) {
+  const disk = { "_lorekeeper/templates/session.md": "# S{{session}}\n", "_lorekeeper/templates/session-part.md": "{{author}} {{session}}\n", "Sessions/Session 3.md": "# S3\n" };
+  const asked = [];
+  const io = {
+    list: async (d) => (d === "Sessions" ? ["Session 3.md"] : []),
+    exists: async (p) => p in disk,
+    read: async (p) => disk[p],
+    mtimeMs: async () => mtime,
+    write: async (p, t) => { disk[p] = t; },
+  };
+  const editorOver = (lines, cursor) => ({
+    lines, lastLine: () => lines.length - 1, getLine: (i) => lines[i], setCursor: (c) => cursor.push(c), focus() {},
+    replaceRange(text, at) { const l = lines[at.line]; lines.splice(at.line, 1, ...(l.slice(0, at.ch) + text + l.slice(at.ch)).split("\n")); },
+  });
+  const cursor = [];
+  const opened = [];
+  const editor = editorOver([], cursor);
+  const leaf = { view: { editor }, openFile: async (f) => { opened.push(f.path); editor.lines.splice(0, editor.lines.length, ...disk[f.path].split("\n")); } };
+  const openEditor = editorOver(["# mine", "- 20:00 old"], cursor);
+  const openLeaf = { view: { file: { path: openPath }, editor: openEditor }, getViewState: () => ({ state: { mode: "source" } }), setViewState: async () => {} };
+  const app = {
+    loadLocalStorage: () => me,
+    workspace: { getLeavesOfType: () => (openPath ? [openLeaf] : []), getLeaf: () => leaf, setActiveLeaf() {} },
+    vault: { getAbstractFileByPath: (p) => (p in disk ? { path: p } : null) },
+  };
+  const lk = { party: partyLib, session: sessionLib, identity, io };
+  const quickAddApi = { yesNoPrompt: async (...a) => { asked.push(a); return answer; } };
+  return { lk, app, quickAddApi, disk, cursor, opened, asked, openEditor };
+}
+
+test("private-note refuses solo mode", async () => {
+  const r = privateNoteRun({ me: "" });
+  assert.deepEqual(await runScript("private-note.js", r), ["Pick your character first."]);
+  assert.deepEqual(Object.keys(r.disk).filter((p) => p.startsWith("Private/")), []);
+});
+
+test("private-note opens your private notes for the current session on a new time line", async () => {
+  const r = privateNoteRun();
+  assert.deepEqual(await runScript("private-note.js", r), []);
+  const p = "Private/Vex/Sessions/Session 3.md";
+  assert.match(r.disk[p], /^"\[\[Vex\]\]" 3\n- \d{2}:\d{2} \n$/);
+  assert.deepEqual(r.opened, [p]);
+  assert.deepEqual(r.asked, []);
+  assert.equal(r.cursor.at(-1).line, 1);
+  assert.equal(r.cursor.at(-1).ch, "- 00:00 ".length);
+  assert.equal(Object.keys(r.disk).some((k) => k.startsWith("Sessions/Session 3/")), false);
+});
+
+test("private-note offers the next session when it went quiet", async () => {
+  const r = privateNoteRun({ mtime: 0, answer: true });
+  await runScript("private-note.js", r);
+  assert.deepEqual(r.asked, [["Start Session 4?", "Session 3 went quiet over 12 hours ago."]]);
+  assert.ok(r.disk["Private/Vex/Sessions/Session 4.md"]);
+  assert.ok(r.disk["Sessions/Session 4.md"]);
+});
+
+test("private-note adds the line through the editor when the file is already open", async () => {
+  const r = privateNoteRun({ openPath: "Private/Vex/Sessions/Session 3.md" });
+  r.disk["Private/Vex/Sessions/Session 3.md"] = "on disk\n";
+  await runScript("private-note.js", r);
+  assert.equal(r.disk["Private/Vex/Sessions/Session 3.md"], "on disk\n");
+  assert.match(r.openEditor.lines.at(-1), /^- \d{2}:\d{2} $/);
+  assert.deepEqual(r.openEditor.lines.slice(0, 2), ["# mine", "- 20:00 old"]);
 });

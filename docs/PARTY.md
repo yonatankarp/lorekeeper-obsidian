@@ -23,9 +23,12 @@ Until a character or the DM is picked on a device, that device works as a solo v
 |---|---|
 | `~` at the start of a note | In the system note box, the note goes to your private notes for the current session, with the `~` removed |
 | **Make line private** (`⌘⇧P` / `Ctrl+Shift+P`) | Moves the current line, or the selected lines, out of the open page into your private notes |
+| **Private note** | Opens your private notes for the current session on a new `- HH:MM ` line, like Quick note |
 | **Make private** | Moves the open page to `Private/<you>/`, links follow |
 | **Make shared** | Moves one of your private pages back out, after asking **Share <page> with the party?** |
 | **New page** | In a shared campaign it asks **Shared** or **Private** (Esc cancels) |
+
+Anything you type into a shared page reaches the party as you type (Relay syncs it live; Obsidian Git commits it). **Make line private** moves it out, but can't take back what teammates' devices, sync history or File recovery already have. For a private note, start it with `~` in the note box outside Obsidian, or open your private notes with **Private note**.
 
 Details worth knowing:
 

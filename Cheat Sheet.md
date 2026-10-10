@@ -25,12 +25,13 @@ Open the command palette with `⌘P` or `Ctrl+P` and type the name (it shows as 
 | **Sign out of D&D Beyond** | Removes it |
 | **Pick your character** | Says who you play on this device: a PC, the DM or solo |
 | **Make line private** (`⌘⇧P` / `Ctrl+Shift+P`) | Moves the current line, or the selected lines, to your private notes |
+| **Private note** | Opens your private notes for the current session, for a note only you see |
 | **Make private** | Moves the open page to your private folder |
 | **Make shared** | Moves one of your private pages back for the party |
 
 ## Playing with your party
 
-Run **Pick your character** first, on each device. Start a note with `~` in the note box to keep it private. In the editor, use **Make line private**: a `~` line typed in Quick note stays put until you do. If ⌘⇧P (Ctrl+Shift+P) does nothing after updating, set **Make line private** in **Settings > Hotkeys**. See docs/PARTY.md.
+Run **Pick your character** first, on each device. Start a note with `~` in the note box to keep it private, or run **Private note** in Obsidian. In the editor, use **Make line private**: a `~` line typed in Quick note stays put until you do. If ⌘⇧P (Ctrl+Shift+P) does nothing after updating, set **Make line private** in **Settings > Hotkeys**. See docs/PARTY.md.
 
 ## Links and images
 

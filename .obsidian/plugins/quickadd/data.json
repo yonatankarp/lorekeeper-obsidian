@@ -261,6 +261,26 @@
       }
     },
     {
+      "id": "lk-private-note",
+      "name": "Private note",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-private-note-macro",
+        "name": "Private note",
+        "commands": [
+          {
+            "id": "lk-private-note-script",
+            "name": "private-note",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/private-note.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
       "id": "lk-make-private",
       "name": "Make private",
       "type": "Macro",

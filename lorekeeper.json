@@ -163,7 +163,7 @@
       "kind": "managed"
     },
     ".obsidian/plugins/quickadd/data.json": {
-      "sha256": "739d1f6f51fdd5b2ec39686bfb18c07d26b790416645968538797dbe06f9d383",
+      "sha256": "e5a71625fcd238ac5d2ce0dc3408c9a94660704eefa2e0dcddee5c8ef5a22d5c",
       "kind": "shared",
       "keys": [
         "choices",
@@ -254,7 +254,7 @@
       "kind": "managed"
     },
     "Cheat Sheet.md": {
-      "sha256": "4dec07e681270530d8a98868c55b235e8c49b7e2c3e312da72d2b98a30a2a289",
+      "sha256": "796ec472b518b388fff2619049afe01f807dcb019f09df29971c7ac1517b2197",
       "kind": "shared"
     },
     "Home.md": {
@@ -421,6 +421,10 @@
       "sha256": "2522726de9c0f339819b56219a99d3ee375d239271df5b3ea9a49a0a3ce9e335",
       "kind": "managed"
     },
+    "_lorekeeper/scripts/private-note.js": {
+      "sha256": "74a0d9414890c23d9a0d6afbcbc62734044797e1e4a8f06b9bcd721951d985fa",
+      "kind": "managed"
+    },
     "_lorekeeper/scripts/quick-note.js": {
       "sha256": "8b40de56478a23c075eb2db9439e048659f04593513a1df842aead5d2b6ed356",
       "kind": "managed"
@@ -450,7 +454,7 @@
       "kind": "managed"
     },
     "docs/CAPTURE.md": {
-      "sha256": "0474d9e8653e7f1d5fc00df24c918a282765db8c8d67a33beeaa0df9802e5890",
+      "sha256": "6d2f0d92f71aadf842c4668dcf519a82b627d1060af46d79222fa4a8225c3ebf",
       "kind": "managed"
     },
     "docs/DNDBEYOND.md": {
@@ -458,7 +462,7 @@
       "kind": "managed"
     },
     "docs/PARTY.md": {
-      "sha256": "45d75800eac912880672215d46627632b77e26fe64eb561cd78f00c43e969c9a",
+      "sha256": "00127924b94a0514c7f1b0b337f7619daf95b066b0e8bbe5db99ff8bb62edc06",
       "kind": "managed"
     }
   }

@@ -38,7 +38,7 @@ Back up to a private GitHub repository with Obsidian's **Git** plugin: see [docs
 
 ## Playing with your party
 
-Share the vault with your group through Relay or Obsidian Sync, and each player's notes stay in their own file, shown together with their names in every session. Run **Pick your character** on each device (a PC, or **I'm the DM (no character)**). Start a note with `~` in the note box, or run **Make line private** (`⌘⇧P` or `Ctrl+Shift+P`) on a line in the editor, to keep it in your private notes. **Make private** and **Make shared** move a whole page. Setting up the sync, and what each service can't do: [docs/PARTY.md](docs/PARTY.md).
+Share the vault with your group through Relay or Obsidian Sync, and each player's notes stay in their own file, shown together with their names in every session. Run **Pick your character** on each device (a PC, or **I'm the DM (no character)**). Start a note with `~` in the note box, or run **Make line private** (`⌘⇧P` or `Ctrl+Shift+P`) on a line in the editor, to keep it in your private notes. Inside Obsidian, **Private note** opens your private notes for the session. **Make private** and **Make shared** move a whole page. Setting up the sync, and what each service can't do: [docs/PARTY.md](docs/PARTY.md).
 
 ## Not here yet
 
