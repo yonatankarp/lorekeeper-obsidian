@@ -11,6 +11,19 @@ Start a note with a symbol to file it. It works in the note box and on any line 
 | `"` | Quotes |
 | none | What happened |
 
+## Commands
+
+Open the command palette with `⌘P` or `Ctrl+P` and type the name (it shows as "QuickAdd: ...").
+
+| Command | What it does |
+|---|---|
+| **Update Lorekeeper** | Shows what changes, asks, then updates the template |
+| **Check backup** | Says whether the vault is ready to back up |
+| **Import from D&D Beyond** | Fills PC pages from a character link |
+| **Refresh from D&D Beyond** | Re-reads the open PC page's character |
+| **Sign in to D&D Beyond** | Saves your sign-in cookie, for Campaign Only characters |
+| **Sign out of D&D Beyond** | Removes it |
+
 ## Links and images
 
 - `[[Mirela]]` links a page. `@[[Mirela]]` files the note under NPCs and links her.

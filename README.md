@@ -21,11 +21,24 @@ Press `⌘⌥N` (`Ctrl+Alt+N`) and type `@Mirela, shifty innkeeper`. Start a not
 - Quests have a **status** (open, in progress, done, failed). NPCs have a **condition** (alive, dead, missing, unknown) and an **attitude** (friendly, neutral, hostile, unknown).
 - A session's `title` property names it: "The bridge collapse".
 - **Home** lists open quests, recent sessions and NPCs. The graph (`⌘G` or `Ctrl+G`) maps the connections.
+- Status shows as a mark: done quests are ticked, failed ones crossed out, dead NPCs crossed out, all dimmed, in the file list. Friendly NPCs are green, hostile red and missing ones purple, in the file list (lighter on the leather sidebar), in links on pages and on Home.
 - Everything is in the **Cheat Sheet** (`⌘/` or `Ctrl+/`).
+
+## Updating
+
+Run **Update Lorekeeper** from the command palette (`⌘P` or `Ctrl+P`). It shows what will change and asks first. Pages you wrote and templates you edited are kept. Reload Obsidian when it asks.
+
+## Backups
+
+Back up to a private GitHub repository with Obsidian's **Git** plugin: see [docs/BACKUP.md](docs/BACKUP.md). Run **Check backup** from the command palette to see whether the vault is ready.
+
+## Characters from D&D Beyond
+
+**Import from D&D Beyond** fills PC pages from a character link, and **Refresh from D&D Beyond** updates one later: see [docs/DNDBEYOND.md](docs/DNDBEYOND.md).
 
 ## Not here yet
 
-Playing with your party, private notes, status marks in the sidebar and D&D Beyond import come later (see the roadmap in `docs/superpowers/specs/`). Back up with Obsidian Git or by keeping the vault in a cloud drive.
+Playing with your party and private notes come later (see the roadmap in `docs/superpowers/specs/`).
 
 ## Development
 

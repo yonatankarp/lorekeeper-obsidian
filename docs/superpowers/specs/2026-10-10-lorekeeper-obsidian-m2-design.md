@@ -14,7 +14,7 @@ M2 keeps M1's rules: behaviour follows Lorekeeper's `docs/GUIDE.md`, logic lives
 
 **Categories.**
 - **Managed** files belong to the template and are always replaced: `_lorekeeper/**`, `.obsidian/themes/**`, `.obsidian/plugins/*/main.js`, `manifest.json`, `styles.css` and `LICENSE`, `CREDITS.md`, `docs/CAPTURE.md`, `docs/BACKUP.md`.
-- **Shared** files start as the template's and may be edited by the player: `Templates/*.md`, `.obsidian/plugins/*/data.json`, `.obsidian/hotkeys.json`, `.obsidian/app.json`, `.obsidian/appearance.json`, `.obsidian/core-plugins.json`, `.obsidian/community-plugins.json`, `.obsidian/graph.json`, `.obsidian/bookmarks.json`, `Home.md`, `Cheat Sheet.md`. An update replaces one only when its current hash equals the hash the last update installed; otherwise it's left alone and listed as edited.
+- **Shared** files start as the template's and may be edited by the player: `Templates/*.md`, `.obsidian/plugins/*/data.json`, `.obsidian/hotkeys.json`, `.obsidian/app.json`, `.obsidian/appearance.json`, `.obsidian/core-plugins.json`, `.obsidian/community-plugins.json`, `.obsidian/graph.json`, `.obsidian/bookmarks.json`, `Home.md`, `Cheat Sheet.md`. An update replaces one only when its current hash equals the hash the last update installed; otherwise it's left alone and listed as edited. Shared JSON settings files are compared on the template's own top-level keys in canonical form, because Obsidian rewrites them on first open; replacing one merges the template's keys over the player's file.
 - Everything else (the player's notes, `README.md`, `docs/superpowers/`, tests, `scripts/`, `theme/` sources) is not in the manifest and is never touched.
 
 **The command: Lorekeeper: Update** (QuickAdd script `update.js`, logic in `lib/update.js`).
@@ -52,7 +52,7 @@ Colouring note lines by their `@`/`#` prefix while editing stays out of M2: acce
 
 ## 3. Backups
 
-**Obsidian Git 2.41.1** (`vinzent03/obsidian-git`, MIT), pinned and committed, **turned off** in `community-plugins.json` (on, in a folder that isn't a git repo, it complains at every start). Its settings ship to match Lorekeeper's rhythm: commit and push every 30 minutes while notes change, pull on start.
+**Obsidian Git 2.41.1** (`vinzent03/obsidian-git`, MIT), pinned and committed, **turned off** in `community-plugins.json` (on, in a folder that isn't a git repo, it complains at every start). Its settings ship to match Lorekeeper's rhythm: Obsidian Git backs up every 30 minutes, and pulls on start. The plugin shows in Obsidian as **Git**.
 
 **docs/BACKUP.md:**
 1. Create a **private** GitHub repo for the campaign.
@@ -68,7 +68,7 @@ A check guards the trap in step 2: **Lorekeeper: Check backup** (QuickAdd script
 
 A port of Lorekeeper's import (`src-tauri/src/dndbeyond.rs` and the code that updates PC pages) into `lib/dndbeyond.js`, with the same source and rules.
 
-**Lookup.** A character link (`dndbeyond.com/characters/<id>/…`, the short form, or a bare id), or, when signed in, a campaign link. Each character is read from `https://character-service.dndbeyond.com/character/v5/character/<id>` with `requestUrl`; the campaign's party list brings in the rest, up to Lorekeeper's `MAX_CHARACTERS`. One that can't be read shows its error without failing the rest.
+**Lookup.** A character link (`dndbeyond.com/characters/<id>/…`, the short form, or a bare id). Each character is read from `https://character-service.dndbeyond.com/character/v5/character/<id>` with `requestUrl`; the character's party brings in the rest, up to Lorekeeper's `MAX_CHARACTERS`. Campaign links aren't supported: Obsidian's requestUrl follows redirects without showing where, so the sign-in cookie could follow a redirect off D&D Beyond. A character link brings its party along instead. One that can't be read shows its error without failing the rest.
 
 **Mapping** (`parse_character`, line for line): `race` (full name, else base name); `class` ("Fighter (Champion)", or "Fighter 3 / Rogue 1"); `level` (sum of class levels); `background` (else the custom background); `alignment` (from the 1-to-9 table); `dndbeyond` (the sheet link); `player` (the D&D Beyond username); **Appearance** (gender, age, height, weight, eyes, hair, skin joined with ` · `, then the appearance text); **Personality** (Traits, Ideals, Bonds, Flaws, bold-labelled, several lines become a list).
 
@@ -81,7 +81,7 @@ A port of Lorekeeper's import (`src-tauri/src/dndbeyond.rs` and the code that up
 - **Lorekeeper: Refresh from D&D Beyond:** on the open PC page, reads its `dndbeyond` link and updates it.
 - **Lorekeeper: Sign in to D&D Beyond** / **Sign out of D&D Beyond.**
 
-**Sign-in (optional).** Import works without it for public characters. Sign-in unlocks "Campaign Only" characters and campaign links. The player signs in to D&D Beyond in their own browser, copies the `CobaltSession` cookie from the browser's developer tools, and pastes it into the sign-in prompt. `docs/DNDBEYOND.md` gives the steps for Chrome, Safari and Firefox and says what the cookie is (it's their D&D Beyond session: treat it like a password). The cookie is kept only in Obsidian's secret storage (`app.secretStorage`), never in a vault file, so backups never carry it. Each lookup trades it for a short-lived token at `https://auth-service.dndbeyond.com/v1/cobalt-token` (Lorekeeper's `cobalt_token`). An expired cookie gives a clear "Sign in to D&D Beyond again" message. A private character met while signed out says "This character is private: sign in to D&D Beyond to import it".
+**Sign-in (optional).** Import works without it for public characters. Sign-in unlocks "Campaign Only" characters. The player signs in to D&D Beyond in their own browser, copies the `CobaltSession` cookie from the browser's developer tools, and pastes it into the sign-in prompt. `docs/DNDBEYOND.md` gives the steps for Chrome, Safari and Firefox and says what the cookie is (it's their D&D Beyond session: treat it like a password). The cookie is kept only in Obsidian's secret storage (`app.secretStorage`), never in a vault file, so backups never carry it. Each lookup trades it for a short-lived token at `https://auth-service.dndbeyond.com/v1/cobalt-token` (Lorekeeper's `cobalt_token`). An expired cookie gives a clear "Sign in to D&D Beyond again" message. A private character met while signed out says "This character is private: sign in to D&D Beyond to import it".
 
 **Tests:** parsing, page updates, the portrait checks and link parsing are pure functions, tested with fixture JSON trimmed from a public character and cases from Lorekeeper's Rust tests. Network calls go on the checklist.
 

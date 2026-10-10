@@ -19,3 +19,10 @@ Run before tagging a release, in a fresh copy of the vault (`cp -R` the repo, wi
 - [ ] **Templater toggle:** **Settings > Templater > Trigger Templater on new file creation** is on (it is kept per device). On first open no Templater notice appears, and `git status` shows `.obsidian/plugins/templater-obsidian/data.json` unchanged afterwards.
 - [ ] **Quick note into an open session:** type a note in an open session, press `⌘⌥N` within 2 seconds: both notes are there.
 - [ ] **Custom Selectors:** don't rename selectors in its settings (it can turn `status` into `selector.status`); the dropdowns for status, condition and attitude still show.
+- [ ] **Update from v0.1.0:** in a vault from `v0.1.0` with one edited template, **Update Lorekeeper** shows the plan, lists the edited template as kept, asks, updates, and offers a reload. Run again: it says you're up to date.
+- [ ] **Status marks:** in the file list, in Light and Dark, done quests are ticked, failed ones crossed out, dead NPCs crossed out, all dimmed; friendly NPCs green, hostile red, missing purple (lighter on the leather sidebar); the same colours in links on pages.
+- [ ] **Home NPC colours:** NPCs on Home show attitude colours in both themes.
+- [ ] **Backup setup:** **Check backup** in a clone of the template warns about the template origin; after `git remote set-url origin` it says ready; **Git** turned on commits and pushes.
+- [ ] **D&D Beyond import and refresh:** import a public character (its party comes along, each ticked), then **Refresh from D&D Beyond** on its page.
+- [ ] **D&D Beyond sign-in:** **Sign in to D&D Beyond** with a pasted cookie, then import a Campaign Only character; **Sign out of D&D Beyond** makes it say it's private again; a campaign link is refused.
+- [ ] **Mobile (if you sync the vault):** **Update Lorekeeper** and **Import from D&D Beyond** work.
