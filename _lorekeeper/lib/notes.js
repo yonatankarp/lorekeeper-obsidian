@@ -55,7 +55,7 @@ const minutes = (time) => {
 // note sorts with the note before it, so a file's own order never changes.
 function merge(parts) {
   const all = [];
-  parts.forEach(({ author, text }, p) => {
+  parts.forEach(({ author, text, private: priv }, p) => {
     let day = 0;
     let last = -1;
     notesOf(text).forEach((n, i) => {
@@ -64,11 +64,25 @@ function merge(parts) {
         if (last >= 0 && last - (t + day * 1440) > 720) day += 1;
         last = t + day * 1440;
       }
-      all.push({ ...n, author, key: Math.max(last, 0), p, i });
+      all.push({ ...n, author, ...(priv ? { private: true } : {}), key: Math.max(last, 0), p, i });
     });
   });
   all.sort((a, b) => a.key - b.key || a.p - b.p || a.i - b.i);
-  return all.map(({ time, kind, text, author }) => ({ time, kind, text, author }));
+  return all.map(({ time, kind, text, author, private: priv }) => ({ time, kind, text, author, ...(priv ? { private: true } : {}) }));
 }
 
-module.exports = { SECTIONS, PREFIX, notesOf, journal, merge };
+// Shared parts and the viewer's private parts ({ author: owner, text }) in one timeline; private notes carry private: true.
+function mergeWithPrivate(parts, privateParts) {
+  return merge([...parts, ...privateParts.map((p) => ({ ...p, private: true }))]);
+}
+
+const sessionNumber = (path) => Number((String(path).match(/Session (\d+)\.md$/) || [])[1]) || 0;
+
+// A PC page's portrait: "[[Demus.jpg]]", "![[Demus.jpg|100]]" or a plain path -> the link text to resolve, or "".
+function portraitTarget(value) {
+  const v = String(value ?? "").trim();
+  const m = v.match(/^!?\[\[([^\]|#]*)/);
+  return (m ? m[1] : v).trim();
+}
+
+module.exports = { SECTIONS, PREFIX, notesOf, journal, merge, mergeWithPrivate, sessionNumber, portraitTarget };

@@ -80,7 +80,7 @@
   display: inline-block; width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px;
   background: currentColor; -webkit-mask: none center / contain no-repeat; mask: none center / contain no-repeat;
 }
-.nav-folder-title:not([data-path="PCs"], [data-path="NPCs"], [data-path="Locations"], [data-path="Items"], [data-path="Factions"], [data-path="Quests"], [data-path="Lore"], [data-path="Sessions"]) .nav-folder-title-content::before { display: none; }
+.nav-folder-title:not([data-path="PCs"], [data-path="NPCs"], [data-path="Locations"], [data-path="Items"], [data-path="Factions"], [data-path="Quests"], [data-path="Lore"], [data-path="Sessions"], [data-path="Private"]) .nav-folder-title-content::before { display: none; }
 
 /* Drop cap on every page title, as on Lorekeeper's session titles. */
 .inline-title::first-letter { font-family: "Solbera Imitation", var(--lk-font-display); color: var(--lk-initial); }
@@ -122,6 +122,16 @@ button.mod-cta {
 .lk-time { font-family: var(--font-interface-theme); font-variant-numeric: tabular-nums; color: var(--lk-muted); font-size: 0.85em; margin-right: 0.3em; }
 .lk-author { font-family: var(--font-interface-theme); color: var(--lk-muted); font-size: 0.85em; }
 .lk-author::before { content: "· "; }
+.lk-private::before {
+  content: ""; display: inline-block; width: 0.85em; height: 0.85em; margin-right: 0.35em; vertical-align: -0.1em; color: var(--lk-muted);
+  background: currentColor; -webkit-mask: var(--lk-icon-lock) center / contain no-repeat; mask: var(--lk-icon-lock) center / contain no-repeat;
+}
+.lk-portrait { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; vertical-align: -4px; margin-right: 0.2em; }
+.lk-author:has(.lk-portrait)::before { content: ""; }
+.lk-warning {
+  margin: 0.6em 0; padding: 0.5em 0.8em; border-radius: 4px; font-family: var(--font-interface-theme);
+  background: var(--lk-seal); color: var(--lk-seal-text); border: 1px solid var(--lk-seal-edge);
+}
 .lk-empty { color: var(--lk-muted); font-style: italic; }
 
 /* Coins in quest rewards. */

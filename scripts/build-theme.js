@@ -8,7 +8,7 @@ const ROOT = path.join(__dirname, "..");
 const OUT = path.join(ROOT, ".obsidian/themes/Lorekeeper/theme.css");
 const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
 
-const FOLDER_ICONS = { PCs: "pc", NPCs: "npc", Locations: "location", Items: "item", Factions: "faction", Quests: "quest", Lore: "lore", Sessions: "session" };
+const FOLDER_ICONS = { PCs: "pc", NPCs: "npc", Locations: "location", Items: "item", Factions: "faction", Quests: "quest", Lore: "lore", Sessions: "session", Private: "lock" };
 
 function tokens(css, re, name) {
   const m = css.match(re);
@@ -39,7 +39,7 @@ function markCss(paths) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="black" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${paths[name].replaceAll("currentColor", "black")}</svg>`;
     return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
   };
-  return `body { --lk-icon-done: ${url("done")}; --lk-icon-failed: ${url("failed")}; }`;
+  return `body { --lk-icon-done: ${url("done")}; --lk-icon-failed: ${url("failed")}; --lk-icon-lock: ${url("lock")}; }`;
 }
 
 function inlineFonts(css) {

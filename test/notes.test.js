@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { SECTIONS, notesOf, journal, merge } = require("../_lorekeeper/lib/notes.js");
+const { SECTIONS, notesOf, journal, merge, mergeWithPrivate, sessionNumber, portraitTarget } = require("../_lorekeeper/lib/notes.js");
 
 const SESSION = `---
 session: 4
@@ -99,4 +99,25 @@ test("a small step back in time is not midnight", () => {
     { author: "X", text: "- 20:07 C\n- 20:20 D\n" },
   ]);
   assert.deepEqual(merged.map((n) => n.text), ["B", "C", "A", "D"]);
+});
+
+test("mergeWithPrivate flags private notes and leaves shared ones unflagged", () => {
+  const out = mergeWithPrivate([{ author: "Demus", text: "- 20:05 shared" }], [{ author: "Mirela", text: "- 20:03 secret" }]);
+  assert.deepEqual(out, [
+    { time: "20:03", kind: "event", text: "secret", author: "Mirela", private: true },
+    { time: "20:05", kind: "event", text: "shared", author: "Demus" },
+  ]);
+  assert.deepEqual(mergeWithPrivate([{ author: "", text: "- 20:01 a" }], []), [{ time: "20:01", kind: "event", text: "a", author: "" }]);
+});
+
+test("sessionNumber reads N from Session N.md", () => {
+  assert.equal(sessionNumber("Sessions/Session 12.md"), 12);
+  assert.equal(sessionNumber("Sessions/Other.md"), 0);
+});
+
+test("portraitTarget handles embeds, links and paths", () => {
+  assert.equal(portraitTarget("[[Demus.jpg]]"), "Demus.jpg");
+  assert.equal(portraitTarget("![[img/Demus.jpg|100]]"), "img/Demus.jpg");
+  assert.equal(portraitTarget("img/Demus.jpg"), "img/Demus.jpg");
+  assert.equal(portraitTarget(undefined), "");
 });
