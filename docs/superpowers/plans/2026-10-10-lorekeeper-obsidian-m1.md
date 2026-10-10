@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-10-lorekeeper-obsidian-design.md`
 
+**USER CHECKPOINT steps** need a person at Obsidian or macOS (Tasks 4, 6, 7, 8, 9, 10, 11). An executor finishes the task's code and tests, commits, then stops and asks the user to run the checkpoint, and only continues after the user reports back.
+
 ## Global Constraints
 
 - The repo is `~/Projects/_private_projects/lorekeeper-obsidian`, branch `main`, and its root is the vault. One vault is one campaign.
@@ -867,7 +869,7 @@ if [ ! -e "$file" ]; then
 fi
 if [ -n "$text" ]; then
   if [ -s "$file" ] && [ -n "$(tail -c 1 "$file")" ]; then printf '\n' >>"$file"; fi
-  printf -- '- %s %s\n' "$(date +%H:%M)" "$text" >>"$file"
+  printf '%s\n' "- $(date +%H:%M) $text" >>"$file"
 fi
 printf '%s\n' "$file"
 ```
@@ -882,7 +884,7 @@ Expected: `# pass 10`, `# fail 0`
 Run: `shellcheck _lorekeeper/capture/lk-note`
 Expected: no output, exit 0. Fix anything it reports. Don't silence it with `# shellcheck disable` unless the warning is a false positive, and if it is, say why in the comment.
 
-- [ ] **Step 6: Check the dialogs and the focus on macOS (spike, manual)**
+- [ ] **Step 6: USER CHECKPOINT: the dialogs and the focus on macOS (spike).** An agent stops here and asks the user to run these.
 
 This tests the spec's focus assumption before anything depends on it.
 1. `mkdir -p /tmp/lkv/_lorekeeper/templates && cp _lorekeeper/templates/session.md /tmp/lkv/_lorekeeper/templates/`
@@ -1481,7 +1483,7 @@ test("selectors match the templates' starting values", () => {
 Run: `npm test`
 Expected: `# fail 0`
 
-- [ ] **Step 7: Check it in Obsidian (spike, manual)**
+- [ ] **Step 7: USER CHECKPOINT: on-create in Obsidian (spike).** An agent stops here and asks the user to run these.
 
 This tests the spec's on-create assumption. Use a throwaway copy so Obsidian's own files don't get into the repo: `rm -rf /tmp/lk-try && cp -R . /tmp/lk-try && rm -rf /tmp/lk-try/.git`. In Obsidian choose **Open folder as vault** and pick `/tmp/lk-try`, then **Trust author and enable plugins**.
 1. **Settings > Community plugins** lists all four, turned on.
@@ -1507,7 +1509,7 @@ Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Create: `_lorekeeper/scripts/session.js` (DataviewJS view)
 - Create: `_lorekeeper/scripts/quick-note.js`, `new-session.js`, `open-session.js`, `new-page.js`, `open-cheat-sheet.js` (QuickAdd user scripts)
-- Modify: `.obsidian/plugins/quickadd/data.json` (created by the QuickAdd UI), `.obsidian/hotkeys.json` (created by the Hotkeys UI)
+- Create: `.obsidian/plugins/quickadd/data.json`, `.obsidian/hotkeys.json`
 - Test: `test/scripts.test.js`
 
 **Interfaces:**
@@ -1524,12 +1526,22 @@ const path = require("node:path");
 
 const DIR = path.join(__dirname, "..", "_lorekeeper/scripts");
 const BOOT = 'new Function("module", await app.vault.adapter.read("_lorekeeper/lib/load.js"))(m);';
-const AsyncFunction = (async () => {}).constructor;
 
-for (const name of ["session.js", "quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js"]) {
-  test(`${name} parses and boots lib through load.js`, () => {
+// Dataview 0.5.70 compiles a view as new Function("dv", "input", body), wrapping the body in an async arrow function
+// when it contains "await" (its view() in main.js). QuickAdd loads a script as CommonJS.
+test("session.js compiles the way dv.view compiles it", () => {
+  const src = fs.readFileSync(path.join(DIR, "session.js"), "utf8");
+  assert.ok(src.includes("await"));
+  assert.doesNotThrow(() => new Function("dv", "input", "(async () => { " + src + " })()"));
+  assert.ok(src.includes(BOOT), "uses the load.js boot lines");
+});
+
+for (const name of ["quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js"]) {
+  test(`${name} compiles as a CommonJS module exporting a function`, () => {
     const src = fs.readFileSync(path.join(DIR, name), "utf8");
-    assert.doesNotThrow(() => new AsyncFunction("dv", "input", "module", "app", src));
+    const m = { exports: {} };
+    new Function("module", "exports", src)(m, m.exports);
+    assert.equal(typeof m.exports, "function");
     if (name !== "open-cheat-sheet.js") assert.ok(src.includes(BOOT), "uses the load.js boot lines");
   });
 }
@@ -1714,41 +1726,83 @@ module.exports = async ({ app, obsidian }) => {
 Run: `npm test`
 Expected: `# fail 0`
 
-- [ ] **Step 9: Set up the QuickAdd commands in Obsidian (manual, then commit the file Obsidian writes)**
+- [ ] **Step 9: Write the QuickAdd commands and the hotkeys**
 
-Do this in the repo vault itself so `.obsidian/plugins/quickadd/data.json` is written there. Open `~/Projects/_private_projects/lorekeeper-obsidian` as a vault. Then in **Settings > QuickAdd**, add five **Macro** choices with these exact names, each with a single **User Script** step:
+QuickAdd 2.32.1 stores a Macro choice as `{ id, name, type: "Macro", command, runOnStartup, macro: { id, name, commands } }`, with each script step `{ id, name, type: "UserScript", path, settings }`. A choice with `command: true` becomes the command `quickadd:choice:<id>` (from its `main.js`). The `migrations` flags are set so QuickAdd doesn't try to upgrade this already-current shape.
 
-| Choice name | User script |
-|---|---|
-| `Quick note` | `_lorekeeper/scripts/quick-note.js` |
-| `New session` | `_lorekeeper/scripts/new-session.js` |
-| `Current session` | `_lorekeeper/scripts/open-session.js` |
-| `New page` | `_lorekeeper/scripts/new-page.js` |
-| `Cheat sheet` | `_lorekeeper/scripts/open-cheat-sheet.js` |
+`.obsidian/plugins/quickadd/data.json`:
 
-Turn on the ⚡ (command) toggle for each. Then in **Settings > Hotkeys**, set:
+```json
+{
+  "choices": [
+    { "id": "lk-quick-note", "name": "Quick note", "type": "Macro", "command": true, "runOnStartup": false,
+      "macro": { "id": "lk-quick-note-macro", "name": "Quick note", "commands": [
+        { "id": "lk-quick-note-script", "name": "quick-note", "type": "UserScript", "path": "_lorekeeper/scripts/quick-note.js", "settings": {} } ] } },
+    { "id": "lk-new-session", "name": "New session", "type": "Macro", "command": true, "runOnStartup": false,
+      "macro": { "id": "lk-new-session-macro", "name": "New session", "commands": [
+        { "id": "lk-new-session-script", "name": "new-session", "type": "UserScript", "path": "_lorekeeper/scripts/new-session.js", "settings": {} } ] } },
+    { "id": "lk-current-session", "name": "Current session", "type": "Macro", "command": true, "runOnStartup": false,
+      "macro": { "id": "lk-current-session-macro", "name": "Current session", "commands": [
+        { "id": "lk-current-session-script", "name": "open-session", "type": "UserScript", "path": "_lorekeeper/scripts/open-session.js", "settings": {} } ] } },
+    { "id": "lk-new-page", "name": "New page", "type": "Macro", "command": true, "runOnStartup": false,
+      "macro": { "id": "lk-new-page-macro", "name": "New page", "commands": [
+        { "id": "lk-new-page-script", "name": "new-page", "type": "UserScript", "path": "_lorekeeper/scripts/new-page.js", "settings": {} } ] } },
+    { "id": "lk-cheat-sheet", "name": "Cheat sheet", "type": "Macro", "command": true, "runOnStartup": false,
+      "macro": { "id": "lk-cheat-sheet-macro", "name": "Cheat sheet", "commands": [
+        { "id": "lk-cheat-sheet-script", "name": "open-cheat-sheet", "type": "UserScript", "path": "_lorekeeper/scripts/open-cheat-sheet.js", "settings": {} } ] } }
+  ],
+  "migrations": {
+    "useQuickAddTemplateFolder": true, "incrementFileNameSettingMoveToDefaultBehavior": true,
+    "consolidateFileExistsBehavior": true, "repairTemplateFileExistsBehavior": true,
+    "mutualExclusionInsertAfterAndWriteToBottomOfFile": true, "setVersionAfterUpdateModalRelease": true,
+    "addDefaultAIProviders": true, "removeMacroIndirection": true, "migrateFileOpeningSettings": true,
+    "backfillFileOpeningDefaults": true, "setProviderModelDiscoveryMode": true,
+    "migrateProviderApiKeysToSecretStorage": true, "migrateToMultipleTemplateFolders": true,
+    "refreshStaleDefaultModelSeeds": true, "pinAiModelRefs": true
+  }
+}
+```
 
-| Command | Hotkey |
-|---|---|
-| QuickAdd: Quick note | `⌘⌥N` |
-| QuickAdd: Current session | `⌘J` |
-| QuickAdd: New page | `⌘N` |
-| QuickAdd: Cheat sheet | `⌘/` |
-| Search: Search in all files | `⌘K` |
-| Insert Markdown link | remove its `⌘K` |
-| Create new note | remove its `⌘N` |
+`.obsidian/hotkeys.json` (`Mod` is `⌘` on macOS and `Ctrl` elsewhere; an empty list removes a default hotkey):
 
-Obsidian stores `Mod`, so the same hotkeys are `Ctrl` on Windows and Linux.
+```json
+{
+  "quickadd:choice:lk-quick-note": [{ "modifiers": ["Mod", "Alt"], "key": "N" }],
+  "quickadd:choice:lk-current-session": [{ "modifiers": ["Mod"], "key": "J" }],
+  "quickadd:choice:lk-new-page": [{ "modifiers": ["Mod"], "key": "N" }],
+  "quickadd:choice:lk-cheat-sheet": [{ "modifiers": ["Mod"], "key": "/" }],
+  "global-search:open": [{ "modifiers": ["Mod"], "key": "K" }],
+  "editor:insert-link": [],
+  "file-explorer:new-file": [],
+  "editor:toggle-comments": []
+}
+```
 
-- [ ] **Step 10: Check it in Obsidian (manual)**
+Add to `test/scripts.test.js`:
 
+```js
+test("every QuickAdd script exists and every hotkey names a QuickAdd choice", () => {
+  const ROOT = path.join(__dirname, "..");
+  const qa = JSON.parse(fs.readFileSync(path.join(ROOT, ".obsidian/plugins/quickadd/data.json"), "utf8"));
+  const ids = qa.choices.map((c) => c.id);
+  for (const c of qa.choices) for (const cmd of c.macro.commands) assert.ok(fs.existsSync(path.join(ROOT, cmd.path)), cmd.path);
+  const keys = JSON.parse(fs.readFileSync(path.join(ROOT, ".obsidian/hotkeys.json"), "utf8"));
+  for (const k of Object.keys(keys).filter((k) => k.startsWith("quickadd:choice:"))) assert.ok(ids.includes(k.slice(16)), k);
+});
+```
+
+Run: `npm test`
+Expected: `# fail 0`
+
+- [ ] **Step 10: USER CHECKPOINT: check it in Obsidian.** An agent stops here and asks the user to run these, in a throwaway copy (`rm -rf /tmp/lk-try && cp -R . /tmp/lk-try && rm -rf /tmp/lk-try/.git`, then **Open folder as vault**):
+
+0. The command palette lists **QuickAdd: Quick note**, **New session**, **Current session**, **New page** and **Cheat sheet**. If QuickAdd rewrote `data.json` on load, compare it with ours and bring any fields it added back into the repo's copy.
 1. `⌘⌥N` with no sessions: `Session 1` opens with the cursor after `- HH:MM `. Type `@[[Mir` and confirm the link suggestions appear, then finish as `@[[Mirela]] shifty innkeeper`. Switch to Reading view: the Timeline shows it with the NPC colour, and **Journal** groups it under **NPCs**.
 2. Press `⌘⌥N` and then Esc without typing. Reading view shows no empty note.
 3. `⌘N`, **NPC**, `Mirela`: refused with **There's already a page called Mirela.** if Mirela exists, otherwise created in `NPCs/` and opened.
 4. A Quest with `reward: 25gp` and status **open** shows under **Open quests** on the session page, with a gold coin.
 5. Add `title: The bridge collapse` to the session's properties: the view shows it above the open quests.
 6. `⌘J` opens the newest session, and `⌘/` opens the cheat sheet (after Task 8).
-7. Quit Obsidian, then `git status`: only `.obsidian/plugins/quickadd/data.json`, `.obsidian/hotkeys.json` and maybe `.obsidian/app.json`/`appearance.json` changed. Revert anything else Obsidian wrote (`git checkout -- <file>`), apart from those, before committing.
 
 - [ ] **Step 11: Commit**
 
@@ -1902,7 +1956,11 @@ Start a note with a symbol to file it. It works in the note box and on any line 
 | `F2` | Rename the page: links to it follow |
 ```
 
-- [ ] **Step 6: Bookmark Home** (manual, in the repo vault): right-click `Home.md`, **Bookmark**. Commit `.obsidian/bookmarks.json`.
+- [ ] **Step 6: Bookmark Home, `.obsidian/bookmarks.json`**
+
+```json
+{ "items": [{ "type": "file", "ctime": 1791676800000, "path": "Home.md" }, { "type": "file", "ctime": 1791676800000, "path": "Cheat Sheet.md" }] }
+```
 
 - [ ] **Step 7: Add a test that Home's embeds exist, appended to `test/config.test.js`**
 
@@ -1918,11 +1976,12 @@ test("Home embeds only bases that exist", () => {
 Run: `npm test`
 Expected: `# fail 0`
 
-- [ ] **Step 8: Check it in Obsidian (manual)**, with two quests (one open, one done), two NPCs (friendly and hostile) and two sessions (one with `title: The bridge collapse`):
+- [ ] **Step 8: USER CHECKPOINT: check it in Obsidian.** An agent stops here and asks the user. In a throwaway copy as in Task 7, with two quests (one open, one done), two NPCs (friendly and hostile) and two sessions (one with `title: The bridge collapse`):
 1. **Open quests** lists only the open one, and its **status** cell is a dropdown. If it isn't, change the column to `selector.status` in `quests.base` (Custom Selectors' README) and note that in the commit.
-2. **NPCs** is grouped by attitude. If Obsidian reports `groupBy` as unknown, replace it with `sort: [{ property: attitude, direction: ASC }]`.
-3. **Recent sessions** shows Session 2 first with its title.
-4. Any parse error in a `.base` file appears in the embed. Fix it using Obsidian's Bases help (**Help > Bases syntax**), and keep the meaning.
+2. **NPCs** is grouped by attitude (`groupBy` is documented at https://obsidian.md/help/bases/syntax).
+3. **Recent sessions** shows Session 2 first with its title. `sort` isn't in Obsidian's documented syntax: if it's ignored, sort the view by **session**, descending, from the table header, and copy the YAML Obsidian writes into `sessions.base`.
+4. **Open quests** shows only that view. Embedding one view with `#Open quests` isn't documented either: if the embed shows every view, move the open-quests filter to the base's top-level `filters` and keep a single view.
+5. Any parse error in a `.base` file appears in the embed. Fix it using Obsidian's Bases help (**Help > Bases syntax**), and keep the meaning.
 
 - [ ] **Step 9: Commit**
 
@@ -2094,7 +2153,8 @@ if (require.main === module) {
 @font-face { font-family: "Scaly Sans"; src: url("fonts/scaly-sans-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 @font-face { font-family: "Solbera Imitation"; src: url("fonts/solbera-imitation.woff2") format("woff2"); font-display: swap; }
 
-body {
+/* On .theme-light and .theme-dark, where Obsidian sets its own colour variables, so ours win. */
+.theme-light, .theme-dark {
   font-synthesis: none;
   --lk-font-display: "Mr Eaves Small Caps", "Iowan Old Style", Georgia, serif;
   --font-text-theme: "Bookinsanity", "Bookman Old Style", "Iowan Old Style", Georgia, serif;
@@ -2223,7 +2283,7 @@ button.mod-cta {
 Run: `npm run build:theme && npm test`
 Expected: `# fail 0`, and `theme.css` is about 300 KB (`ls -lh .obsidian/themes/Lorekeeper/theme.css`)
 
-- [ ] **Step 6: Compare with Lorekeeper (manual)**
+- [ ] **Step 6: USER CHECKPOINT: compare with Lorekeeper.** An agent stops here and asks the user.
 
 Open the vault from Task 7's demo (or the repo vault) next to `~/Projects/_private_projects/lorekeeper/docs/screenshots/light.jpg` and `dark.jpg`. **Settings > Appearance**: switch **Base color scheme** between Light and Dark. Check:
 1. The parchment page background and the leather sidebar with its dashed seam (Light); stone and gold (Dark).
@@ -2347,7 +2407,7 @@ Install `zenity` (and `xclip` for saving the selection on X11). In your desktop'
 
 In `docs/superpowers/specs/2026-10-10-lorekeeper-obsidian-design.md`, replace `- **macOS:** two Shortcuts in the repo.` with `- **macOS:** two Shortcuts, built from the steps in \`docs/CAPTURE.md\` (an exported Shortcut would hold its author's vault path).`
 
-- [ ] **Step 4: Check it on macOS (manual)**, following `docs/CAPTURE.md` with the repo vault:
+- [ ] **Step 4: USER CHECKPOINT: capture on macOS.** An agent stops here and asks the user to follow `docs/CAPTURE.md` with the repo vault:
 1. In Discord's message box, press `⌘⌥N`, type `!Find the missing miners` and press Enter. Discord keeps focus, and the note is the last line of the newest session.
 2. Select a sentence in Safari and press `⌘⇧S`. The sentence is saved as one line.
 3. With nothing selected, `⌘⇧S` saves the clipboard.
@@ -2436,7 +2496,7 @@ Run before tagging a release, in a fresh copy of the vault (`cp -R` the repo, wi
 Run: `npm test && npm run check:theme && shellcheck _lorekeeper/capture/lk-note scripts/update-plugins.sh`
 Expected: `# fail 0`, no output from the other two
 
-- [ ] **Step 4: Work through `docs/CHECKLIST.md` once**, ticking it in a scratch copy (not in the repo). Report any item that fails, with what happened.
+- [ ] **Step 4: USER CHECKPOINT: work through `docs/CHECKLIST.md` once** in a scratch copy (not in the repo). Report any item that fails, with what happened.
 
 - [ ] **Step 5: Commit**
 
