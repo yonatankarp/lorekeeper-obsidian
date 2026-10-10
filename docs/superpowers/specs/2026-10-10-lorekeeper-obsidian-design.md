@@ -34,7 +34,9 @@ Cheat Sheet.md
 _lorekeeper/
   lib/                pure functions shared by the scripts (tested)
   templates/          session.md (the new-session file, used by both capture paths)
-  scripts/            capture.js  new-page.js  timeline.js  journal.js  coins.js
+  lib/load.js         loads lib/ inside Obsidian (desktop and mobile), since Node's require can't see the vault
+  scripts/            QuickAdd scripts (quick-note, new-session, open-session, new-page, open-cheat-sheet) and the session view
+  scripts/templater/  Templater user scripts (none in v1; the folder must exist)
   bases/              quests.base  npcs.base  sessions.base
   capture/            lk-note (POSIX sh), macOS Shortcuts, Windows AutoHotkey, Linux notes
 .obsidian/
@@ -70,7 +72,7 @@ The behaviour follows Lorekeeper's `docs/GUIDE.md`. The files are designed for O
 - **The next session:** when the last note in the current session is more than 12 hours old, capture offers to start the next one.
 - **Per-author files** `Sessions/Session N/<PC>.md` (with an `author` property) are read by every view, so party play needs no migration. v1 never writes them.
 - **Private notes** (party play, not in v1) will live in one folder per player, `Private/<PC>/`, mirroring the vault inside it (`Private/<PC>/Sessions/Session N.md`, `Private/<PC>/NPCs/…`). One folder per player is what folder-based sharing needs to show a player's private notes to the DM only. The views must not assume `Private/` is absent.
-- **Pages** come from seven templates with the same properties and sections as Lorekeeper's (PC, NPC, Location, Item, Faction, Quest, Lore), written in Templater syntax. Dates are typed date properties. Typed by `type`. Quest `status`: open, in progress, done, failed. NPC `status`: alive, dead, missing, unknown. NPC `attitude`: friendly, neutral, hostile, unknown. Empty means unknown.
+- **Pages** come from seven templates with the same properties and sections as Lorekeeper's (PC, NPC, Location, Item, Faction, Quest, Lore), written in Templater syntax. Dates are typed date properties. Typed by `type`. Quest `status`: open, in progress, done, failed. NPC `condition`: alive, dead, missing, unknown (not `status`: Custom Selectors sets options per property name across the vault, so quests and NPCs can't share one). NPC `attitude`: friendly, neutral, hostile, unknown. Empty means unknown. Pages have no `# title` heading, since Obsidian shows the file name as the title.
 - **Images** go in `Attachments/` and embed as `![[name.png]]`, with an optional `|300` width.
 
 ## Theme
@@ -97,11 +99,12 @@ Obsidian's own layout (tabs, ribbon, status bar) stays. The target is the same b
 
 **From outside Obsidian (the hotkeys).** The system shows its own input box and `_lorekeeper/capture/lk-note` appends the line to the file. Obsidian never takes focus, and it works with Obsidian closed.
 
-- `lk-note [--vault DIR] [--next] TEXT` finds the current session, or starts one from `_lorekeeper/templates/session.md`, and appends `- HH:MM text`. When the last note is over 12 hours old it exits with a distinct code, so the caller can ask "Start Session N+1?" and rerun it with `--next`.
-- **macOS:** two Shortcuts in the repo. **Lorekeeper Note** (`⌘⌥N`) asks for the text. **Lorekeeper Save Selection** (`⌘⇧S`) is a Quick Action that takes the selected text, or the clipboard when there's none.
-- **Windows:** an AutoHotkey v2 script. **Linux:** `zenity` plus the desktop's shortcut settings. Both are untested in v1, and the README says so.
+- `lk-note [--vault DIR] [--next | --here] [--dialog | --stdin | TEXT…]` finds the current session, or starts one from `_lorekeeper/templates/session.md`, and appends `- HH:MM text`. A session counts as quiet when its file hasn't changed in 12 hours, as in Lorekeeper. Then it exits 3 unless `--next` (start the next session) or `--here` (keep this one) says what to do.
+- `--dialog` asks for the note in the system's own box, and asks "Start Session N+1?" when the session is quiet: `osascript` on macOS, `zenity` on Linux. `--stdin` reads the note from standard input, for saving the selection, and asks about a quiet session the same way.
+- **macOS:** two Shortcuts in the repo. **Lorekeeper Note** (`⌘⌥N`) runs `lk-note --dialog`. **Lorekeeper Save Selection** (`⌘⇧S`) is a Quick Action that passes the selected text to `lk-note --stdin`.
+- **Windows:** an AutoHotkey v2 script that asks for the note and runs `lk-note` with Git for Windows' `sh`. **Linux:** the desktop's shortcut settings run `lk-note --dialog`. Both are untested in v1, and the README says so.
 
-**Inside Obsidian.** The QuickAdd command **Lorekeeper: Quick note** (`⌘⌥N` inside Obsidian) runs `capture.js` with the same rules and the same fixtures. It offers `[[` link suggestions if QuickAdd's prompt supports them.
+**Inside Obsidian.** The QuickAdd command **Lorekeeper: Quick note** (`⌘⌥N` inside Obsidian) runs `quick-note.js`. It opens the current session (offering the next one when it's quiet), adds a `- HH:MM ` line at the end and puts the cursor there, so Obsidian's own `[[` suggestions work while you type. **Lorekeeper: New session** starts the next session and opens it.
 
 Not carried over in v1: `↑` to fix the last note, `[[` suggestions in the system input box, and `~` private notes (they are part of party play).
 
@@ -111,7 +114,7 @@ The QuickAdd command **Lorekeeper: New page** (`⌘N`) runs `new-page.js`:
 
 1. Pick a kind. The list is the files in `Templates/`, so a custom `Templates/Monster.md` adds Monster.
 2. Type a name. A name that's taken, or has `/ \ : * ? " < > |`, is refused.
-3. The script creates the page in the kind's folder (a custom kind goes in `Monsters/` or `Monster/` if one exists, else the root), and Templater fills it from the template.
+3. The script asks Templater to create the page from the template in the kind's folder (a custom kind goes in `Monsters/` or `Monster/` if one exists, else the root) and opens it.
 
 **Templater folder templates** map each folder to its template, so a page made any other way in `NPCs/` gets the NPC template too. **Clicking a link to a page that doesn't exist yet** creates an empty note at the root. Templater's on-create trigger runs the kind picker, which fills the note and moves it.
 
@@ -124,11 +127,10 @@ Taken from Obsidian as is: **Rename** updates every link (with **Automatically u
 2. **Timeline | Journal**, a toggle. **Timeline** is every note in time order with its time and kind colour, and notes from per-author files show their author. **Journal** is the notes grouped into What happened, NPCs, Loot, Quests, Mysteries and Quotes.
 3. `## Notes`, the raw lines, where you edit.
 
-`session.js` renders this through DataviewJS, using `timeline.js` and `journal.js`. The `lk-session` CSS class styles the page.
+`_lorekeeper/scripts/session.js` renders this through DataviewJS from `lib/notes.js`. Open quests show their reward with coin icons (`lib/coins.js`). The `lk-session` CSS class styles the page.
 
 **`Home.md`:**
 - Bases views of open and in-progress quests with their status, NPCs grouped by attitude in their colours, and recent sessions with their titles.
-- Quest rewards like `25gp` with coin icons (`coins.js`).
 - A **Connections** link to the graph, saved with a filter that hides `Sessions/`.
 
 **`Cheat Sheet.md`** (`⌘/`) lists the note symbols, links and hotkeys of this setup.
@@ -141,7 +143,7 @@ Pinned in `plugin-versions.txt`, with each plugin's `main.js`, `manifest.json`, 
 
 ## Testing
 
-- **Unit (`node --test`):** `_lorekeeper/lib/` covers prefix to kind, line parsing, finding the current session, the 12-hour rule, the session header, the session file, name checks and coin parsing. Lorekeeper's `notes.test.js` and `vault.test.js` are a source of cases for the behaviour.
+- **Unit (`node --test`):** `_lorekeeper/lib/` covers prefix to kind, line parsing (skipping the view block and headings), merging per-author files, finding the current session, the 12-hour rule, the session file, kinds and folders, name checks, coin parsing and the loader. Lorekeeper's `notes.test.js` and `vault.test.js` are a source of cases for the behaviour.
 - **Shell:** `lk-note` against the same fixtures in temp folders, plus `shellcheck`.
 - **CI:** GitHub Actions runs both on every push.
 - **Manual checklist in `docs/CHECKLIST.md`:**
@@ -188,4 +190,5 @@ Every feature in Lorekeeper's `docs/GUIDE.md`, the milestone that delivers it, a
 
 - Four community plugins can change under us. Versions are pinned, and every Obsidian-specific behaviour is a thin wrapper over the tested `lib/`.
 - Obsidian may not load base64 fonts at this size. Fallback: the font stacks Lorekeeper already lists.
-- Templater's on-create trigger and QuickAdd's link suggestions are assumptions. Check both first in the plan, and drop or replace either if it doesn't work.
+- Templater's on-create trigger on a link-created note, and `osascript`'s dialog handing focus back to Discord, are assumptions. The plan checks both early.
+- Custom Selectors is a small plugin (MIT, a handful of stars) that edits Obsidian's DOM. If it breaks, plain text properties still work.
