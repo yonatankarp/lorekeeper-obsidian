@@ -133,3 +133,131 @@ test("text with % and quotes is saved as typed", () => {
   run(dir, ['"50% off," said Vex']);
   assert.ok(lastLine(read(dir, 1)).endsWith(' "50% off," said Vex'));
 });
+
+// Party mode: identity comes from me.tsv in a temp HOME (or --me).
+function partyVault() {
+  const dir = vault();
+  fs.copyFileSync(path.join(ROOT, "_lorekeeper/templates/session-part.md"), path.join(dir, "_lorekeeper/templates/session-part.md"));
+  return dir;
+}
+function runAs(dir, name, args, input, tsv) {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "lk home "));
+  const env = { ...process.env, HOME: home, LK_NO_DIALOG: "1" };
+  delete env.XDG_CONFIG_HOME;
+  const lines = tsv ?? (name == null ? "" : `${dir}\t${name}\n`);
+  if (lines) {
+    fs.mkdirSync(path.join(home, ".config/lorekeeper"), { recursive: true });
+    fs.writeFileSync(path.join(home, ".config/lorekeeper/me.tsv"), lines);
+  }
+  return spawnSync("sh", [SCRIPT, "--vault", dir, ...args], { encoding: "utf8", input, env });
+}
+const rel = (dir, p) => fs.readFileSync(path.join(dir, p), "utf8");
+const agePath = (dir, p, hours) => {
+  const t = Date.now() / 1000 - hours * 3600;
+  fs.utimesSync(path.join(dir, p), t, t);
+};
+
+test("party: a note goes to your own part file, with the view page created", () => {
+  const dir = partyVault();
+  const r = runAs(dir, "Vex Ahlo", ["hello", "there"]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), path.join(dir, "Sessions/Session 1/Vex Ahlo.md"));
+  const part = rel(dir, "Sessions/Session 1/Vex Ahlo.md");
+  assert.match(part, /^---\nsession: 1\ndate: \d{4}-\d{2}-\d{2}\nauthor: "\[\[Vex Ahlo\]\]"\n---\n## Notes\n\n- \d{2}:\d{2} hello there\n$/);
+  assert.match(read(dir, 1), /^---\nsession: 1\n/);
+  assert.equal(read(dir, 1).includes("hello there"), false);
+});
+
+test("party: a ~ note is private and never reaches the part file or the view", () => {
+  const dir = partyVault();
+  assert.equal(runAs(dir, "Vex", ["open"]).status, 0);
+  const r = runAs(dir, "Vex", ["  ~", " the", "secret"]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), path.join(dir, "Private/Vex/Sessions/Session 1.md"));
+  const priv = rel(dir, "Private/Vex/Sessions/Session 1.md");
+  assert.match(priv, /^---\nsession: 1\n[^]*author: "\[\[Vex\]\]"\n---\n## Notes\n\n- \d{2}:\d{2} the secret\n$/);
+  assert.equal(rel(dir, "Sessions/Session 1/Vex.md").includes("secret"), false);
+  assert.equal(read(dir, 1).includes("secret"), false);
+});
+
+test("party: a first ~ note creates the view but no shared part file", () => {
+  const dir = partyVault();
+  assert.equal(runAs(dir, "Vex", ["~ hush"]).status, 0);
+  assert.equal(fs.existsSync(path.join(dir, "Sessions/Session 1.md")), true);
+  assert.equal(fs.existsSync(path.join(dir, "Sessions/Session 1/Vex.md")), false);
+  assert.equal(read(dir, 1).includes("hush"), false);
+});
+
+test("party: ~~ is strikethrough (shared) and a lone ~ is not a note", () => {
+  const dir = partyVault();
+  assert.equal(runAs(dir, "Vex", ["~~wrong~~"]).status, 0);
+  assert.ok(lastLine(rel(dir, "Sessions/Session 1/Vex.md")).endsWith(" ~~wrong~~"));
+  assert.equal(fs.existsSync(path.join(dir, "Private")), false);
+  assert.equal(runAs(dir, "Vex", ["~"]).status, 0);
+  assert.equal(fs.existsSync(path.join(dir, "Private")), false);
+  assert.equal(rel(dir, "Sessions/Session 1/Vex.md").split("\n").filter((l) => LINE.test(l)).length, 1);
+});
+
+test("party: the me.tsv path must match the vault exactly", () => {
+  const dir = partyVault();
+  const real = dir;
+  const r = runAs(dir, null, ["solo note"], undefined, `${real} 2\tVex\n`);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), path.join(dir, "Sessions/Session 1.md"));
+  assert.ok(lastLine(read(dir, 1)).endsWith(" solo note"));
+  const r2 = runAs(dir, null, ["other"], undefined, `${real} 2\tVex\n${real}\tIvo\n`);
+  assert.equal(r2.stdout.trim(), path.join(dir, "Sessions/Session 1/Ivo.md"));
+});
+
+test("party: --me DM writes DM.md with author: DM, and --me \"\" forces solo", () => {
+  const dir = partyVault();
+  const r = runAs(dir, "Vex", ["--me", "DM", "dm note"]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), path.join(dir, "Sessions/Session 1/DM.md"));
+  assert.match(rel(dir, "Sessions/Session 1/DM.md"), /\nauthor: DM\n/);
+  const solo = runAs(dir, "Vex", ["--me", "", "plain"]);
+  assert.equal(solo.stdout.trim(), path.join(dir, "Sessions/Session 1.md"));
+  assert.ok(lastLine(read(dir, 1)).endsWith(" plain"));
+});
+
+test("party: quiet is judged by your own file's age", () => {
+  const dir = partyVault();
+  runAs(dir, "Vex", ["one"]);
+  runAs(dir, "Ivo", ["fresh teammate"]);
+  agePath(dir, "Sessions/Session 1/Vex.md", 13);
+  const r = runAs(dir, "Vex", ["two"]);
+  assert.equal(r.status, 3);
+  assert.match(r.stderr, /Session 1 went quiet/);
+  assert.equal(runAs(dir, "Vex", ["--here", "two"]).status, 0);
+  // never wrote here and nothing fresh anywhere: quiet; a fresh teammate: not quiet
+  const dir2 = partyVault();
+  runAs(dir2, "Ivo", ["x"]);
+  assert.equal(runAs(dir2, "Vex", ["hi"]).status, 0);
+  agePath(dir2, "Sessions/Session 1/Ivo.md", 13);
+  agePath(dir2, "Sessions/Session 1/Vex.md", 13);
+  agePath(dir2, "Sessions/Session 1.md", 13);
+  fs.rmSync(path.join(dir2, "Sessions/Session 1/Vex.md"));
+  assert.equal(runAs(dir2, "Vex", ["hi"]).status, 3);
+});
+
+test("party: --next joins a teammate's fresh session, else starts the next", () => {
+  const dir = partyVault();
+  runAs(dir, "Ivo", ["we begin"]);
+  const r = runAs(dir, "Vex", ["--next", "me too"]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), path.join(dir, "Sessions/Session 1/Vex.md"));
+  const again = runAs(dir, "Vex", ["--next", "new one"]); // you already wrote in 1
+  assert.equal(again.stdout.trim(), path.join(dir, "Sessions/Session 2/Vex.md"));
+  const dir2 = partyVault();
+  runAs(dir2, "Ivo", ["old"]);
+  agePath(dir2, "Sessions/Session 1/Ivo.md", 13);
+  agePath(dir2, "Sessions/Session 1.md", 13);
+  assert.equal(runAs(dir2, "Vex", ["--next"]).status, 0);
+  assert.equal(fs.existsSync(path.join(dir2, "Sessions/Session 2/Vex.md")), true);
+});
+
+test("party: an author name with sed characters is kept as typed", () => {
+  const dir = partyVault();
+  assert.equal(runAs(dir, "Tom & Jerry | Co", ["hi"]).status, 0);
+  assert.match(rel(dir, "Sessions/Session 1/Tom & Jerry | Co.md"), /\nauthor: "\[\[Tom & Jerry \| Co\]\]"\n/);
+});

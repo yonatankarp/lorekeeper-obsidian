@@ -1,8 +1,10 @@
 #!/bin/sh
 # Saves a quick note to the current session, the way Lorekeeper's note box does (see lib/session.js, which matches it).
-#   lk-note [--vault DIR] [--next | --here] [--dialog | --stdin | TEXT...]
+#   lk-note [--vault DIR] [--me NAME] [--next | --here] [--dialog | --stdin | TEXT...]
 # --next starts the next session (with no text: just starts it). --here keeps a quiet session without asking.
 # --dialog asks for the note in a system box; --stdin reads it from standard input.
+# Party play: your name comes from --me (--me "" forces solo) or this vault's line in ~/.config/lorekeeper/me.tsv. Then the
+# note goes to Sessions/Session N/<name>.md, or, when it starts with ~, to Private/<name>/Sessions/Session N.md (lib/party.js).
 # Exit: 0 saved (prints the session's path), 1 cancelled, 2 usage or setup error,
 # 3 the session went quiet (no change in 12 hours) and there's no dialog to ask: rerun with --next or --here.
 set -eu
@@ -10,11 +12,19 @@ set -eu
 vault=${LK_VAULT:-$(cd "$(dirname "$0")/../.." && pwd)}
 mode=args
 quiet=ask
+me=
+me_set=0
 while [ $# -gt 0 ]; do
   case $1 in
     --vault)
       [ $# -ge 2 ] || { echo "lk-note: --vault needs a folder" >&2; exit 2; }
       vault=$2
+      shift 2
+      ;;
+    --me)
+      [ $# -ge 2 ] || { echo "lk-note: --me needs a name" >&2; exit 2; }
+      me=$2
+      me_set=1
       shift 2
       ;;
     --next) quiet=next; shift ;;
@@ -29,6 +39,17 @@ done
 
 template=$vault/_lorekeeper/templates/session.md
 [ -f "$template" ] || { echo "lk-note: $vault isn't a Lorekeeper vault (no _lorekeeper/templates/session.md)" >&2; exit 2; }
+
+if [ "$me_set" = 0 ]; then
+  me_file=${XDG_CONFIG_HOME:-$HOME/.config}/lorekeeper/me.tsv
+  if [ -f "$me_file" ]; then
+    # the vault's absolute path as the app wrote it; also try the symlink-free spelling (macOS /var vs /private/var)
+    for vault_abs in "$(cd "$vault" && pwd)" "$(cd "$vault" && pwd -P)"; do
+      me=$(V=$vault_abs awk -F'\t' '$1 == ENVIRON["V"] {print $2; exit}' "$me_file" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+      [ -z "$me" ] || break
+    done
+  fi
+fi
 
 has_dialog() {
   [ "${LK_NO_DIALOG:-}" != 1 ] && { command -v osascript >/dev/null 2>&1 || command -v zenity >/dev/null 2>&1; }
@@ -88,6 +109,98 @@ case $mode in
 esac
 text=$(printf '%s' "$text" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
 
+# fresh FILE: succeeds when FILE changed within the last 12 hours.
+fresh() {
+  [ -f "$1" ] && [ -z "$(find "$1" -mmin +720)" ]
+}
+
+# others_fresh N NAME: succeeds when a teammate's file in Session N/ is fresh (the page itself counts only when there are
+# no part files at all); sets mine_exists to 1 or 0.
+others_fresh() {
+  mine_exists=0
+  any_other=0
+  found=1
+  for f in "$vault/Sessions/Session $1"/*.md; do
+    [ -f "$f" ] || continue
+    if [ "$f" = "$vault/Sessions/Session $1/$2.md" ]; then
+      mine_exists=1
+    else
+      any_other=1
+      if fresh "$f"; then found=0; fi
+    fi
+  done
+  if [ "$mine_exists" = 0 ] && [ "$any_other" = 0 ] && fresh "$vault/Sessions/Session $1.md"; then found=0; fi
+  return $found
+}
+
+# sed_escape TEXT: TEXT safe inside a s|..|..| replacement.
+sed_escape() {
+  printf '%s' "$1" | sed 's/[\\&|]/\\&/g'
+}
+
+# write_party: the party-mode save (me is set).
+write_party() {
+  is_private=0
+  case $text in
+    '~~'*) ;;
+    '~'*)
+      is_private=1
+      text=$(printf '%s' "${text#\~}" | sed 's/^ //')
+      ;;
+  esac
+  if [ "$quiet" = next ]; then
+    if [ "$n" -eq 0 ]; then
+      n=1
+    elif others_fresh "$n" "$me" && [ "$mine_exists" = 0 ]; then
+      :
+    else
+      n=$((n + 1))
+    fi
+  elif [ -z "$text" ]; then
+    exit 0
+  elif [ "$n" -eq 0 ]; then
+    n=1
+  elif [ "$quiet" = ask ]; then
+    mine="$vault/Sessions/Session $n/$me.md"
+    if [ -f "$mine" ]; then
+      if fresh "$mine"; then is_quiet=0; else is_quiet=1; fi
+    elif others_fresh "$n" "$me"; then
+      is_quiet=0
+    else
+      is_quiet=1
+    fi
+    if [ "$is_quiet" = 1 ]; then
+      if [ "$mode" = args ] || ! has_dialog; then
+        echo "lk-note: Session $n went quiet over 12 hours ago; rerun with --next or --here" >&2
+        exit 3
+      fi
+      if start_next "$n"; then n=$((n + 1)); fi
+    fi
+  fi
+
+  page="$vault/Sessions/Session $n.md"
+  if [ ! -e "$page" ]; then
+    mkdir -p "$vault/Sessions"
+    sed -e "s/{{session}}/$n/g" -e "s/{{date}}/$(date +%Y-%m-%d)/g" "$template" >"$page"
+  fi
+  if [ "$is_private" = 1 ]; then
+    file="$vault/Private/$me/Sessions/Session $n.md"
+  else
+    file="$vault/Sessions/Session $n/$me.md"
+  fi
+  if [ ! -e "$file" ]; then
+    mkdir -p "$(dirname "$file")"
+    if [ "$me" = DM ]; then author=DM; else author="\"[[$me]]\""; fi
+    sed -e "s|{{session}}|$n|g" -e "s|{{date}}|$(date +%Y-%m-%d)|g" -e "s|{{author}}|$(sed_escape "$author")|g" \
+      "$vault/_lorekeeper/templates/session-part.md" >"$file"
+  fi
+  if [ -n "$text" ]; then
+    if [ -s "$file" ] && [ -n "$(tail -c 1 "$file")" ]; then printf '\n' >>"$file"; fi
+    printf '%s\n' "- $(date +%H:%M) $text" >>"$file"
+  fi
+  printf '%s\n' "$file"
+}
+
 latest=0
 for p in "$vault"/Sessions/Session\ *; do
   [ -e "$p" ] || continue
@@ -96,6 +209,12 @@ for p in "$vault"/Sessions/Session\ *; do
   case $n in '' | *[!0-9]*) continue ;; esac
   if [ "$n" -gt "$latest" ]; then latest=$n; fi
 done
+
+if [ -n "$me" ]; then
+  n=$latest
+  write_party
+  exit 0
+fi
 
 n=$latest
 file="$vault/Sessions/Session $n.md"
