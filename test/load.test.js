@@ -57,6 +57,7 @@ test("loads every lib module", async () => {
   assert.equal(typeof lk.pcpage.fillSection, "function");
   assert.equal(typeof lk.pcsync.syncCharacter, "function");
   assert.equal(typeof lk.signin.signIn, "function");
+  assert.equal(typeof lk.party.joinOrNext, "function");
 });
 
 test("io writes through the vault, making folders", async () => {
