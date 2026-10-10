@@ -1,0 +1,125 @@
+#!/bin/sh
+# Saves a quick note to the current session, the way Lorekeeper's note box does (see lib/session.js, which matches it).
+#   lk-note [--vault DIR] [--next | --here] [--dialog | --stdin | TEXT...]
+# --next starts the next session (with no text: just starts it). --here keeps a quiet session without asking.
+# --dialog asks for the note in a system box; --stdin reads it from standard input.
+# Exit: 0 saved (prints the session's path), 1 cancelled, 2 usage or setup error,
+# 3 the session went quiet (no change in 12 hours) and there's no dialog to ask: rerun with --next or --here.
+set -eu
+
+vault=${LK_VAULT:-$(cd "$(dirname "$0")/../.." && pwd)}
+mode=args
+quiet=ask
+while [ $# -gt 0 ]; do
+  case $1 in
+    --vault)
+      [ $# -ge 2 ] || { echo "lk-note: --vault needs a folder" >&2; exit 2; }
+      vault=$2
+      shift 2
+      ;;
+    --next) quiet=next; shift ;;
+    --here) quiet=here; shift ;;
+    --dialog) mode=dialog; shift ;;
+    --stdin) mode=stdin; shift ;;
+    --) shift; break ;;
+    -*) echo "lk-note: unknown option $1" >&2; exit 2 ;;
+    *) break ;;
+  esac
+done
+
+template=$vault/_lorekeeper/templates/session.md
+[ -f "$template" ] || { echo "lk-note: $vault isn't a Lorekeeper vault (no _lorekeeper/templates/session.md)" >&2; exit 2; }
+
+has_dialog() {
+  [ "${LK_NO_DIALOG:-}" != 1 ] && { command -v osascript >/dev/null 2>&1 || command -v zenity >/dev/null 2>&1; }
+}
+
+# ask PROMPT: prints the typed text; fails when cancelled.
+ask() {
+  if command -v osascript >/dev/null 2>&1; then
+    osascript -e 'on run argv' -e 'tell application "System Events"' -e 'activate' \
+      -e 'text returned of (display dialog (item 1 of argv) default answer "" with title "Lorekeeper")' \
+      -e 'end tell' -e 'end run' "$1"
+  else
+    zenity --entry --title=Lorekeeper --text="$1"
+  fi
+}
+
+# front_app: the frontmost app's name on macOS (LK_FRONT_APP overrides it), else nothing.
+front_app() {
+  if [ -n "${LK_FRONT_APP+x}" ]; then
+    printf '%s' "$LK_FRONT_APP"
+  elif command -v osascript >/dev/null 2>&1; then
+    osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null || true
+  fi
+}
+
+# urlencode TEXT: every byte as %XX, which is always a valid URL encoding.
+urlencode() {
+  printf '%s' "$1" | od -An -tx1 -v | tr -d ' \n' | sed 's/../%&/g'
+}
+
+# start_next N: succeeds when the player picks Start Session N+1.
+start_next() {
+  next=$(($1 + 1))
+  if command -v osascript >/dev/null 2>&1; then
+    answer=$(osascript -e 'on run argv' -e 'tell application "System Events"' -e 'activate' \
+      -e 'button returned of (display dialog (item 1 of argv) buttons {(item 2 of argv), (item 3 of argv)} default button 2 with title "Lorekeeper")' \
+      -e 'end tell' -e 'end run' "Session $1 went quiet over 12 hours ago." "Keep Session $1" "Start Session $next") || return 1
+    [ "$answer" = "Start Session $next" ]
+  else
+    zenity --question --title=Lorekeeper --text="Session $1 went quiet over 12 hours ago." \
+      --ok-label="Start Session $next" --cancel-label="Keep Session $1"
+  fi
+}
+
+case $mode in
+  dialog)
+    if [ "$(front_app)" = Obsidian ]; then # the smart hotkey: Quick note inside Obsidian, with [[ suggestions
+      open_cmd=${LK_OPEN:-open}
+      "$open_cmd" "obsidian://quickadd?choice=$(urlencode "Quick note")&vault=$(urlencode "$(basename "$vault")")"
+      exit 0
+    fi
+    has_dialog || { echo "lk-note: --dialog needs osascript (macOS) or zenity (Linux)" >&2; exit 2; }
+    text=$(ask "Note") || exit 1
+    ;;
+  stdin) text=$(cat) ;;
+  *) text="$*" ;;
+esac
+text=$(printf '%s' "$text" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
+
+latest=0
+for p in "$vault"/Sessions/Session\ *; do
+  [ -e "$p" ] || continue
+  n=${p##*/Session }
+  n=${n%.md}
+  case $n in '' | *[!0-9]*) continue ;; esac
+  if [ "$n" -gt "$latest" ]; then latest=$n; fi
+done
+
+n=$latest
+file="$vault/Sessions/Session $n.md"
+if [ "$quiet" = next ]; then
+  n=$((n + 1))
+elif [ -z "$text" ]; then
+  exit 0
+elif [ "$n" -eq 0 ]; then
+  n=1
+elif [ "$quiet" = ask ] && [ -f "$file" ] && [ -n "$(find "$file" -mmin +720)" ]; then
+  if [ "$mode" = args ] || ! has_dialog; then
+    echo "lk-note: Session $n went quiet over 12 hours ago; rerun with --next or --here" >&2
+    exit 3
+  fi
+  if start_next "$n"; then n=$((n + 1)); fi
+fi
+
+file="$vault/Sessions/Session $n.md"
+if [ ! -e "$file" ]; then
+  mkdir -p "$vault/Sessions"
+  sed -e "s/{{session}}/$n/g" -e "s/{{date}}/$(date +%Y-%m-%d)/g" "$template" >"$file"
+fi
+if [ -n "$text" ]; then
+  if [ -s "$file" ] && [ -n "$(tail -c 1 "$file")" ]; then printf '\n' >>"$file"; fi
+  printf '%s\n' "- $(date +%H:%M) $text" >>"$file"
+fi
+printf '%s\n' "$file"
