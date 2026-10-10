@@ -4,6 +4,7 @@
 VAULT := A_MyDocuments "\Lorekeeper"
 SH := "C:\Program Files\Git\bin\sh.exe"
 
+#HotIf !WinActive("ahk_exe Obsidian.exe")
 ^!n:: {  ; Ctrl+Alt+N: the note box
     box := InputBox("Note", "Lorekeeper")
     if (box.Result = "OK" && Trim(box.Value) != "")
@@ -21,6 +22,7 @@ SH := "C:\Program Files\Git\bin\sh.exe"
     if (Trim(text) != "")
         Save(text)
 }
+#HotIf
 
 Save(text, flag := "") {
     tmp := A_Temp "\lorekeeper-note.txt"

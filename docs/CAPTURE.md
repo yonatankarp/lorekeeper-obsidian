@@ -36,7 +36,7 @@ Install [AutoHotkey v2](https://www.autohotkey.com) and [Git for Windows](https:
 
 Install `zenity` (and `xclip` for saving the selection on X11). In your desktop's keyboard settings, add:
 - `Ctrl+Alt+N`: `sh /path/to/vault/_lorekeeper/capture/lk-note --dialog`
-- `Ctrl+Shift+S`: `sh -c 'xclip -o -selection primary | sh /path/to/vault/_lorekeeper/capture/lk-note --stdin'`
+- `Ctrl+Shift+S`: `sh -c '{ xclip -o -selection primary 2>/dev/null || xclip -o -selection clipboard; } | sh /path/to/vault/_lorekeeper/capture/lk-note --stdin'`
 
 ## What lk-note does
 
