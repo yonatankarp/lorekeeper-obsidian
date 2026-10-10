@@ -9,3 +9,4 @@
 - Templater by SilentVoid13, https://github.com/SilentVoid13/Templater
 - Dataview by Michael Brenan, https://github.com/blacksmithgu/obsidian-dataview
 - Custom Selectors by hodie, https://github.com/hodie/obsidian-custom-selectors
+- Supercharged Links by mdelobelle and Emile, https://github.com/mdelobelle/obsidian_supercharged_links (MIT)

@@ -39,3 +39,17 @@ test("styles every class the session view emits", () => {
 test("theme.css is up to date", () => {
   assert.equal(fs.readFileSync(path.join(ROOT, ".obsidian/themes/Lorekeeper/theme.css"), "utf8"), css);
 });
+
+test("status marks and attitude colours, Lorekeeper's rules", () => {
+  for (const sel of ['[data-link-status="done"]', '[data-link-status="failed"]', '[data-link-condition="dead"]',
+    '[data-link-condition="missing"]', '[data-link-attitude="friendly"]', '[data-link-attitude="hostile"]'])
+    assert.ok(css.includes(sel), sel);
+  assert.match(css, /--lk-icon-done: url\("data:image\/svg\+xml,/);
+  assert.match(css, /--lk-icon-failed: url\("data:image\/svg\+xml,/);
+});
+
+test("every marked value is one the dropdowns offer", () => {
+  const sel = Object.fromEntries(JSON.parse(fs.readFileSync(path.join(ROOT, ".obsidian/plugins/custom-selectors/data.json"), "utf8"))
+    .selectors.map((s) => [s.name, s.options]));
+  for (const m of css.matchAll(/\[data-link-(status|condition|attitude)="([^"]+)"\]/g)) assert.ok(sel[m[1]].includes(m[2]), m[0]);
+});

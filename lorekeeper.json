@@ -4,7 +4,8 @@
     "quickadd",
     "templater-obsidian",
     "dataview",
-    "custom-selectors"
+    "custom-selectors",
+    "supercharged-links-obsidian"
   ],
   "files": {
     ".obsidian/app.json": {
@@ -38,7 +39,7 @@
       ]
     },
     ".obsidian/community-plugins.json": {
-      "sha256": "8b3fe550c69c0a012a7d10abb9eab488e37a48f74636f4c3bae8bd9379ad59c9",
+      "sha256": "a2def6ef8b51bef72e07c22d39824c62f83edc8b5caa04ea4e69231550aa3d3e",
       "kind": "shared"
     },
     ".obsidian/core-plugins.json": {
@@ -153,6 +154,36 @@
       "sha256": "9467ef3622cd1137ce5a0148e16de23b9f5be87bc8c204fb6050c48f8f29994d",
       "kind": "managed"
     },
+    ".obsidian/plugins/supercharged-links-obsidian/data.json": {
+      "sha256": "ea7c8e623109d1d671dedab10e834b79db3cfe6afc4870697f079876f911ae0b",
+      "kind": "shared",
+      "keys": [
+        "targetAttributes",
+        "targetTags",
+        "getFromInlineField",
+        "enableTabHeader",
+        "activateSnippet",
+        "enableEditor",
+        "enableFileList",
+        "enableBacklinks",
+        "enableQuickSwitcher",
+        "enableSuggestor",
+        "enableBases",
+        "selectors"
+      ]
+    },
+    ".obsidian/plugins/supercharged-links-obsidian/main.js": {
+      "sha256": "63aed6c9daa8d9ab98d8e52018be96c10d4e5048ce09bb3b9256bd2ed5e49099",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/supercharged-links-obsidian/manifest.json": {
+      "sha256": "9253b010c8aaa1d9b4f7a1e047a0137691c081c88e10911121589213fbffc4fb",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/supercharged-links-obsidian/styles.css": {
+      "sha256": "914fb03b54f4cfbc992d89ecccf883b14289384fb60d25e512a2f4243c70559d",
+      "kind": "managed"
+    },
     ".obsidian/plugins/templater-obsidian/LICENSE": {
       "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
       "kind": "managed"
@@ -187,11 +218,11 @@
       "kind": "managed"
     },
     ".obsidian/themes/Lorekeeper/theme.css": {
-      "sha256": "6a6c878916a18531b0487562991e7ed988843a339274e1ac3816ced8af1e5fae",
+      "sha256": "f61c7181cc8d3942d6afe1ecfc49067b167de280cbbd613409691628465be94f",
       "kind": "managed"
     },
     "CREDITS.md": {
-      "sha256": "63efdff8994e34c57b9ae6eadb7e0bd825d606300ab2432fe6173b845380babf",
+      "sha256": "68e1861785e9f7ccbce9f352a4a670921fe23310e6663449d3c996786a61c3b9",
       "kind": "managed"
     },
     "Cheat Sheet.md": {

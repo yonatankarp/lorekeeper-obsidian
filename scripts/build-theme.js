@@ -33,6 +33,15 @@ function iconCss(paths) {
     .join("\n");
 }
 
+function markCss(paths) {
+  const url = (name) => {
+    if (!paths[name]) throw new Error(`build-theme: no "${name}" icon in theme/upstream/icons.js`);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="black" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${paths[name].replaceAll("currentColor", "black")}</svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  };
+  return `body { --lk-icon-done: ${url("done")}; --lk-icon-failed: ${url("failed")}; }`;
+}
+
 function inlineFonts(css) {
   return css.replace(/url\("fonts\/([^"]+\.woff2)"\)/g, (_, file) => {
     const data = fs.readFileSync(path.join(ROOT, "theme/upstream/fonts", file)).toString("base64");
@@ -50,6 +59,7 @@ function build() {
     `.theme-dark {${dark}\n}`,
     inlineFonts(read("theme/theme.src.css")),
     iconCss(icons(read("theme/upstream/icons.js"))),
+    markCss(icons(read("theme/upstream/icons.js"))),
     "",
   ].join("\n");
 }

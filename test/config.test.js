@@ -49,3 +49,11 @@ test("every built-in template has its folder template", () => {
     assert.ok(pairs.some((p) => p.folder === folders[kind] && p.template === `Templates/${file}`), kind);
   }
 });
+
+test("Supercharged Links watches the three properties, file list on, no generated snippet", () => {
+  const s = json(".obsidian/plugins/supercharged-links-obsidian/data.json");
+  assert.deepEqual(s.targetAttributes, ["status", "condition", "attitude"]);
+  assert.equal(s.enableFileList, true);
+  assert.equal(s.enableBases, true);
+  assert.equal(s.activateSnippet, false);
+});
