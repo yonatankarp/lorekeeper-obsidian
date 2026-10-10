@@ -99,6 +99,26 @@
           }
         ]
       }
+    },
+    {
+      "id": "lk-update",
+      "name": "Update Lorekeeper",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-update-macro",
+        "name": "Update Lorekeeper",
+        "commands": [
+          {
+            "id": "lk-update-script",
+            "name": "update",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/update.js",
+            "settings": {}
+          }
+        ]
+      }
     }
   ],
   "migrations": {

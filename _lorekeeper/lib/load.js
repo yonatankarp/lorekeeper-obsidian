@@ -1,7 +1,7 @@
 // Loads _lorekeeper/lib inside Obsidian, where Node's require can't reach the vault (and mobile has none). Each lib
 // module is CommonJS with no requires of its own. Entry scripts run this file with new Function and await it with app.
 
-const MODULES = ["notes", "session", "pages", "coins", "update"];
+const MODULES = ["notes", "session", "pages", "coins", "update", "updater"];
 
 module.exports = async function lorekeeper(app) {
   const { vault } = app;

@@ -15,7 +15,7 @@ test("session.js compiles the way dv.view compiles it", () => {
   assert.ok(src.includes(BOOT), "uses the load.js boot lines");
 });
 
-for (const name of ["quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js"]) {
+for (const name of ["quick-note.js", "new-session.js", "open-session.js", "new-page.js", "open-cheat-sheet.js", "update.js"]) {
   test(`${name} compiles as a CommonJS module exporting a function`, () => {
     const src = fs.readFileSync(path.join(DIR, name), "utf8");
     const m = { exports: {} };
