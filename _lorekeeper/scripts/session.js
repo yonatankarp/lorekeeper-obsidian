@@ -27,6 +27,8 @@ if (me) {
 }
 const all = notes.mergeWithPrivate(parts, privateParts);
 
+// Dataview can run this view twice at once; the newest render wins.
+dv.container.querySelectorAll(".lk-session-view").forEach((e) => e.remove());
 const root = dv.el("div", "", { cls: "lk-session-view" });
 if (foreign.length)
   dv.el("div", "Other players' private notes are on this device: check your sync setup (docs/PARTY.md).", { container: root, cls: "lk-warning" });

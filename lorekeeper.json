@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "plugins": [
     "quickadd",
     "templater-obsidian",
@@ -9,7 +9,7 @@
   ],
   "files": {
     ".obsidian/app.json": {
-      "sha256": "339eed2eba870398d12bd20b0aa508041581bfe5a195afdc2c69b4c1319e2956",
+      "sha256": "d087f015ee295d2ea3ddad9e6e52710a1a8bb28145a9a41d95a44683f79bd851",
       "kind": "shared",
       "keys": [
         "alwaysUpdateLinks",
@@ -163,10 +163,11 @@
       "kind": "managed"
     },
     ".obsidian/plugins/quickadd/data.json": {
-      "sha256": "e5a71625fcd238ac5d2ce0dc3408c9a94660704eefa2e0dcddee5c8ef5a22d5c",
+      "sha256": "177d4fd3e5b19441715ae202dfcf94ca5e106076f69cb4cefc13502bb91f09d4",
       "kind": "shared",
       "keys": [
         "choices",
+        "version",
         "migrations"
       ]
     },
@@ -246,7 +247,7 @@
       "kind": "managed"
     },
     ".obsidian/themes/Lorekeeper/theme.css": {
-      "sha256": "052d420d20be13b256c73834a3bf3abde3062057f4f7f4e91ba045871c8426fb",
+      "sha256": "8d821983f23beb682722eaa89b9b85a6c311cbd65d9e475f8832bc8f026f783f",
       "kind": "managed"
     },
     "CREDITS.md": {
@@ -430,7 +431,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/session.js": {
-      "sha256": "f865ae2da41142ea4fbb115005130f9b8606e99398e96f30deae92d56ccf5d7a",
+      "sha256": "32ad94e0745936eed5bde8069b65cbca49eee05fe3ab7c7ccb0d9c06669807fb",
       "kind": "managed"
     },
     "_lorekeeper/scripts/update.js": {
@@ -454,7 +455,7 @@
       "kind": "managed"
     },
     "docs/CAPTURE.md": {
-      "sha256": "30f97f4b952771d49c1918d8d357427a27a50b5dc5295daf5740fdc373cc026e",
+      "sha256": "42edb7009370f7fd559c1d7a51b859754f7ce334b91cfa47554e0afc16172773",
       "kind": "managed"
     },
     "docs/DNDBEYOND.md": {

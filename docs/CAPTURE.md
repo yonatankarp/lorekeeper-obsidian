@@ -14,7 +14,7 @@ Allow scripts once: open **Shortcuts**, then **Settings > Advanced** and turn on
    ```
 3. In the shortcut's **Details** (the ⓘ), **Add Keyboard Shortcut** and press `⌘⌥N`.
 
-With Obsidian in front, ⌘⌥N opens **Quick note** inside Obsidian instead of the box. In a shared campaign, with Obsidian in front, ⌘⌥N opens Quick note in your shared file, so a `~` there isn't private: use **Private note** instead.
+With Obsidian in front, ⌘⌥N opens **Quick note** inside Obsidian instead of the box. In a shared campaign that's your shared file, so a `~` there isn't private: use **Private note** instead.
 
 **Save selection (`⌘⇧S`):**
 1. **File > New Shortcut**, named **Lorekeeper Save Selection**. In **Details**, turn on **Use as Quick Action** and **Services Menu**, receiving **Text** from **Any app**. If there's no input: **Get Clipboard**.

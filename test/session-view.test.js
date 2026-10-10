@@ -12,12 +12,24 @@ const VAULT = {
   "Private/Mirela/Sessions/Session 1.md": "- 20:02 mirela secret\n",
 };
 
-async function run(me) {
+function makeContainer() {
+  const c = {
+    children: [],
+    querySelectorAll(sel) {
+      const cls = sel.slice(1);
+      return c.children.filter((o) => o.cls === cls).map((o) => ({ remove() { c.children.splice(c.children.indexOf(o), 1); } }));
+    },
+  };
+  return c;
+}
+
+async function run(me, container = makeContainer(), times = 1) {
   const reads = [];
   const out = [];
-  const el = (tag, text) => {
-    const o = { text, createEl: () => el("x", ""), toggleClass() {}, addEventListener() {}, set hidden(v) {} };
+  const el = (tag, text, opts = {}) => {
+    const o = { text, cls: opts.cls, createEl: () => el("x", ""), toggleClass() {}, addEventListener() {}, set hidden(v) {} };
     out.push(o);
+    if (!opts.container) container.children.push(o);
     return o;
   };
   const app = {
@@ -43,13 +55,15 @@ async function run(me) {
     },
   };
   const dv = {
-    el: (tag, text) => el(tag, text),
+    container,
+    el: (tag, text, opts) => el(tag, text, opts),
     page: () => null,
     pages: () => Object.assign([], { where() { return this; } }),
   };
   const fn = new Function("dv", "input", "app", "localStorage", "(async () => { " + SRC + " })()");
-  const done = fn(dv, { file: "Sessions/Session 1.md" }, app, { getItem: () => null, setItem() {} });
-  await done;
+  const runs = [];
+  for (let i = 0; i < times; i++) runs.push(fn(dv, { file: "Sessions/Session 1.md" }, app, { getItem: () => null, setItem() {} }));
+  await Promise.all(runs);
   await new Promise((r) => setTimeout(r, 20));
   return { reads, text: out.map((o) => String(o.text)).join("\n") };
 }
@@ -68,4 +82,12 @@ test("the DM sees every private note with names and no warning", async () => {
   assert.ok(text.includes("vex secret") && text.includes("mirela secret"));
   assert.ok(text.includes("Vex</span>") && text.includes("Mirela</span>"));
   assert.ok(!text.includes("check your sync setup"));
+});
+
+test("running the view twice into the same container leaves one view", async () => {
+  const container = makeContainer();
+  await run("Vex", container, 2);
+  assert.equal(container.children.filter((o) => o.cls === "lk-session-view").length, 1);
+  await run("Vex", container);
+  assert.equal(container.children.filter((o) => o.cls === "lk-session-view").length, 1);
 });

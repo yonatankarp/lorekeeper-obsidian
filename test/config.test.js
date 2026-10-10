@@ -72,3 +72,13 @@ test("installed.json stays out of the template", () => {
   assert.equal(execFileSync("git", ["ls-files", "_lorekeeper/installed.json"], { cwd: ROOT }).toString(), "");
   assert.ok(fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8").split("\n").includes("_lorekeeper/installed.json"));
 });
+
+test("developer folders are out of search, graph and the quick switcher, and docs/ is not", () => {
+  const filters = json(".obsidian/app.json").userIgnoreFilters;
+  for (const f of ["_lorekeeper/", "test/", "scripts/", "theme/", "docs/superpowers/"]) assert.ok(filters.includes(f), f);
+  assert.ok(!filters.includes("docs/"));
+});
+
+test("QuickAdd knows its version, so a fresh vault shows no release notes", () => {
+  assert.equal(json(".obsidian/plugins/quickadd/data.json").version, json(".obsidian/plugins/quickadd/manifest.json").version);
+});

@@ -1,5 +1,7 @@
 #!/bin/sh
 # Downloads the plugin versions in plugin-versions.txt into .obsidian/plugins/<id>/. Settings (data.json) are kept.
+# When you bump quickadd, also bump "version" in .obsidian/plugins/quickadd/data.json to the same number, or QuickAdd
+# shows its release notes on first open (test/config.test.js checks it).
 set -eu
 cd "$(dirname "$0")/.."
 grep -v '^#' plugin-versions.txt | while read -r id repo version _manifest; do

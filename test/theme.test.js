@@ -93,3 +93,34 @@ test("page link colours leave the file list to its own rules", () => {
         assert.ok(sel.includes(":not(.nav-file-title-content)"), sel);
   }
 });
+
+const rule = (sel) => rules().find((r) => r.selectors.includes(sel));
+
+test("folder kind icons are drawn: the pseudo-element has content", () => {
+  const r = rule(".nav-folder-title[data-path] .nav-folder-title-content::before");
+  assert.ok(r, "rule exists");
+  assert.match(r.body, /content: "";/);
+});
+
+test("status marks sit inline before the name, not in a negative margin that the title clips", () => {
+  const r = rules().find((x) => x.selectors.some((s) => s.startsWith(".nav-file-title-content:is(") && s.endsWith("::before")));
+  assert.ok(r, "rule exists");
+  const margin = r.body.match(/margin:\s*([^;]+);/)[1].trim().split(/\s+/);
+  assert.ok(margin.every((v) => !v.startsWith("-")), margin.join(" "));
+});
+
+test("the padlock is drawn on the private note itself, since Dataview renders spans not paragraphs", () => {
+  const r = rule(".lk-private::before");
+  assert.ok(r, "rule exists");
+  assert.match(r.body, /content: "";/);
+  assert.match(r.body, /--lk-icon-lock/);
+  assert.doesNotMatch(css, /\.lk-private\s*>\s*p/);
+});
+
+test("developer folders are hidden like _lorekeeper, but docs/ stays visible", () => {
+  const r = rules().find((x) => x.body.includes("display: none") && x.selectors.some((s) => s.startsWith(".nav-folder:is(")));
+  assert.ok(r, "hiding rule exists");
+  for (const dir of ["_lorekeeper", "test", "scripts", "theme", "docs/superpowers"])
+    assert.ok(r.selectors[0].includes(`:has(> .nav-folder-title[data-path="${dir}"])`), dir);
+  assert.ok(!r.selectors[0].includes('data-path="docs"'));
+});

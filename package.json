@@ -1,7 +1,7 @@
 {
   "name": "lorekeeper-obsidian",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Lorekeeper's D&D session notes as an Obsidian vault",
   "license": "MIT",
   "engines": { "node": ">=20" },

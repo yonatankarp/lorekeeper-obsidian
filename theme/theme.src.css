@@ -73,11 +73,17 @@
 .mod-left-split :is(.workspace-tab-header-container, .workspace-leaf-content, .nav-header, .view-header) { background: transparent; }
 
 /* The vault's machinery stays out of sight. */
-.nav-folder:has(> .nav-folder-title[data-path="_lorekeeper"]) { display: none; }
+.nav-folder:is(
+  :has(> .nav-folder-title[data-path="_lorekeeper"]),
+  :has(> .nav-folder-title[data-path="test"]),
+  :has(> .nav-folder-title[data-path="scripts"]),
+  :has(> .nav-folder-title[data-path="theme"]),
+  :has(> .nav-folder-title[data-path="docs/superpowers"])
+) { display: none; }
 
 /* Kind icons on the campaign folders (the masks are generated after this file). */
 .nav-folder-title[data-path] .nav-folder-title-content::before {
-  display: inline-block; width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px;
+  content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px;
   background: currentColor; -webkit-mask: none center / contain no-repeat; mask: none center / contain no-repeat;
 }
 .nav-folder-title:not([data-path="PCs"], [data-path="NPCs"], [data-path="Locations"], [data-path="Items"], [data-path="Factions"], [data-path="Quests"], [data-path="Lore"], [data-path="Sessions"], [data-path="Private"]) .nav-folder-title-content::before { display: none; }
@@ -122,7 +128,7 @@ button.mod-cta {
 .lk-time { font-family: var(--font-interface-theme); font-variant-numeric: tabular-nums; color: var(--lk-muted); font-size: 0.85em; margin-right: 0.3em; }
 .lk-author { font-family: var(--font-interface-theme); color: var(--lk-muted); font-size: 0.85em; }
 .lk-author::before { content: "· "; }
-.lk-private > p:first-child::before {
+.lk-private::before {
   content: ""; display: inline-block; width: 0.85em; height: 0.85em; margin-right: 0.35em; vertical-align: -0.1em; color: var(--lk-muted);
   background: currentColor; -webkit-mask: var(--lk-icon-lock) center / contain no-repeat; mask: var(--lk-icon-lock) center / contain no-repeat;
 }
@@ -145,7 +151,7 @@ button.mod-cta {
 /* Status marks (Supercharged Links puts each page's status, condition and attitude on links to it), Lorekeeper's rules.
    On the page: friendly green, hostile red, missing purple. In the file list (leather in Tome, so the side tokens, as in
    Lorekeeper's sidebar): the same colours lightened, and a done or failed quest or a dead NPC dimmed with its check or
-   cross in the indent; the selected row keeps its own colour. */
+   cross before the name; the selected row keeps its own colour. */
 .workspace-leaf-content [data-link-attitude="friendly"]:not(.nav-file-title-content) { color: var(--lk-kind-quest); }
 .workspace-leaf-content [data-link-attitude="hostile"]:not(.nav-file-title-content) { color: color-mix(in srgb, var(--lk-seal-hi), var(--lk-fg) 45%); }
 .workspace-leaf-content [data-link-condition="missing"]:not(.nav-file-title-content) { color: var(--lk-kind-mystery); }
@@ -154,7 +160,7 @@ button.mod-cta {
 .nav-file-title:not(.is-active) > .nav-file-title-content[data-link-condition="missing"] { color: color-mix(in srgb, var(--lk-kind-mystery), var(--lk-side-fg) 50%); }
 .nav-file-title:not(.is-active) > .nav-file-title-content:is([data-link-status="done"], [data-link-status="failed"], [data-link-condition="dead"]) { color: var(--lk-side-muted); }
 .nav-file-title-content:is([data-link-status="done"], [data-link-status="failed"], [data-link-condition="dead"])::before {
-  content: ""; display: inline-block; width: 12px; height: 12px; margin: 0 0.3em 0 -1.4em; vertical-align: -1px;
+  content: ""; display: inline-block; width: 12px; height: 12px; margin: 0 0.3em 0 0; vertical-align: -1px;
   background: currentColor; -webkit-mask: var(--lk-mark) center / contain no-repeat; mask: var(--lk-mark) center / contain no-repeat;
 }
 .nav-file-title-content[data-link-status="done"] { --lk-mark: var(--lk-icon-done); }

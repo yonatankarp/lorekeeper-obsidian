@@ -321,6 +321,7 @@
       }
     }
   ],
+  "version": "2.32.1",
   "migrations": {
     "useQuickAddTemplateFolder": true,
     "incrementFileNameSettingMoveToDefaultBehavior": true,

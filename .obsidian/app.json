@@ -6,5 +6,5 @@
   "useMarkdownLinks": false,
   "showInlineTitle": true,
   "promptDelete": true,
-  "userIgnoreFilters": ["_lorekeeper/"]
+  "userIgnoreFilters": ["_lorekeeper/", "test/", "scripts/", "theme/", "docs/superpowers/"]
 }
