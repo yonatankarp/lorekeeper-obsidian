@@ -170,6 +170,7 @@ Every feature in Lorekeeper's `docs/GUIDE.md`, the milestone that delivers it, a
 | Tome and Dungeon themes, text size | M1 | the theme, Obsidian's font size setting |
 | Several campaigns | M1 | one vault each, Obsidian's vault switcher |
 | Status markers in the file list | M2 | Supercharged Links |
+| Kind colours on note lines while editing | M2 | a CSS snippet if Obsidian exposes the text, else an accepted loss or the plugin decision |
 | `[[` suggestions and `↑` in the system note box | M2 | try a richer input (Raycast extension); else accepted loss |
 | D&D Beyond import | M2 | the third-party D&D Beyond Importer |
 | Backups to a folder, Dropbox, Google Drive or GitHub | M2 | Obsidian Git, or the vault in a cloud drive; documented in the README |
