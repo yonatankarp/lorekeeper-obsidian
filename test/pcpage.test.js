@@ -41,3 +41,26 @@ test("applyCharacter replaces sheet fields, fills player and portrait only when 
   assert.equal(fresh.player, "demus_player");
   assert.ok(!("portrait" in fresh));
 });
+
+const { nameProblem } = require("../_lorekeeper/lib/pages.js");
+
+test("safePageName drops trailing dots and spaces, and every name passes the vault's nameProblem", () => {
+  assert.equal(p.safePageName("Vex.", "Character 6"), "Vex");
+  assert.equal(p.safePageName("Mirela. ", "Character 6"), "Mirela");
+  assert.equal(p.safePageName("...", "Character 6"), "Character 6");
+  for (const raw of ["Vex: the [Bold] #1", "Vex.", "Mirela. ", "...", " . . ", "Ok"]) {
+    const name = p.safePageName(raw, "Character 6");
+    assert.equal(nameProblem(name, []), null, `${JSON.stringify(raw)} -> ${JSON.stringify(name)}`);
+  }
+});
+
+test("fillSection keeps CRLF line endings", () => {
+  assert.equal(p.fillSection("## Appearance\r\n\r\n## Notes\r\n", "Appearance", "Age 52"), "## Appearance\r\n\r\nAge 52\r\n\r\n## Notes\r\n");
+});
+
+test("applyCharacter fills player and portrait when they're null or missing", () => {
+  const fm = { player: null, portrait: null };
+  p.applyCharacter(fm, c, "[[Demus.jpg]]");
+  assert.equal(fm.player, "demus_player");
+  assert.equal(fm.portrait, "[[Demus.jpg]]");
+});

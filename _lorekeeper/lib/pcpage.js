@@ -11,7 +11,7 @@ function pcPageFor(character, notes) {
 }
 
 function safePageName(name, fallback) {
-  const clean = name.replace(/[\\/:*?"<>|#^[\]]/g, " ").replace(/\s+/g, " ").trim().replace(/^\.+\s*/, "");
+  const clean = name.replace(/[\\/:*?"<>|#^[\]]/g, " ").replace(/\s+/g, " ").trim().replace(/^\.+\s*/, "").replace(/[.\s]+$/, "");
   return clean || fallback;
 }
 
