@@ -186,3 +186,27 @@ test("never removes a path the template doesn't own", () => {
   });
   assert.deepEqual(plan, { add: [], replace: [], kept: [], remove: [], merge: [] });
 });
+
+test("hotkeys.json: an edited one is merged, an unedited one replaced, a deleted one stays deleted", () => {
+  const H = ".obsidian/hotkeys.json";
+  const plan = (current, was = "h1") => u.planUpdate({
+    installed: { version: "0.2.0", files: was ? { [H]: was } : {}, plugins: [] }, current, release: rel({ [H]: "h2" }),
+  });
+  assert.ok(u.MERGED.includes(H));
+  assert.deepEqual(plan({ [H]: "edited" }), { add: [], replace: [], kept: [], remove: [], merge: [H] });
+  assert.deepEqual(plan({ [H]: "mine" }, null).merge, [H]); // never installed: the player's, merged
+  assert.deepEqual(plan({ [H]: "h1" }), { add: [], replace: [H], kept: [], remove: [], merge: [] });
+  assert.deepEqual(plan({ [H]: "h2" }), { add: [], replace: [], kept: [], remove: [], merge: [] });
+  assert.deepEqual(plan({}), { add: [], replace: [], kept: [H], remove: [], merge: [] });
+});
+
+test("mergeHotkeys adds the release's commands the vault lacks and never changes the vault's own", () => {
+  const mine = { "quickadd:choice:lk-quick-note": [{ modifiers: ["Mod"], key: "M" }], "editor:insert-link": [], "my:cmd": [{ modifiers: [], key: "F3" }] };
+  const release = {
+    "quickadd:choice:lk-quick-note": [{ modifiers: ["Mod", "Alt"], key: "N" }],
+    "quickadd:choice:lk-line-private": [{ modifiers: ["Mod", "Shift"], key: "P" }],
+    "editor:insert-link": [{ modifiers: ["Mod"], key: "L" }],
+  };
+  assert.deepEqual(u.mergeHotkeys(mine, release), { ...mine, "quickadd:choice:lk-line-private": [{ modifiers: ["Mod", "Shift"], key: "P" }] });
+  assert.deepEqual(u.mergeHotkeys(["not", "an object"], release), release);
+});

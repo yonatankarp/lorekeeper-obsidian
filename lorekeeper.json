@@ -254,7 +254,7 @@
       "kind": "managed"
     },
     "Cheat Sheet.md": {
-      "sha256": "ed37ace9e8b4876fa6cb3a1074f1ba23a5aee4353fa44a42d0b988f22a1bb9d8",
+      "sha256": "4dec07e681270530d8a98868c55b235e8c49b7e2c3e312da72d2b98a30a2a289",
       "kind": "shared"
     },
     "Home.md": {
@@ -362,11 +362,11 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/update.js": {
-      "sha256": "1e4939e91f30aa069811aa03a968c5cc0eb344c908b84e897a9a31404b623f5c",
+      "sha256": "8a4ff93f60cc863082e885edbf5d13bc8074065cbfccfe16524257ebafffe9ba",
       "kind": "managed"
     },
     "_lorekeeper/lib/updater.js": {
-      "sha256": "fed294f2e4ffcca990b5384bbef09d38cafb185f7b1914441eb6bde8e7490a76",
+      "sha256": "5efa3b082160713a9c63075f94d131cf772dbefef6e5ad8c8ef7c431fd881c7d",
       "kind": "managed"
     },
     "_lorekeeper/scripts/check-backup.js": {
@@ -458,7 +458,7 @@
       "kind": "managed"
     },
     "docs/PARTY.md": {
-      "sha256": "606a1e07d8012d87d6f5e84d7777e35bf7730b1e368f08e22ae09d741233c90c",
+      "sha256": "45d75800eac912880672215d46627632b77e26fe64eb561cd78f00c43e969c9a",
       "kind": "managed"
     }
   }

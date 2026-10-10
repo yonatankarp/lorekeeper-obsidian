@@ -104,6 +104,44 @@ test("a clean update merges plugins and QuickAdd, records hashes, asks for reloa
   assert.equal(adapter.order.at(-1), "_lorekeeper/installed.json");
 });
 
+test("an edited hotkeys.json gains the release's new commands and keeps the player's bindings", async () => {
+  const H = ".obsidian/hotkeys.json";
+  const ship = { "quickadd:choice:lk-quick-note": [{ modifiers: ["Mod", "Alt"], key: "N" }], "quickadd:choice:lk-line-private": [{ modifiers: ["Mod", "Shift"], key: "P" }] };
+  const remote = { [H]: JSON.stringify(ship) };
+  const rel = release(remote, []);
+  const was = sha(update.canonical({ "quickadd:choice:lk-quick-note": ship["quickadd:choice:lk-quick-note"] }));
+  const mine = { "quickadd:choice:lk-quick-note": [{ modifiers: ["Mod"], key: "M" }], "my:cmd": [] };
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: { [H]: was }, keys: { [H]: ["quickadd:choice:lk-quick-note"] } }),
+    [H]: JSON.stringify(mine),
+  });
+  const request = fakeRequest({ ...remote, "lorekeeper.json": JSON.stringify(rel) });
+  const prepared = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
+  assert.deepEqual(prepared.plan.merge, [H]);
+  const out = await updater.apply({ adapter, request, subtle: webcrypto.subtle, update, ...prepared });
+  assert.deepEqual(out.failed, []);
+  assert.deepEqual(JSON.parse(adapter.store.get(H)), { ...mine, "quickadd:choice:lk-line-private": ship["quickadd:choice:lk-line-private"] });
+  assert.equal(out.reload, true);
+});
+
+test("an unedited hotkeys.json takes the release's bindings and keeps keys Obsidian added", async () => {
+  const H = ".obsidian/hotkeys.json";
+  const old = { "quickadd:choice:lk-quick-note": [{ modifiers: ["Mod", "Alt"], key: "N" }] };
+  const ship = { ...old, "quickadd:choice:lk-line-private": [{ modifiers: ["Mod", "Shift"], key: "P" }] };
+  const remote = { [H]: JSON.stringify(ship) };
+  const rel = release(remote, []);
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: { [H]: sha(update.canonical(old)) }, keys: { [H]: Object.keys(old) } }),
+    [H]: JSON.stringify({ ...old, "obsidian:added": [] }),
+  });
+  const request = fakeRequest({ ...remote, "lorekeeper.json": JSON.stringify(rel) });
+  const prepared = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
+  assert.deepEqual(prepared.plan.replace, [H]);
+  const out = await updater.apply({ adapter, request, subtle: webcrypto.subtle, update, ...prepared });
+  assert.deepEqual(out.failed, []);
+  assert.deepEqual(JSON.parse(adapter.store.get(H)), { ...ship, "obsidian:added": [] });
+});
+
 test("rawUrl encodes each path segment", () => {
   assert.ok(update.rawUrl(updater.REPO, "v0.2.0", "Cheat Sheet.md").endsWith("/Cheat%20Sheet.md"));
 });

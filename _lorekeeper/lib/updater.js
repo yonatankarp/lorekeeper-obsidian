@@ -130,6 +130,7 @@ async function apply({ adapter, request, subtle, update, tag, release, installed
       const mine = mineText === null ? null : await parse(mineText);
       const merged = !mine ? JSON.parse(theirs)
         : p.endsWith("community-plugins.json") ? update.mergeEnabledPlugins(mine, installed?.plugins ?? [], release.plugins)
+        : p.endsWith("hotkeys.json") ? update.mergeHotkeys(mine, JSON.parse(theirs))
         : update.mergeQuickAdd(mine, JSON.parse(theirs));
       const out = JSON.stringify(merged, null, 2) + "\n";
       if (out === mineText) continue;

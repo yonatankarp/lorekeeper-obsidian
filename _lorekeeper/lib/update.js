@@ -15,7 +15,9 @@ const SHARED = [
   /^Home\.md$/,
   /^Cheat Sheet\.md$/,
 ];
-const MERGED = [".obsidian/community-plugins.json", ".obsidian/plugins/quickadd/data.json"];
+const MERGED = [".obsidian/community-plugins.json", ".obsidian/plugins/quickadd/data.json", ".obsidian/hotkeys.json"];
+// Merged only when the player edited it: an unedited one is replaced like any shared file, a deleted one stays deleted.
+const MERGED_WHEN_EDITED = [".obsidian/hotkeys.json"];
 
 function categorize(path) {
   if (path.endsWith("/.gitkeep")) return null;
@@ -33,12 +35,13 @@ function planUpdate({ installed, current, release }) {
   const edited = (path) => path in current && (!(path in was) || current[path] !== was[path]);
   for (const path of Object.keys(release.files).sort()) {
     const { sha256, kind } = release.files[path];
-    if (MERGED.includes(path)) (path in current ? plan.merge : plan.add).push(path);
+    if (MERGED.includes(path) && !MERGED_WHEN_EDITED.includes(path)) (path in current ? plan.merge : plan.add).push(path);
     else if (!(path in current)) {
       if (kind === "managed" || !(path in was)) plan.add.push(path);
       else plan.kept.push(path); // a shared file the player deleted stays deleted
     } else if (current[path] === sha256) continue;
     else if (kind === "managed" || !edited(path)) plan.replace.push(path);
+    else if (MERGED_WHEN_EDITED.includes(path)) plan.merge.push(path);
     else plan.kept.push(path);
   }
   for (const path of Object.keys(was).sort()) {
@@ -59,6 +62,14 @@ function mergeQuickAdd(current, release) {
   const choices = current.choices.map((c) => (c.id.startsWith("lk-") && theirs.has(c.id) ? theirs.get(c.id) : c));
   for (const c of release.choices) if (!choices.some((x) => x.id === c.id)) choices.push(c);
   return { ...current, choices, migrations: { ...current.migrations, ...release.migrations } };
+}
+
+// Hotkeys: adds the commands the release binds and the vault doesn't mention, never changing the vault's own bindings
+// (an emptied one included).
+function mergeHotkeys(current, release) {
+  if (!current || typeof current !== "object" || Array.isArray(current)) return release;
+  const added = Object.fromEntries(Object.entries(release).filter(([id]) => !(id in current)));
+  return { ...current, ...added };
 }
 
 // A JSON value as text with every object's keys sorted and no whitespace, so formatting never changes its hash.
@@ -97,6 +108,6 @@ const rawUrl = (repo, tag, path) =>
   `https://raw.githubusercontent.com/${repo}/${tag}/${path.split("/").map(encodeURIComponent).join("/")}`;
 
 module.exports = {
-  MERGED, categorize, isSharedJson, planUpdate, mergeEnabledPlugins, mergeQuickAdd,
+  MERGED, categorize, isSharedJson, planUpdate, mergeEnabledPlugins, mergeQuickAdd, mergeHotkeys,
   canonical, jsonView, mergeJson, sha256Hex, rawUrl,
 };

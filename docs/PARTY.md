@@ -30,6 +30,7 @@ Until a character or the DM is picked on a device, that device works as a solo v
 Details worth knowing:
 
 - Quick note opens a line in the editor, so a `~` line typed there stays where it is until you run **Make line private**. A lone `~` isn't a note, and `~~text~~` is strikethrough, not private.
+- If ⌘⇧P (Ctrl+Shift+P) does nothing after updating, set **Make line private** in **Settings > Hotkeys**.
 - **Make line private** on a session page sends the lines to that session's private file. On any other page it uses the latest session and adds a link to the page first, so the note keeps its context. It refuses the properties at the top of a page.
 - **Make private** refuses `Sessions/`, `Templates/` and Lorekeeper's own files.
 - If a page was already pushed to a shared git history (the **Git** backup, for example), making it private doesn't remove it from that history.

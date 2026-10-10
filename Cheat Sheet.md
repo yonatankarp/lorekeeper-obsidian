@@ -30,7 +30,7 @@ Open the command palette with `⌘P` or `Ctrl+P` and type the name (it shows as 
 
 ## Playing with your party
 
-Run **Pick your character** first, on each device. Start a note with `~` in the note box to keep it private. In the editor, use **Make line private**: a `~` line typed in Quick note stays put until you do. See docs/PARTY.md.
+Run **Pick your character** first, on each device. Start a note with `~` in the note box to keep it private. In the editor, use **Make line private**: a `~` line typed in Quick note stays put until you do. If ⌘⇧P (Ctrl+Shift+P) does nothing after updating, set **Make line private** in **Settings > Hotkeys**. See docs/PARTY.md.
 
 ## Links and images
 
