@@ -1,0 +1,6 @@
+{
+  "file-explorer": true, "global-search": true, "switcher": true, "graph": true, "backlink": true,
+  "outgoing-link": true, "properties": true, "page-preview": true, "bookmarks": true, "bases": true,
+  "command-palette": true, "editor-status": true, "word-count": false, "templates": false,
+  "daily-notes": false, "tag-pane": false, "canvas": false, "file-recovery": true, "sync": false
+}

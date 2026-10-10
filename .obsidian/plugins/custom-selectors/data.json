@@ -1,0 +1,7 @@
+{
+  "selectors": [
+    { "name": "status", "options": ["open", "in progress", "done", "failed"], "defaultFirst": true },
+    { "name": "condition", "options": ["alive", "dead", "missing", "unknown"], "defaultFirst": false },
+    { "name": "attitude", "options": ["friendly", "neutral", "hostile", "unknown"], "defaultFirst": false }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "search": "-path:Sessions -path:Templates -path:_lorekeeper -path:Attachments",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": true,
+  "showOrphans": true,
+  "colorGroups": [
+    { "query": "path:NPCs", "color": { "a": 1, "rgb": 1720163 } },
+    { "query": "path:Quests", "color": { "a": 1, "rgb": 2179867 } }
+  ]
+}
