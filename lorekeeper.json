@@ -341,7 +341,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/pcsync.js": {
-      "sha256": "7316e8bca8f4f47690350eabcaf8a0c0c7bbaddec041944e0afad92e43dfca99",
+      "sha256": "d517511e4ca85014ebccefa64e004c119886f6ca397071d4b42a017e294602ef",
       "kind": "managed"
     },
     "_lorekeeper/lib/session.js": {

@@ -13,7 +13,7 @@ const c = { id: 5, name: "Demus", race: "Hill Dwarf", classes: "Fighter (Champio
   url: "https://www.dndbeyond.com/characters/5", background: "Folk Hero", alignment: "", appearance: "Age 52",
   personality: "**Ideals:** Family.", portrait: "https://www.dndbeyond.com/avatars/demus.jpg" };
 
-function fakeApp({ secret, files: initial = {}, fm: initialFm = {}, folders: initialFolders = [] } = {}) {
+function fakeApp({ stale = false, secret, files: initial = {}, fm: initialFm = {}, folders: initialFolders = [] } = {}) {
   const files = new Map(Object.entries(initial));
   const fms = new Map(Object.entries(initialFm));
   const folders = new Set(initialFolders);
@@ -31,12 +31,18 @@ function fakeApp({ secret, files: initial = {}, fm: initialFm = {}, folders: ini
       getMarkdownFiles: () => [...files.keys()].filter((p) => p.endsWith(".md")).map(abstract),
       createFolder: async (p) => { folders.add(p); log.folders.push(p); },
       createBinary: async (p, data) => { files.set(p, data); log.binaries.push([p, data]); },
+      read: async (f) => {
+        const body = files.get(f.path);
+        const fm = fms.get(f.path);
+        if (!fm) return body;
+        return `---\n${Object.entries(fm).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join("\n")}\n---\n${body}`;
+      },
       process: async (f, fn) => { files.set(f.path, fn(files.get(f.path))); },
     },
     fileManager: {
       processFrontMatter: async (f, fn) => { if (!fms.has(f.path)) fms.set(f.path, {}); fn(fms.get(f.path)); },
     },
-    metadataCache: { getFileCache: (f) => (fms.has(f.path) ? { frontmatter: fms.get(f.path) } : null) },
+    metadataCache: { getFileCache: (f) => (stale ? { frontmatter: {} } : fms.has(f.path) ? { frontmatter: fms.get(f.path) } : null) },
   };
   if (secret !== undefined) app.secretStorage = { getSecret: (id) => (id === "lorekeeper-dndbeyond" ? secret : null) };
   return { app, files, fms, folders, log };
@@ -115,12 +121,12 @@ test("savePortrait refusals", async () => {
     { message: "Couldn't download the portrait (404)." });
 });
 
-test("pcNotes lists PCs with their dndbeyond link", () => {
+test("pcNotes lists PCs with their dndbeyond link", async () => {
   const { app } = fakeApp({
     files: { "PCs/Demus.md": "", "PCs/Vex.md": "", "NPCs/Bob.md": "" },
     fm: { "PCs/Demus.md": { dndbeyond: c.url }, "NPCs/Bob.md": { dndbeyond: "x" } },
   });
-  assert.deepEqual(sync.pcNotes(app), [
+  assert.deepEqual(await sync.pcNotes(app), [
     { path: "PCs/Demus.md", dndbeyond: c.url },
     { path: "PCs/Vex.md", dndbeyond: "" },
   ]);
@@ -132,7 +138,7 @@ test("syncCharacter updates an existing page; keeps filled sections; skips a por
     fm: { "PCs/Old Demus.md": { dndbeyond: c.url, portrait: "[[mine.png]]", player: "" } },
   });
   const request = fakeRequest(() => assert.fail("no download"));
-  const notes = sync.pcNotes(app);
+  const notes = await sync.pcNotes(app);
   const res = await sync.syncCharacter(app, { request, lk, templater: null, notes }, c);
   assert.deepEqual(res, { path: "PCs/Old Demus.md", created: false });
   assert.equal(files.get("PCs/Old Demus.md"), "## Appearance\n\nAge 52\n\n## Personality\nAlready here.\n\n## Notes\n");
@@ -150,7 +156,7 @@ test("syncCharacter downloads the portrait when the page has none", async () => 
     fm: { "PCs/Demus.md": { dndbeyond: c.url, portrait: "" } },
   });
   const request = fakeRequest(() => image());
-  const res = await sync.syncCharacter(app, { request, lk, templater: null, notes: sync.pcNotes(app) }, c);
+  const res = await sync.syncCharacter(app, { request, lk, templater: null, notes: await sync.pcNotes(app) }, c);
   assert.deepEqual(res, { path: "PCs/Demus.md", created: false });
   assert.equal(fms.get("PCs/Demus.md").portrait, "[[Demus.jpg]]");
 });
@@ -161,7 +167,7 @@ test("syncCharacter: a portrait failure still updates the page and is reported",
     fm: { "PCs/Demus.md": { dndbeyond: c.url } },
   });
   const request = fakeRequest(() => ({ status: 500, arrayBuffer: new ArrayBuffer(0) }));
-  const res = await sync.syncCharacter(app, { request, lk, templater: null, notes: sync.pcNotes(app) }, c);
+  const res = await sync.syncCharacter(app, { request, lk, templater: null, notes: await sync.pcNotes(app) }, c);
   assert.equal(res.path, "PCs/Demus.md");
   assert.equal(res.created, false);
   assert.equal(res.portraitError, "Couldn't download the portrait (500).");
@@ -195,4 +201,44 @@ test("syncCharacter names a nameless character after its id and fails when the p
   await assert.rejects(
     sync.syncCharacter(app, { request: fakeRequest(() => image()), lk, templater, notes: [] }, { ...c, name: "..." }),
     { message: "Couldn't make the page for Character 5." });
+});
+
+const throwingJson = (status) => {
+  const res = { status };
+  Object.defineProperty(res, "json", { get() { throw new SyntaxError("Unexpected token <"); } });
+  return res;
+};
+
+test("token: a non-JSON body (json getter throws) still gives the right error", async () => {
+  const app = fakeApp({ secret: COOKIE }).app;
+  await assert.rejects(sync.token(app, fakeRequest(() => throwingJson(401)), dndbeyond), { message: dndbeyond.MESSAGES.expired });
+  await assert.rejects(sync.token(app, fakeRequest(() => throwingJson(502)), dndbeyond), { message: "D&D Beyond's sign-in service said: 502" });
+});
+
+test("token: when request itself throws, the message doesn't contain the cookie", async () => {
+  const request = fakeRequest((o) => { throw new Error(`failed ${o.headers.Cookie}`); });
+  await assert.rejects(sync.token(fakeApp({ secret: COOKIE }).app, request, dndbeyond), (e) => !e.message.includes(COOKIE));
+});
+
+test("frontmatterValue", () => {
+  const fv = sync.frontmatterValue;
+  assert.equal(fv('---\ndndbeyond: "https://x/characters/5"\n---\nbody', "dndbeyond"), "https://x/characters/5");
+  assert.equal(fv("---\nportrait: '[[a.png]]'\n---\n", "portrait"), "[[a.png]]");
+  assert.equal(fv("---\nportrait: [[a.png]]\nrace: Elf\n---\n", "portrait"), "[[a.png]]");
+  assert.equal(fv("---\nrace: Elf\ndndbeyond:\n---\n", "dndbeyond"), "");
+  assert.equal(fv("---\nrace: Elf\n---\n", "dndbeyond"), "");
+  assert.equal(fv("dndbeyond: x\nno block", "dndbeyond"), "");
+  assert.equal(fv("---\r\nrace: Elf\r\n---\r\n", "race"), "Elf");
+});
+
+test("re-importing with a stale metadata cache updates one page and makes no duplicate", async () => {
+  const { app, files } = fakeApp({ stale: true, files: { "Templates/PC.md": "tpl" } });
+  const templater = {
+    create_new_note_from_template: async (tpl, folder, name) => { files.set(`${folder.path}/${name}.md`, "## Notes\n"); },
+  };
+  const request = fakeRequest(() => image());
+  const once = async () => sync.syncCharacter(app, { request, lk, templater, notes: await sync.pcNotes(app) }, c);
+  assert.deepEqual(await once(), { path: "PCs/Demus.md", created: true });
+  assert.deepEqual(await once(), { path: "PCs/Demus.md", created: false });
+  assert.ok(!files.has("PCs/Demus 2.md"));
 });

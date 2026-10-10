@@ -15,7 +15,13 @@ async function token(app, request, dndbeyond) {
   } catch {
     throw new Error(dndbeyond.MESSAGES.unreachable);
   }
-  return dndbeyond.tokenFrom(res.status, res.json);
+  let json = null;
+  try {
+    json = res.json; // a getter that throws on a non-JSON body
+  } catch {
+    json = null;
+  }
+  return dndbeyond.tokenFrom(res.status, json);
 }
 
 async function ensureFolder(app, path) {
@@ -42,11 +48,25 @@ async function savePortrait(app, request, dndbeyond, url, stem) {
   return name;
 }
 
-function pcNotes(app) {
-  return app.vault
-    .getMarkdownFiles()
-    .filter((f) => f.path.startsWith("PCs/"))
-    .map((f) => ({ path: f.path, dndbeyond: app.metadataCache.getFileCache(f)?.frontmatter?.dndbeyond ?? "" }));
+// A key's value from the first frontmatter block of a note's text. The metadata cache lags writes, so the file is read.
+function frontmatterValue(text, key) {
+  const block = String(text ?? "").match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1];
+  if (block === undefined) return "";
+  for (const line of block.split(/\r?\n/)) {
+    const m = line.match(/^([^\s:][^:]*):(.*)$/);
+    if (!m || m[1].trim() !== key) continue;
+    const v = m[2].trim();
+    return v.length >= 2 && (v[0] === '"' || v[0] === "'") && v.endsWith(v[0]) ? v.slice(1, -1) : v;
+  }
+  return "";
+}
+
+async function pcNotes(app) {
+  const notes = [];
+  for (const f of app.vault.getMarkdownFiles().filter((f) => f.path.startsWith("PCs/"))) {
+    notes.push({ path: f.path, dndbeyond: frontmatterValue(await app.vault.read(f), "dndbeyond") });
+  }
+  return notes;
 }
 
 // Templater creates the file, and the vault's index can lag behind it.
@@ -77,7 +97,7 @@ async function syncCharacter(app, { request, lk, templater, notes }, c) {
   const file = existing ? app.vault.getAbstractFileByPath(existing) : await createPage(app, templater, lk, c);
   const created = !existing;
   if (!file) throw new Error(`Couldn't find the page ${existing}.`);
-  const current = app.metadataCache.getFileCache(file)?.frontmatter?.portrait;
+  const current = frontmatterValue(await app.vault.read(file), "portrait");
   let portrait = "";
   let portraitError;
   if (!String(current ?? "").trim() && c.portrait) {
@@ -92,4 +112,4 @@ async function syncCharacter(app, { request, lk, templater, notes }, c) {
   return portraitError ? { path: file.path, created, portraitError } : { path: file.path, created };
 }
 
-module.exports = { SECRET_ID, token, savePortrait, syncCharacter, pcNotes };
+module.exports = { SECRET_ID, token, savePortrait, syncCharacter, pcNotes, frontmatterValue };
