@@ -50,7 +50,56 @@ async function addNote(io, path, text, now) {
   return line;
 }
 
+// Party mode: your own file in a shared session. `party` (lib/party.js) is passed in by the caller.
+const PART_TEMPLATE = "_lorekeeper/templates/session-part.md";
+
+const ensureSession = startSession;
+
+async function startPart(io, party, n, name, now, { privateFile = false } = {}) {
+  await startSession(io, n, now);
+  const path = privateFile ? party.privateSessionPath(n, name) : party.partPath(n, name);
+  if (!(await io.exists(path))) {
+    const author = name === party.DM ? party.DM : `"[[${name}]]"`;
+    const text = renderSession(await io.read(PART_TEMPLATE), n, isoDate(now)).replaceAll("{{author}}", author);
+    await io.write(path, text);
+  }
+  return path;
+}
+
+// When each file in Session N/ was last written: yours, and your teammates'. A session with only the page (written
+// before party play) counts as one teammate's file.
+async function partMtimes(io, party, n, name) {
+  const dir = `Sessions/Session ${n}`;
+  const mine = party.partPath(n, name);
+  let mineMtime = null;
+  const othersMtimes = [];
+  for (const file of await io.list(dir)) {
+    if (!file.endsWith(".md")) continue;
+    const p = `${dir}/${file}`;
+    if (p === mine) mineMtime = await io.mtimeMs(p);
+    else othersMtimes.push(await io.mtimeMs(p));
+  }
+  const page = sessionPath(n);
+  if (mineMtime == null && !othersMtimes.length && (await io.exists(page))) othersMtimes.push(await io.mtimeMs(page));
+  return { mine: mineMtime, others: othersMtimes };
+}
+
+async function currentParty(io, party, name, nowMs) {
+  const n = latestSession(await io.list("Sessions"));
+  if (n === 0) return { n: 0, path: null, quiet: false };
+  const { mine, others } = await partMtimes(io, party, n, name);
+  return { n, path: party.partPath(n, name), quiet: party.quietParty({ mineMtime: mine, othersMtimes: others, nowMs }) };
+}
+
+async function newSessionNumber(io, party, name, nowMs) {
+  const n = latestSession(await io.list("Sessions"));
+  if (n === 0) return 1;
+  const { mine, others } = await partMtimes(io, party, n, name);
+  return party.joinOrNext({ n, mine: mine != null, others, nowMs });
+}
+
 module.exports = {
+  PART_TEMPLATE, ensureSession, startPart, currentParty, newSessionNumber,
   TEMPLATE, sessionPath, latestSession, isQuiet, isoDate, clock, noteLine, appendLine, renderSession,
   currentSession, startSession, addNote,
 };

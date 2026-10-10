@@ -1,11 +1,12 @@
-// QuickAdd: Quick note. Opens the current session (offering the next when it went quiet), adds a "- HH:MM " line at
+// QuickAdd: Quick note. Opens the current session, or your own file in it in a shared campaign (offering the next when it went quiet), adds a "- HH:MM " line at
 // the end and puts the cursor on it, so Obsidian's [[ suggestions work while typing.
 module.exports = async ({ app, quickAddApi, obsidian }) => {
   const m = { exports: {} };
   new Function("module", await app.vault.adapter.read("_lorekeeper/lib/load.js"))(m);
-  const { session, io } = await m.exports(app);
+  const { session, party, identity, io } = await m.exports(app);
   const now = new Date();
-  const current = await session.currentSession(io, now.getTime());
+  const name = identity.me(app); // empty = solo: Sessions/Session N.md; a name = your own file in Session N/
+  const current = name ? await session.currentParty(io, party, name, now.getTime()) : await session.currentSession(io, now.getTime());
   let n = current.n || 1;
   if (current.quiet) {
     const next = await quickAddApi
@@ -13,7 +14,7 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
       .catch(() => false);
     if (next) n += 1;
   }
-  const path = await session.startSession(io, n, now);
+  const path = name ? await session.startPart(io, party, n, name, now) : await session.startSession(io, n, now);
   const prefix = `- ${session.clock(now)} `;
   const open = app.workspace.getLeavesOfType("markdown").find((l) => l.view.file?.path === path);
   if (open) {

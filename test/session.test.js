@@ -85,3 +85,88 @@ test("addNote ignores an empty note", async () => {
   assert.equal(await s.addNote(io, p, "   ", AT), null);
   assert.equal(await io.read(p), before);
 });
+
+// Party mode: your own file inside a shared session.
+const party = require("../_lorekeeper/lib/party.js");
+const PART = "_lorekeeper/templates/session-part.md";
+
+function partVault() {
+  const v = vault();
+  fs.copyFileSync(path.join(ROOT, PART), path.join(v.dir, PART));
+  return v;
+}
+const touch = (dir, p, msAgo) => {
+  const t = (AT.getTime() - msAgo) / 1000;
+  fs.utimesSync(path.join(dir, p), t, t);
+};
+
+test("startPart makes the view page and your file, never overwriting", async () => {
+  const { dir, io } = partVault();
+  const p = await s.startPart(io, party, 4, "Vex", AT);
+  assert.equal(p, "Sessions/Session 4/Vex.md");
+  assert.ok(fs.existsSync(path.join(dir, "Sessions/Session 4.md")));
+  assert.equal(await io.read(p), '---\nsession: 4\ndate: 2026-10-10\nauthor: "[[Vex]]"\n---\n## Notes\n\n');
+  await io.write(p, "mine\n");
+  await s.startPart(io, party, 4, "Vex", AT);
+  assert.equal(await io.read(p), "mine\n");
+});
+
+test("startPart writes author DM for the DM", async () => {
+  const { io } = partVault();
+  const p = await s.startPart(io, party, 2, "DM", AT);
+  assert.match(await io.read(p), /\nauthor: DM\n/);
+});
+
+test("startPart can make your private session file", async () => {
+  const { dir, io } = partVault();
+  const p = await s.startPart(io, party, 3, "Vex", AT, { privateFile: true });
+  assert.equal(p, "Private/Vex/Sessions/Session 3.md");
+  assert.match(await io.read(p), /\nauthor: "\[\[Vex\]\]"\n/);
+  assert.ok(fs.existsSync(path.join(dir, "Sessions/Session 3.md")));
+});
+
+test("ensureSession is startSession", async () => {
+  const { io } = partVault();
+  assert.equal(await s.ensureSession(io, 1, AT), "Sessions/Session 1.md");
+});
+
+test("currentParty: nothing yet, then mine and teammates decide quiet", async () => {
+  const { dir, io } = partVault();
+  const now = AT.getTime();
+  assert.deepEqual(await s.currentParty(io, party, "Vex", now), { n: 0, path: null, quiet: false });
+  await s.startPart(io, party, 2, "Halia", AT);
+  touch(dir, "Sessions/Session 2/Halia.md", 1 * 3600e3);
+  // a teammate wrote recently and I haven't: not quiet
+  assert.deepEqual(await s.currentParty(io, party, "Vex", now), { n: 2, path: "Sessions/Session 2/Vex.md", quiet: false });
+  // my own file decides once it exists
+  await s.startPart(io, party, 2, "Vex", AT);
+  touch(dir, "Sessions/Session 2/Vex.md", 13 * 3600e3);
+  assert.equal((await s.currentParty(io, party, "Vex", now)).quiet, true);
+});
+
+test("currentParty: everyone quiet means quiet; a folder-only session isn't", async () => {
+  const { dir, io } = partVault();
+  const now = AT.getTime();
+  await s.startPart(io, party, 2, "Halia", AT);
+  touch(dir, "Sessions/Session 2/Halia.md", 20 * 3600e3);
+  assert.equal((await s.currentParty(io, party, "Vex", now)).quiet, true);
+  fs.mkdirSync(path.join(dir, "Sessions/Session 6"), { recursive: true });
+  assert.deepEqual(await s.currentParty(io, party, "Vex", now), { n: 6, path: "Sessions/Session 6/Vex.md", quiet: true });
+});
+
+test("newSessionNumber joins a session teammates are writing in, else starts the next", async () => {
+  const { dir, io } = partVault();
+  const now = AT.getTime();
+  assert.equal(await s.newSessionNumber(io, party, "Vex", now), 1);
+  await s.startPart(io, party, 2, "Halia", AT);
+  touch(dir, "Sessions/Session 2/Halia.md", 1 * 3600e3);
+  assert.equal(await s.newSessionNumber(io, party, "Vex", now), 2);
+  await s.startPart(io, party, 2, "Vex", AT);
+  touch(dir, "Sessions/Session 2/Vex.md", 1 * 3600e3);
+  assert.equal(await s.newSessionNumber(io, party, "Vex", now), 3);
+  assert.equal(await s.newSessionNumber(io, party, "Halia", now), 3);
+  assert.equal(await s.newSessionNumber(io, party, "Dara", now), 2);
+  touch(dir, "Sessions/Session 2/Halia.md", 13 * 3600e3);
+  touch(dir, "Sessions/Session 2/Vex.md", 13 * 3600e3);
+  assert.equal(await s.newSessionNumber(io, party, "Dara", now), 3);
+});

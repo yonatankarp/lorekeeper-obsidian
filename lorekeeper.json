@@ -353,7 +353,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/session.js": {
-      "sha256": "a1677333355f524270d134d7eb705724b70f7dbd4130155dfaf9c4b944aadd7e",
+      "sha256": "823de6086a9ec316a057a8ce7e25bb350122a9554f8be1ff5ed2d88f1c0719c6",
       "kind": "managed"
     },
     "_lorekeeper/lib/signin.js": {
@@ -393,7 +393,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/new-session.js": {
-      "sha256": "a82b0a18de37b289ae58c17e10a2603e48cfe04924a833d1b0780184049277c5",
+      "sha256": "c8675b61dfda0b0e64827e92c8d69daf3cca8b33e0b115246d4c757b1cb3965d",
       "kind": "managed"
     },
     "_lorekeeper/scripts/open-cheat-sheet.js": {
@@ -409,7 +409,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/quick-note.js": {
-      "sha256": "fca8285768b1152da27218a60ecc697d7409707fb8e14758478ce000dcf46539",
+      "sha256": "8b40de56478a23c075eb2db9439e048659f04593513a1df842aead5d2b6ed356",
       "kind": "managed"
     },
     "_lorekeeper/scripts/session.js": {
