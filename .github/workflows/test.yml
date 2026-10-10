@@ -1,0 +1,15 @@
+name: test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test
+      - run: shellcheck _lorekeeper/capture/lk-note scripts/update-plugins.sh
+        if: hashFiles('_lorekeeper/capture/lk-note') != ''
+      - run: npm run check:theme
+        if: hashFiles('scripts/build-theme.js') != ''

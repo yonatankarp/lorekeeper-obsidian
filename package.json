@@ -1,0 +1,12 @@
+{
+  "name": "lorekeeper-obsidian",
+  "private": true,
+  "description": "Lorekeeper's D&D session notes as an Obsidian vault",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "build:theme": "node scripts/build-theme.js",
+    "check:theme": "node scripts/build-theme.js --check"
+  }
+}
