@@ -1,0 +1,10 @@
+{
+  "quickadd:choice:lk-quick-note": [{ "modifiers": ["Mod", "Alt"], "key": "N" }],
+  "quickadd:choice:lk-current-session": [{ "modifiers": ["Mod"], "key": "J" }],
+  "quickadd:choice:lk-new-page": [{ "modifiers": ["Mod"], "key": "N" }],
+  "quickadd:choice:lk-cheat-sheet": [{ "modifiers": ["Mod"], "key": "/" }],
+  "global-search:open": [{ "modifiers": ["Mod"], "key": "K" }],
+  "editor:insert-link": [],
+  "file-explorer:new-file": [],
+  "editor:toggle-comments": []
+}

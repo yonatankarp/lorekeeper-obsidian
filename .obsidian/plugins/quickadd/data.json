@@ -1,0 +1,121 @@
+{
+  "choices": [
+    {
+      "id": "lk-quick-note",
+      "name": "Quick note",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-quick-note-macro",
+        "name": "Quick note",
+        "commands": [
+          {
+            "id": "lk-quick-note-script",
+            "name": "quick-note",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/quick-note.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-new-session",
+      "name": "New session",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-new-session-macro",
+        "name": "New session",
+        "commands": [
+          {
+            "id": "lk-new-session-script",
+            "name": "new-session",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/new-session.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-current-session",
+      "name": "Current session",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-current-session-macro",
+        "name": "Current session",
+        "commands": [
+          {
+            "id": "lk-current-session-script",
+            "name": "open-session",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/open-session.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-new-page",
+      "name": "New page",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-new-page-macro",
+        "name": "New page",
+        "commands": [
+          {
+            "id": "lk-new-page-script",
+            "name": "new-page",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/new-page.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-cheat-sheet",
+      "name": "Cheat sheet",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-cheat-sheet-macro",
+        "name": "Cheat sheet",
+        "commands": [
+          {
+            "id": "lk-cheat-sheet-script",
+            "name": "open-cheat-sheet",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/open-cheat-sheet.js",
+            "settings": {}
+          }
+        ]
+      }
+    }
+  ],
+  "migrations": {
+    "useQuickAddTemplateFolder": true,
+    "incrementFileNameSettingMoveToDefaultBehavior": true,
+    "consolidateFileExistsBehavior": true,
+    "repairTemplateFileExistsBehavior": true,
+    "mutualExclusionInsertAfterAndWriteToBottomOfFile": true,
+    "setVersionAfterUpdateModalRelease": true,
+    "addDefaultAIProviders": true,
+    "removeMacroIndirection": true,
+    "migrateFileOpeningSettings": true,
+    "backfillFileOpeningDefaults": true,
+    "setProviderModelDiscoveryMode": true,
+    "migrateProviderApiKeysToSecretStorage": true,
+    "migrateToMultipleTemplateFolders": true,
+    "refreshStaleDefaultModelSeeds": true,
+    "pinAiModelRefs": true
+  }
+}
