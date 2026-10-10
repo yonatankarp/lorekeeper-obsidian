@@ -15,6 +15,22 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
   }
   const path = await session.startSession(io, n, now);
   const prefix = `- ${session.clock(now)} `;
+  const open = app.workspace.getLeavesOfType("markdown").find((l) => l.view.file?.path === path);
+  if (open) {
+    // Already open, maybe with unsaved typing: add the line through the editor, never through the file on disk.
+    app.workspace.setActiveLeaf(open, { focus: true });
+    const state = open.getViewState();
+    if (state.state?.mode !== "source" || state.state?.source === false)
+      await open.setViewState({ ...state, state: { ...state.state, mode: "source", source: true } });
+    const editor = open.view.editor;
+    const last = editor.lastLine();
+    const needsNewline = editor.getLine(last) !== "";
+    editor.replaceRange((needsNewline ? "\n" : "") + prefix, { line: last, ch: editor.getLine(last).length });
+    const end = editor.lastLine();
+    editor.setCursor({ line: end, ch: editor.getLine(end).length });
+    editor.focus();
+    return;
+  }
   await io.write(path, session.appendLine(await io.read(path), prefix));
   const fileAt = async (p) => { for (let i = 0; i < 20; i++) { const f = app.vault.getAbstractFileByPath(p); if (f) return f; await new Promise((r) => setTimeout(r, 100)); } return null; };
   const file = await fileAt(path);
