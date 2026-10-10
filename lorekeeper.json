@@ -325,7 +325,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/load.js": {
-      "sha256": "fcc7864b0221697caa0a40771d7daa954c301639e52b088e1c0199866fbe6fb7",
+      "sha256": "320af1b64de7a2884ac74188b8a4610425afc473274ffd320a6db3f60c069037",
       "kind": "managed"
     },
     "_lorekeeper/lib/notes.js": {
@@ -338,6 +338,10 @@
     },
     "_lorekeeper/lib/pcpage.js": {
       "sha256": "9bba70f65c0c2c88c024e10761ed4bc0d4152a16c3d084b7cb930b44c7044f97",
+      "kind": "managed"
+    },
+    "_lorekeeper/lib/pcsync.js": {
+      "sha256": "7316e8bca8f4f47690350eabcaf8a0c0c7bbaddec041944e0afad92e43dfca99",
       "kind": "managed"
     },
     "_lorekeeper/lib/session.js": {
