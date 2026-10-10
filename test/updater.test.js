@@ -245,11 +245,13 @@ test("a fresh clone's unedited shared file is replaced next release", async () =
   const manifest = gitShow("HEAD:lorekeeper.json");
   const files = committed("HEAD");
   const rel = JSON.parse(manifest);
-  rel.version = "0.3.0";
-  const home = files["Home.md"] + "\nNew in 0.3.0.\n";
+  const [major, minor] = rel.version.split(".").map(Number);
+  const next = `${major}.${minor + 1}.0`; // one minor release past the committed one
+  rel.version = next;
+  const home = files["Home.md"] + `\nNew in ${next}.\n`;
   rel.files["Home.md"].sha256 = sha(home);
   const adapter = fakeAdapter({ ...files, "lorekeeper.json": manifest });
-  const request = fakeRequest({ ...files, "Home.md": home, "lorekeeper.json": JSON.stringify(rel) }, "v0.3.0");
+  const request = fakeRequest({ ...files, "Home.md": home, "lorekeeper.json": JSON.stringify(rel) }, `v${next}`);
   const out = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
   assert.deepEqual(out.plan.replace, ["Home.md"]);
   assert.deepEqual(out.plan.kept, []);

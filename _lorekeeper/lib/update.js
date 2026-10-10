@@ -6,7 +6,7 @@ const MANAGED = [
   /^\.obsidian\/themes\/.+/,
   /^\.obsidian\/plugins\/[^/]+\/(main\.js|manifest\.json|styles\.css|LICENSE)$/,
   /^CREDITS\.md$/,
-  /^docs\/(CAPTURE|BACKUP|DNDBEYOND)\.md$/,
+  /^docs\/(CAPTURE|BACKUP|DNDBEYOND|PARTY)\.md$/,
 ];
 const SHARED = [
   /^Templates\/[^/]+\.md$/,

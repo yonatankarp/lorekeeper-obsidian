@@ -27,3 +27,15 @@ Run before tagging a release, in a fresh copy of the vault (`cp -R` the repo, wi
 - [ ] **D&D Beyond import and refresh:** import a public character (its party comes along, each ticked), then **Refresh from D&D Beyond** on its page.
 - [ ] **D&D Beyond sign-in:** **Sign in to D&D Beyond** with a pasted cookie, then import a Campaign Only character; **Sign out of D&D Beyond** makes it say it's private again; a campaign link is refused.
 - [ ] **Mobile (if you sync the vault):** **Update Lorekeeper** and **Import from D&D Beyond** work.
+- [ ] **Two devices, one session:** with two characters picked, both take notes in the same session (Quick note and the note box); the session view shows both, with authors and portraits, and the DM as **DM**.
+- [ ] **`~` notes:** a `~` note from the note box lands in `Private/<you>/Sessions/Session N.md`, without the `~`; a lone `~` adds nothing; `~~text~~` stays shared.
+- [ ] **Make line private:** on a session page and on an NPC page (the link is added), with a selection of several lines; **Moved N notes to your private notes** shows.
+- [ ] **Make line private's `⌘⇧P` doesn't clash with an Obsidian default:** check **Settings > Hotkeys** for another command on `⌘⇧P` or `Ctrl+Shift+P`, and that it runs Make line private in the editor.
+- [ ] **Padlock:** your private notes in the session view show a padlock, on the same line as the note text, in Light and Dark.
+- [ ] **Make private and Make shared:** a page moves in and out of `Private/<you>/`, links follow, Make shared asks first, and Sessions and Templates are refused.
+- [ ] **New page in party mode:** asks **Shared** or **Private**; Esc cancels.
+- [ ] **Pick your character:** per device; the system note box outside Obsidian uses the pick (desktop).
+- [ ] **DM sees private notes (Relay):** share a player's `Private/<name>` with the DM; the DM's session view shows those notes with the player's name and a padlock.
+- [ ] **Misconfiguration warning:** put another player's `Private/<name>/Sessions/Session N.md` in a player's vault: **Other players' private notes are on this device** shows and the notes are hidden.
+- [ ] **Relay setup:** follow docs/PARTY.md with real accounts; two people edit different session files live, and the DM's private folder works.
+- [ ] **Obsidian Sync setup:** exclude `Private` on each device as docs/PARTY.md says; private notes stay on the device that wrote them.

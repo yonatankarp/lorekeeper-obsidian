@@ -5,7 +5,7 @@ const u = require("../_lorekeeper/lib/update.js");
 
 test("categorize follows the spec's lists", () => {
   for (const p of ["_lorekeeper/lib/notes.js", ".obsidian/themes/Lorekeeper/theme.css", ".obsidian/plugins/dataview/main.js",
-    ".obsidian/plugins/templater-obsidian/LICENSE", "CREDITS.md", "docs/CAPTURE.md", "docs/BACKUP.md", "docs/DNDBEYOND.md"])
+    ".obsidian/plugins/templater-obsidian/LICENSE", "CREDITS.md", "docs/CAPTURE.md", "docs/BACKUP.md", "docs/DNDBEYOND.md", "docs/PARTY.md"])
     assert.equal(u.categorize(p), "managed", p);
   for (const p of ["Templates/NPC.md", ".obsidian/plugins/quickadd/data.json", ".obsidian/hotkeys.json", ".obsidian/app.json",
     ".obsidian/appearance.json", ".obsidian/core-plugins.json", ".obsidian/community-plugins.json", ".obsidian/graph.json",

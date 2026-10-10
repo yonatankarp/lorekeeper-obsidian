@@ -23,6 +23,14 @@ Open the command palette with `⌘P` or `Ctrl+P` and type the name (it shows as 
 | **Refresh from D&D Beyond** | Re-reads the open PC page's character |
 | **Sign in to D&D Beyond** | Saves your sign-in cookie, for Campaign Only characters |
 | **Sign out of D&D Beyond** | Removes it |
+| **Pick your character** | Says who you play on this device: a PC, the DM or solo |
+| **Make line private** (`⌘⇧P` / `Ctrl+Shift+P`) | Moves the current line, or the selected lines, to your private notes |
+| **Make private** | Moves the open page to your private folder |
+| **Make shared** | Moves one of your private pages back for the party |
+
+## Playing with your party
+
+Run **Pick your character** first, on each device. Start a note with `~` in the note box to keep it private. In the editor, use **Make line private**: a `~` line typed in Quick note stays put until you do. See docs/PARTY.md.
 
 ## Links and images
 

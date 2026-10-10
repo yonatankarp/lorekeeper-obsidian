@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "plugins": [
     "quickadd",
     "templater-obsidian",
@@ -254,7 +254,7 @@
       "kind": "managed"
     },
     "Cheat Sheet.md": {
-      "sha256": "0043c2b81e6d7992062dbd10137c19b79972e857fdbc16eed7f0f7847245c701",
+      "sha256": "ed37ace9e8b4876fa6cb3a1074f1ba23a5aee4353fa44a42d0b988f22a1bb9d8",
       "kind": "shared"
     },
     "Home.md": {
@@ -362,7 +362,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/update.js": {
-      "sha256": "f52d3139d63c1e8c4a327bba25d408b75b9b149e0cacd3d4176521bb3823b3f3",
+      "sha256": "1e4939e91f30aa069811aa03a968c5cc0eb344c908b84e897a9a31404b623f5c",
       "kind": "managed"
     },
     "_lorekeeper/lib/updater.js": {
@@ -455,6 +455,10 @@
     },
     "docs/DNDBEYOND.md": {
       "sha256": "35a57fc97c7b5d7f3624dcd1d6239039beec63ccba9f4eaaf1f0f7d7aec6c32b",
+      "kind": "managed"
+    },
+    "docs/PARTY.md": {
+      "sha256": "258e6e0e51a57fd84d723555983550605d13fb011ed803615fae6b74f03c6fa7",
       "kind": "managed"
     }
   }

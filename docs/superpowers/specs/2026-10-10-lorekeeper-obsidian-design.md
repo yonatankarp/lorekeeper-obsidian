@@ -179,14 +179,14 @@ Every feature in Lorekeeper's `docs/GUIDE.md`, the milestone that delivers it, a
 | D&D Beyond import | M2 (done) | the third-party D&D Beyond Importer |
 | Backups to a folder, Dropbox, Google Drive or GitHub | M2 (done) | Obsidian Git, or the vault in a cloud drive; documented in the README |
 | Automatic updates | M2 (done) | `scripts/update-plugins.sh` and pulling the template repo; Obsidian updates itself |
-| Sharing with the party, notes with their author | M3 | a shared vault (choose Relay or Obsidian Sync then), per-author capture into `Sessions/Session N/<PC>.md` |
-| Private notes, `~` in the note box | M3 | `Private/<PC>/`, capture routes `~` notes there |
-| Private notes visible to the DM | M3 | share `Private/<PC>/` with the DM (needs folder-level sharing, so Relay) |
-| `~` lines in the editor moving to private notes | M3 | a QuickAdd command on the current line; moving on save is an accepted loss |
-| Sync conflicts | M3 | none with Relay (live merging); Obsidian Sync merges |
+| Sharing with the party, notes with their author | M3 (done) | a shared vault (choose Relay or Obsidian Sync then), per-author capture into `Sessions/Session N/<PC>.md` |
+| Private notes, `~` in the note box | M3 (done) | `Private/<PC>/`, capture routes `~` notes there |
+| Private notes visible to the DM | M3 (done) | share `Private/<PC>/` with the DM (needs folder-level sharing, so Relay) |
+| `~` lines in the editor moving to private notes | M3 (done) | a QuickAdd command on the current line; moving on save is an accepted loss |
+| Sync conflicts | M3 (done) | none with Relay (live merging); Obsidian Sync merges |
 | Roles, invites, online, time zones | none | accepted losses |
 
-**Plugin decision point:** after M2, list what's still missing or clumsy. Write a Lorekeeper Kit plugin only if that list matters more than the cost of maintaining one.
+**Plugin decision point (closed after M3):** no plugin of our own. Revisit only if a gap that needs one comes up.
 
 ## Risks
 
