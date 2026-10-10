@@ -26,7 +26,7 @@ M2 keeps M1's rules: behaviour follows Lorekeeper's `docs/GUIDE.md`, logic lives
 
 Already on the latest version: say so and stop. Offline or GitHub unreachable: say so, change nothing.
 
-**Vaults from before installed.json** (M1 clones): the first update uses the `v0.1.0` manifest as the installed baseline, so an untouched M1 file counts as unedited.
+**Vaults without installed.json:** a clone of v0.2.0 or later uses its own root `lorekeeper.json` (which the updater never writes) as the installed record, and an M1 vault uses the `v0.1.0` baseline manifest, so an untouched file counts as unedited. An installed version at or above the release is up to date: the updater never downgrades.
 
 `planUpdate(installed, current, release)` is a pure function with unit tests; the network and file writes are a thin wrapper. Works on desktop and mobile.
 
