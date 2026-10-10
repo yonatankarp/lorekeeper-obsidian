@@ -23,8 +23,10 @@ module.exports = async function lorekeeper(app) {
     async write(p, text) {
       const file = vault.getAbstractFileByPath(p);
       if (file) return vault.modify(file, text);
+      // The vault's index can lag behind disk (lk-note writes outside Obsidian): create would throw on an existing path.
+      if (await adapter.exists(p)) return adapter.write(p, text);
       const dir = p.split("/").slice(0, -1).join("/");
-      if (dir && !vault.getAbstractFileByPath(dir)) await vault.createFolder(dir);
+      if (dir && !(await adapter.exists(dir))) await vault.createFolder(dir);
       await vault.create(p, text);
     },
     mtimeMs: async (p) => (await adapter.stat(p)).mtime,

@@ -6,14 +6,19 @@ const lorekeeper = require("../_lorekeeper/lib/load.js");
 
 const ROOT = path.join(__dirname, "..");
 
-// A fake Obsidian app: reads lib/ from the repo, keeps written files in memory.
+// A fake Obsidian app: reads lib/ from the repo. `files` and `folders` are what is on disk; `indexed` is what the
+// vault knows about, which can lag behind disk (a file written outside Obsidian, e.g. by lk-note). Like Obsidian,
+// create and createFolder throw when the path exists on disk.
 function fakeApp() {
   const files = new Map();
   const folders = new Set(["Sessions"]);
+  const indexed = new Set(["Sessions"]);
   const created = [];
+  const createdFolders = [];
   const vault = {
     adapter: {
       read: async (p) => (files.has(p) ? files.get(p) : fs.readFileSync(path.join(ROOT, p), "utf8")),
+      write: async (p, text) => files.set(p, text),
       exists: async (p) => files.has(p) || folders.has(p),
       list: async (dir) => ({
         files: [...files.keys()].filter((p) => path.dirname(p) === dir),
@@ -21,12 +26,23 @@ function fakeApp() {
       }),
       stat: async () => ({ mtime: 1000 }),
     },
-    getAbstractFileByPath: (p) => (files.has(p) ? { path: p } : folders.has(p) ? { path: p, children: [] } : null),
+    getAbstractFileByPath: (p) =>
+      !indexed.has(p) ? null : folders.has(p) ? { path: p, children: [] } : { path: p },
     modify: async (f, text) => files.set(f.path, text),
-    create: async (p, text) => (created.push(p), files.set(p, text)),
-    createFolder: async (p) => folders.add(p),
+    create: async (p, text) => {
+      if (files.has(p)) throw new Error("File already exists.");
+      files.set(p, text);
+      indexed.add(p);
+      created.push(p);
+    },
+    createFolder: async (p) => {
+      if (folders.has(p)) throw new Error("Folder already exists.");
+      folders.add(p);
+      indexed.add(p);
+      createdFolders.push(p);
+    },
   };
-  return { app: { vault }, files, folders, created };
+  return { app: { vault }, files, folders, created, createdFolders };
 }
 
 test("loads every lib module", async () => {
@@ -45,6 +61,19 @@ test("io writes through the vault, making folders", async () => {
   assert.deepEqual(created, ["Quests/Find the miners.md"]);
   await io.write("Quests/Find the miners.md", "b");
   assert.equal(files.get("Quests/Find the miners.md"), "b");
+  assert.deepEqual(created, ["Quests/Find the miners.md"]);
+});
+
+test("io.write over a file or folder made outside Obsidian (on disk, not indexed) doesn't throw", async () => {
+  const { app, files, folders, created, createdFolders } = fakeApp();
+  files.set("Sessions/Session 1.md", "old");
+  folders.add("Quests");
+  const { io } = await lorekeeper(app);
+  await io.write("Sessions/Session 1.md", "new");
+  await io.write("Quests/Find the miners.md", "a");
+  assert.equal(files.get("Sessions/Session 1.md"), "new");
+  assert.equal(files.get("Quests/Find the miners.md"), "a");
+  assert.deepEqual(createdFolders, []);
   assert.deepEqual(created, ["Quests/Find the miners.md"]);
 });
 

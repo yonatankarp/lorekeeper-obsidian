@@ -18,7 +18,7 @@ function folderFor(kind, folders) {
 function nameProblem(name, existing) {
   const n = name.trim();
   if (!n) return "Type a name.";
-  if (/[/\\:*?"<>|]/.test(n)) return 'A name can\'t use / \\ : * ? " < > |';
+  if (/[/\\:*?"<>|#^[\]]/.test(n)) return 'A name can\'t use / \\ : * ? " < > | # ^ [ ]';
   if (n.startsWith(".") || n.endsWith(".")) return "A name can't start or end with a dot.";
   const taken = existing.find((e) => e.toLowerCase() === n.toLowerCase());
   return taken ? `There's already a page called ${taken}.` : null;

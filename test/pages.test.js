@@ -20,7 +20,9 @@ test("folderFor: built-in folders, then Monsters or Monster, else the root", () 
 test("nameProblem", () => {
   assert.equal(nameProblem("Mirela", ["Vex"]), null);
   assert.equal(nameProblem("  ", []), "Type a name.");
-  assert.equal(nameProblem("A/B", []), 'A name can\'t use / \\ : * ? " < > |');
+  assert.equal(nameProblem("A/B", []), 'A name can\'t use / \\ : * ? " < > | # ^ [ ]');
+  assert.equal(nameProblem("Item #3", []), 'A name can\'t use / \\ : * ? " < > | # ^ [ ]');
+  assert.equal(nameProblem("Gate [north]", []), 'A name can\'t use / \\ : * ? " < > | # ^ [ ]');
   assert.equal(nameProblem(".hidden", []), "A name can't start or end with a dot.");
   assert.equal(nameProblem("end.", []), "A name can't start or end with a dot.");
   assert.equal(nameProblem("mirela", ["Mirela"]), "There's already a page called Mirela.");
