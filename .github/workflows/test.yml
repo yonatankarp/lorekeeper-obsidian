@@ -13,3 +13,4 @@ jobs:
         if: hashFiles('_lorekeeper/capture/lk-note') != ''
       - run: npm run check:theme
         if: hashFiles('scripts/build-theme.js') != ''
+      - run: npm run check:manifest

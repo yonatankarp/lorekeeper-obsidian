@@ -51,6 +51,7 @@ test("loads every lib module", async () => {
   assert.equal(lk.session.sessionPath(2), "Sessions/Session 2.md");
   assert.equal(typeof lk.pages.nameProblem, "function");
   assert.equal(typeof lk.coins.coinsHtml, "function");
+  assert.equal(typeof lk.update.planUpdate, "function");
 });
 
 test("io writes through the vault, making folders", async () => {

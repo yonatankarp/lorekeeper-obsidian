@@ -1,0 +1,231 @@
+{
+  "version": "0.1.0",
+  "plugins": [
+    "quickadd",
+    "templater-obsidian",
+    "dataview",
+    "custom-selectors"
+  ],
+  "files": {
+    ".obsidian/app.json": {
+      "sha256": "f65e717f0d737bcbfb7336ba36c941a95b0ca2538a7e0c695a15bda5220388b7",
+      "kind": "shared"
+    },
+    ".obsidian/appearance.json": {
+      "sha256": "0f9bd01a5bb7004c80108411ddbce823ce7df02571a37b54709d99909f291a34",
+      "kind": "shared"
+    },
+    ".obsidian/bookmarks.json": {
+      "sha256": "b9d4c29ec4de26c6e41cd959a0203552710efacc62e94a130bd13c9817ceaa45",
+      "kind": "shared"
+    },
+    ".obsidian/community-plugins.json": {
+      "sha256": "768dc952e48b2570cdd3b043229bbc6ce570577b98a2ee4cdeca4da8bf38610d",
+      "kind": "shared"
+    },
+    ".obsidian/core-plugins.json": {
+      "sha256": "a05e5a012ad7cf4629d9dee779f9a165fcbd28f9f05d0afbb408b28b529b653c",
+      "kind": "shared"
+    },
+    ".obsidian/graph.json": {
+      "sha256": "e9e2ec1fd37cc1b3d03047c273e435be9fb2c60835bf018cc1d0ccafed0d7963",
+      "kind": "shared"
+    },
+    ".obsidian/hotkeys.json": {
+      "sha256": "d18081ab02469a0460e80623b97faa6321393ce1f52d5a40082237d55c1c2fb2",
+      "kind": "shared"
+    },
+    ".obsidian/plugins/custom-selectors/data.json": {
+      "sha256": "058c203e710e6b822e54b5778a47c7daa5264b062c37cc7f993666a5600b7e8f",
+      "kind": "shared"
+    },
+    ".obsidian/plugins/custom-selectors/main.js": {
+      "sha256": "149936267083caa25f62335a266df7da5c51854e40cd970943b10e05cf454bd3",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/custom-selectors/manifest.json": {
+      "sha256": "51aa2488f2e33406b4fa644c3194f3b622e4227afd5b771f4e6b69d40f9f8879",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/custom-selectors/styles.css": {
+      "sha256": "44af4fc971b881c8ff2d656da8200b61aaada101b8e42743b8c80c9f8ca4f441",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/dataview/data.json": {
+      "sha256": "f9da0da210daf554bdc74dc798e015cf0bc365856a8c693230969faf5db7a022",
+      "kind": "shared"
+    },
+    ".obsidian/plugins/dataview/main.js": {
+      "sha256": "6bb1cf7010afad830e73575fca0e2bfbd3279c562e3d9d24f2d2f45161eb7d00",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/dataview/manifest.json": {
+      "sha256": "9235db47112da81b85591c79ecb9ae2574e5e72207056e976472f90616286185",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/dataview/styles.css": {
+      "sha256": "3306dd9032e00f989ba7233a37fd255bc4d3f4340cee661762e952f3f6aa1de9",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/quickadd/data.json": {
+      "sha256": "36142db376ab97e95891fbc1ba95593ac39360491244dee2c4709d81f44dfe04",
+      "kind": "shared"
+    },
+    ".obsidian/plugins/quickadd/main.js": {
+      "sha256": "6423b2d14b60bc51fc6b6f61f835e08c5842d28e5a1a43ab5601ccd37b4e44c5",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/quickadd/manifest.json": {
+      "sha256": "b7610b4c1d37c2c73f781c294c1a380e731e797f9858d2d825e7facc1ac3add1",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/quickadd/styles.css": {
+      "sha256": "9467ef3622cd1137ce5a0148e16de23b9f5be87bc8c204fb6050c48f8f29994d",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/templater-obsidian/LICENSE": {
+      "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/templater-obsidian/data.json": {
+      "sha256": "3e6247cae5df6d0fdc925f115552d2aaf4f7ef39b9104953e7ef40128b90e3fc",
+      "kind": "shared"
+    },
+    ".obsidian/plugins/templater-obsidian/main.js": {
+      "sha256": "eb86d9282694ce1f099154c320286fdd89473e60dc2441ee310f3ac331333e94",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/templater-obsidian/manifest.json": {
+      "sha256": "b99280d2c4ab2cd22ad010c12faeedf255bcf385d127d973b89f85deb27d23fd",
+      "kind": "managed"
+    },
+    ".obsidian/plugins/templater-obsidian/styles.css": {
+      "sha256": "67a6dd2d1d6dedca1287c334ca884ec4196433f71ca47388a0bd3eac14cf8b5f",
+      "kind": "managed"
+    },
+    ".obsidian/themes/Lorekeeper/manifest.json": {
+      "sha256": "483351dd12400fd1295117fa3f9ed618c0c6fc020110889618d15f577c5eda07",
+      "kind": "managed"
+    },
+    ".obsidian/themes/Lorekeeper/theme.css": {
+      "sha256": "6a6c878916a18531b0487562991e7ed988843a339274e1ac3816ced8af1e5fae",
+      "kind": "managed"
+    },
+    "CREDITS.md": {
+      "sha256": "63efdff8994e34c57b9ae6eadb7e0bd825d606300ab2432fe6173b845380babf",
+      "kind": "managed"
+    },
+    "Cheat Sheet.md": {
+      "sha256": "f0f5827b723742b352bfc68e9050467407a33cc16f3c0f467c634f4845817e7d",
+      "kind": "shared"
+    },
+    "Home.md": {
+      "sha256": "260f6f700b805af8cf35e6c71edc8759f89358204d023d12c5b907e14693223c",
+      "kind": "shared"
+    },
+    "Templates/Faction.md": {
+      "sha256": "1eda7eab617242b220001dc33e90bd70372490f4b8e9669b4ac63b3b3aaf4a65",
+      "kind": "shared"
+    },
+    "Templates/Item.md": {
+      "sha256": "243616944a794d881c78937a5531558eda95b3fc641c97293bc291e682ea32f0",
+      "kind": "shared"
+    },
+    "Templates/Location.md": {
+      "sha256": "2af49d1e171d13dffb0340d6ca65e9d99509cf15797e75cbc130e3424de706e4",
+      "kind": "shared"
+    },
+    "Templates/Lore.md": {
+      "sha256": "eeba41659bb6ccb7e20bde67d2c6ff6566646fb41f9d86f893e2e94ba2b4aef5",
+      "kind": "shared"
+    },
+    "Templates/NPC.md": {
+      "sha256": "5533f793aac0e0dacf0b399e4ed8c3974ea78c7577c8e57a11c3725d26f4d36f",
+      "kind": "shared"
+    },
+    "Templates/PC.md": {
+      "sha256": "4e47be3984dc109939afdcf2d0bbb6b094ffb6f93fafa09c29a1fba21879fd06",
+      "kind": "shared"
+    },
+    "Templates/Quest.md": {
+      "sha256": "10b671b53a322b77a214b7a347e97f8f7d6dfa4d12a2e7a2d0d6c83f9f64756f",
+      "kind": "shared"
+    },
+    "_lorekeeper/bases/npcs.base": {
+      "sha256": "7db5b414c472bbf13c1de53b53cb22f475eb8a1071776c9d2a85811e28b86ced",
+      "kind": "managed"
+    },
+    "_lorekeeper/bases/quests.base": {
+      "sha256": "508ff1bf4d49bfa90568c7d0b3696bae991f5960ea6a4099c434632eac017f92",
+      "kind": "managed"
+    },
+    "_lorekeeper/bases/sessions.base": {
+      "sha256": "a547a8ab7e68a50618c568e4aa24068bd7b0d7c5c16f62ed1419ae1967465cfd",
+      "kind": "managed"
+    },
+    "_lorekeeper/capture/lk-note": {
+      "sha256": "d4accac6c9d6bf1e095c254a935606e9daebca73d0d4aa58eb4d0f9866e52f3e",
+      "kind": "managed"
+    },
+    "_lorekeeper/capture/windows/lorekeeper.ahk": {
+      "sha256": "f5fc9b6673d2f3b51dc85c7b4da7d81dbb7a141e52e3419abe72aacf405c1deb",
+      "kind": "managed"
+    },
+    "_lorekeeper/lib/coins.js": {
+      "sha256": "0766366f067421999f809b85218cde86e1af55afdb1adc825d4cb5b1be3c4017",
+      "kind": "managed"
+    },
+    "_lorekeeper/lib/load.js": {
+      "sha256": "49827dfb0f2ac606723f78574eb68d4dcf9c9faaae0fbddef6073fc39bb12f0c",
+      "kind": "managed"
+    },
+    "_lorekeeper/lib/notes.js": {
+      "sha256": "794e36eccb0ab906cf3f3d26af23f1b65db6c6ac04c5d7ac2b8499264c3ec6d4",
+      "kind": "managed"
+    },
+    "_lorekeeper/lib/pages.js": {
+      "sha256": "4e771b2615d2a0a707f1a772ec9a95c5e9eef42e10e79e7994f1799d918832a9",
+      "kind": "managed"
+    },
+    "_lorekeeper/lib/session.js": {
+      "sha256": "a1677333355f524270d134d7eb705724b70f7dbd4130155dfaf9c4b944aadd7e",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/new-page.js": {
+      "sha256": "e7d916048c59c390a35c6efdf4553787f0243a2d3ed7558783f887e272b0d60c",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/new-session.js": {
+      "sha256": "a82b0a18de37b289ae58c17e10a2603e48cfe04924a833d1b0780184049277c5",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/open-cheat-sheet.js": {
+      "sha256": "58df1e92302a562c770933052d5dde3b9796b34ca2da1841dfdf4643a00a8bdd",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/open-session.js": {
+      "sha256": "b44a342efd862f51e8ed1f961053d67b44bfcd63e2a05980c3f004dff52691dc",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/quick-note.js": {
+      "sha256": "fca8285768b1152da27218a60ecc697d7409707fb8e14758478ce000dcf46539",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/session.js": {
+      "sha256": "e6aa89a378c8c35134beac80e7c62332f86c4d41de9693fb3a122bc43ccbddaf",
+      "kind": "managed"
+    },
+    "_lorekeeper/templates/pick-kind.md": {
+      "sha256": "7fee70163c60662d88c25199f56ae8269e5b60515b36ac0c166fd597259126bc",
+      "kind": "managed"
+    },
+    "_lorekeeper/templates/session.md": {
+      "sha256": "38b70d9d603a76be18382d3c1dc698cb402637f9e2082bf5657d744ff3445e3c",
+      "kind": "managed"
+    },
+    "docs/CAPTURE.md": {
+      "sha256": "018b4f65f74197b03dd1a7a196039f7318a5c2507bf65558922bfbe5826185b2",
+      "kind": "managed"
+    }
+  }
+}
