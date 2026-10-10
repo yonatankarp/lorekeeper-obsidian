@@ -62,3 +62,29 @@ test("every ⌘ or F2 row in the cheat sheet's In Obsidian table is bound or an 
     assert.ok(bound.has(canon) || DEFAULTS.has(canon), `${span} is neither bound nor a default`);
   }
 });
+
+// Runs a QuickAdd script with a fake lk: load.js is swapped for one that hands back globalThis.__lk.
+async function runScript(name, { lk, app = {}, quickAddApi = {} }) {
+  const notices = [];
+  const obsidian = { Notice: class { constructor(m) { notices.push(m); } }, requestUrl: async () => { throw new Error("no network in tests"); } };
+  const src = fs.readFileSync(path.join(DIR, name), "utf8");
+  const m = { exports: {} };
+  new Function("module", "exports", src)(m, m.exports);
+  globalThis.__lk = lk;
+  const adapter = { read: async (p) => (p === "_lorekeeper/lib/load.js" ? "module.exports = async () => globalThis.__lk;" : ""), ...app.vault?.adapter };
+  await m.exports({ app: { ...app, vault: { ...app.vault, adapter } }, quickAddApi, obsidian });
+  delete globalThis.__lk;
+  return notices;
+}
+
+test("update.js names each failed file and why", async () => {
+  const lk = {
+    update: {},
+    updater: {
+      prepare: async () => ({ release: { version: "0.3.0" }, plan: { add: [], replace: ["Home.md"], remove: [], merge: [], kept: [] } }),
+      apply: async () => ({ written: [], reload: false, failed: [{ path: "Home.md", reason: "couldn't download" }, { path: ".obsidian/app.json", reason: "isn't valid JSON" }] }),
+    },
+  };
+  const notices = await runScript("update.js", { lk, quickAddApi: { yesNoPrompt: async () => true } });
+  assert.deepEqual(notices, ["Some files didn't update: Home.md (couldn't download), .obsidian/app.json (isn't valid JSON). Run Update Lorekeeper again."]);
+});

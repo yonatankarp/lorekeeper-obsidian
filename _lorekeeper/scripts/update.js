@@ -24,7 +24,7 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
   } catch (e) {
     return new obsidian.Notice(`Couldn't finish the update: ${e.message}. Run Update Lorekeeper again.`, 0);
   }
-  if (out.failed.length) return new obsidian.Notice(`Some files didn't update: ${out.failed.join(", ")}. Run Update Lorekeeper again.`, 0);
+  if (out.failed.length) return new obsidian.Notice(`Some files didn't update: ${out.failed.map((f) => `${f.path} (${f.reason})`).join(", ")}. Run Update Lorekeeper again.`, 0);
   new obsidian.Notice(`Updated to v${release.version}.`);
   if (out.reload && (await quickAddApi.yesNoPrompt("Reload Obsidian?", "Plugins or the theme changed. Reload to use them.").catch(() => false)))
     app.commands.executeCommandById("app:reload");

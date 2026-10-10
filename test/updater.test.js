@@ -71,7 +71,7 @@ test("writes installed.json last and skips files that fail their hash", async ()
   const request = fakeRequest({ ...remote, "lorekeeper.json": JSON.stringify(rel) });
   const prepared = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
   const out = await updater.apply({ adapter, request, subtle: webcrypto.subtle, update, ...prepared });
-  assert.deepEqual(out.failed, [".obsidian/plugins/x/main.js"]);
+  assert.deepEqual(out.failed, [{ path: ".obsidian/plugins/x/main.js", reason: "download didn't match" }]);
   assert.ok(!adapter.store.has(".obsidian/plugins/x/main.js"));
   assert.equal(adapter.store.get("Cheat Sheet.md"), "c2");
   assert.equal(JSON.parse(adapter.store.get("_lorekeeper/installed.json")).version, "0.1.0"); // not advanced
@@ -176,7 +176,7 @@ test("a tampered merge download fails and installed.json doesn't advance", async
     ".obsidian/community-plugins.json": JSON.stringify(["x"]),
   });
   const { out } = await run(adapter, remote, { ...rel, tag: "v0.2.0" });
-  assert.deepEqual(out.failed, [".obsidian/community-plugins.json"]);
+  assert.deepEqual(out.failed, [{ path: ".obsidian/community-plugins.json", reason: "download didn't match" }]);
   assert.equal(JSON.parse(adapter.store.get("_lorekeeper/installed.json")).version, "0.1.0");
 });
 
@@ -187,7 +187,7 @@ test("a throwing remove is reported as failed", async () => {
   });
   adapter.remove = async () => { throw new Error("locked"); };
   const { out } = await run(adapter, {}, { ...release({}, []), tag: "v0.2.0" });
-  assert.deepEqual(out.failed, ["_lorekeeper/lib/old.js"]);
+  assert.deepEqual(out.failed, [{ path: "_lorekeeper/lib/old.js", reason: "couldn't remove" }]);
   assert.equal(JSON.parse(adapter.store.get("_lorekeeper/installed.json")).version, "0.1.0");
 });
 
@@ -210,4 +210,93 @@ test("an identical merge is not rewritten", async () => {
   const { out } = await run(adapter, remote, { ...release(remote, ["a"]), tag: "v0.2.0" });
   assert.deepEqual(out.written, []);
   assert.equal(out.reload, false);
+});
+
+// The real committed files, read from git (the working tree can hold the player's uncommitted settings).
+const { execFileSync } = require("node:child_process");
+const path = require("node:path");
+const { filesAt } = require("../scripts/make-manifest.js");
+const ROOT = path.join(__dirname, "..");
+const gitShow = (spec) => execFileSync("git", ["show", spec], { cwd: ROOT, maxBuffer: 1 << 28 }).toString("utf8");
+const committed = (ref) => Object.fromEntries(filesAt(ref).map(({ path: p, text }) => [p, text.toString("utf8")]));
+
+test("toInstalled converts a manifest-shaped record and leaves a flat one alone", () => {
+  assert.equal(updater.toInstalled(null), null);
+  const manifest = {
+    version: "0.2.0", plugins: ["quickadd"],
+    files: { "Home.md": { sha256: "aa", kind: "shared" }, ".obsidian/app.json": { sha256: "bb", kind: "shared", keys: ["x"] } },
+  };
+  assert.deepEqual(updater.toInstalled(manifest), {
+    version: "0.2.0", plugins: ["quickadd"], files: { "Home.md": "aa", ".obsidian/app.json": "bb" }, keys: { ".obsidian/app.json": ["x"] },
+  });
+  const flat = { version: "0.1.0", plugins: [], keys: { "a.json": ["k"] }, files: { "Home.md": "aa" } };
+  assert.equal(updater.toInstalled(flat), flat);
+});
+
+test("a fresh clone is up to date", async () => {
+  const manifest = gitShow("HEAD:lorekeeper.json");
+  const adapter = fakeAdapter({ ...committed("HEAD"), "lorekeeper.json": manifest });
+  const request = fakeRequest({ "lorekeeper.json": manifest }, `v${JSON.parse(manifest).version}`);
+  const out = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
+  assert.equal(out.latest, true);
+});
+
+test("a fresh clone's unedited shared file is replaced next release", async () => {
+  const manifest = gitShow("HEAD:lorekeeper.json");
+  const files = committed("HEAD");
+  const rel = JSON.parse(manifest);
+  rel.version = "0.3.0";
+  const home = files["Home.md"] + "\nNew in 0.3.0.\n";
+  rel.files["Home.md"].sha256 = sha(home);
+  const adapter = fakeAdapter({ ...files, "lorekeeper.json": manifest });
+  const request = fakeRequest({ ...files, "Home.md": home, "lorekeeper.json": JSON.stringify(rel) }, "v0.3.0");
+  const out = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
+  assert.deepEqual(out.plan.replace, ["Home.md"]);
+  assert.deepEqual(out.plan.kept, []);
+  assert.deepEqual(out.plan.add, []);
+  assert.deepEqual(out.plan.remove, []);
+});
+
+test("an untouched v0.1.0 vault replaces Cheat Sheet.md", async () => {
+  const old = committed("71dc24b");
+  assert.ok(!("lorekeeper.json" in old) && !("_lorekeeper/installed.json" in old));
+  const now = committed("HEAD");
+  assert.notEqual(old["Cheat Sheet.md"], now["Cheat Sheet.md"]);
+  const manifest = gitShow("HEAD:lorekeeper.json");
+  const adapter = fakeAdapter({ ...old, "_lorekeeper/baselines/v0.1.0.json": gitShow("HEAD:_lorekeeper/baselines/v0.1.0.json") });
+  const request = fakeRequest({ ...now, "lorekeeper.json": manifest }, `v${JSON.parse(manifest).version}`);
+  const out = await updater.prepare({ adapter, request, subtle: webcrypto.subtle, update });
+  assert.ok(out.plan.replace.includes("Cheat Sheet.md"));
+  assert.ok(!out.plan.kept.includes("Cheat Sheet.md"));
+  assert.deepEqual(out.plan.kept, []);
+});
+
+test("never downgrades: an installed version newer than the release is up to date", async () => {
+  const rel = { ...release({ "Home.md": "h" }, []), version: "0.2.0" };
+  const adapter = fakeAdapter({ "_lorekeeper/installed.json": JSON.stringify({ version: "0.3.0", files: {}, plugins: [] }), "Home.md": "x" });
+  const out = await updater.prepare({ adapter, request: fakeRequest({ "lorekeeper.json": JSON.stringify(rel) }), subtle: webcrypto.subtle, update });
+  assert.deepEqual(out, { latest: true, version: "0.3.0" });
+  const ten = fakeAdapter({ "_lorekeeper/installed.json": JSON.stringify({ version: "0.10.0", files: {}, plugins: [] }) });
+  const out2 = await updater.prepare({ adapter: ten, request: fakeRequest({ "lorekeeper.json": JSON.stringify({ ...rel, version: "0.9.0" }) }), subtle: webcrypto.subtle, update });
+  assert.equal(out2.latest, true);
+});
+
+test("a failed file says why: invalid JSON, a missing download", async () => {
+  const qa = JSON.stringify({ choices: [{ id: "lk-update", name: "Update Lorekeeper" }], migrations: {} });
+  const remote = { ".obsidian/plugins/quickadd/data.json": qa, ".obsidian/appearance.json": JSON.stringify({ theme: "y" }), "Templates/A.md": "a" };
+  const rel = { ...release(remote, []), tag: "v0.2.0" };
+  const adapter = fakeAdapter({
+    "_lorekeeper/installed.json": JSON.stringify({ version: "0.1.0", plugins: [], files: { ".obsidian/appearance.json": sha("{ broken") } }),
+    ".obsidian/plugins/quickadd/data.json": "{ not json",
+    ".obsidian/appearance.json": "{ broken",
+  });
+  const served = { ...remote };
+  delete served["Templates/A.md"];
+  const { out } = await run(adapter, served, rel);
+  assert.deepEqual(out.failed, [
+    { path: "Templates/A.md", reason: "couldn't download" },
+    { path: ".obsidian/appearance.json", reason: "isn't valid JSON" },
+    { path: ".obsidian/plugins/quickadd/data.json", reason: "isn't valid JSON" },
+  ]);
+  assert.equal(adapter.store.get(".obsidian/plugins/quickadd/data.json"), "{ not json");
 });
