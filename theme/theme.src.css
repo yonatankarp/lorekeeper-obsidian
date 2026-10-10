@@ -132,16 +132,20 @@ button.mod-cta {
 .lk-coin-sp { --c: #b8bec4; }
 .lk-coin-cp { --c: #b06b3a; }
 
-/* Status marks (Supercharged Links puts each page's status, condition and attitude on links to it), Lorekeeper's rules:
-   friendly green, hostile red, missing purple; a done or failed quest or a dead NPC dimmed, its check or cross in the
-   indent of the file list. */
-[data-link-attitude="friendly"] { color: var(--lk-kind-quest); }
-[data-link-attitude="hostile"] { color: color-mix(in srgb, var(--lk-seal-hi), var(--lk-fg) 45%); }
-[data-link-condition="missing"] { color: var(--lk-kind-mystery); }
-.nav-file-title-content:is([data-link-status="done"], [data-link-status="failed"], [data-link-condition="dead"]) { color: var(--lk-muted); }
+/* Status marks (Supercharged Links puts each page's status, condition and attitude on links to it), Lorekeeper's rules.
+   On the page: friendly green, hostile red, missing purple. In the file list (leather in Tome, so the side tokens, as in
+   Lorekeeper's sidebar): the same colours lightened, and a done or failed quest or a dead NPC dimmed with its check or
+   cross in the indent; the selected row keeps its own colour. */
+.workspace-leaf-content [data-link-attitude="friendly"]:not(.nav-file-title-content) { color: var(--lk-kind-quest); }
+.workspace-leaf-content [data-link-attitude="hostile"]:not(.nav-file-title-content) { color: color-mix(in srgb, var(--lk-seal-hi), var(--lk-fg) 45%); }
+.workspace-leaf-content [data-link-condition="missing"]:not(.nav-file-title-content) { color: var(--lk-kind-mystery); }
+.nav-file-title:not(.is-active) > .nav-file-title-content[data-link-attitude="friendly"] { color: color-mix(in srgb, var(--lk-kind-quest), var(--lk-side-fg) 50%); }
+.nav-file-title:not(.is-active) > .nav-file-title-content[data-link-attitude="hostile"] { color: color-mix(in srgb, var(--lk-seal-hi), var(--lk-side-fg) 50%); }
+.nav-file-title:not(.is-active) > .nav-file-title-content[data-link-condition="missing"] { color: color-mix(in srgb, var(--lk-kind-mystery), var(--lk-side-fg) 50%); }
+.nav-file-title:not(.is-active) > .nav-file-title-content:is([data-link-status="done"], [data-link-status="failed"], [data-link-condition="dead"]) { color: var(--lk-side-muted); }
 .nav-file-title-content:is([data-link-status="done"], [data-link-status="failed"], [data-link-condition="dead"])::before {
-  content: ""; display: inline-block; width: 12px; height: 12px; margin: 0 4px 0 -16px; vertical-align: -1px;
+  content: ""; display: inline-block; width: 12px; height: 12px; margin: 0 0.3em 0 -1.4em; vertical-align: -1px;
   background: currentColor; -webkit-mask: var(--lk-mark) center / contain no-repeat; mask: var(--lk-mark) center / contain no-repeat;
 }
-[data-link-status="done"] { --lk-mark: var(--lk-icon-done); }
-[data-link-status="failed"], [data-link-condition="dead"] { --lk-mark: var(--lk-icon-failed); }
+.nav-file-title-content[data-link-status="done"] { --lk-mark: var(--lk-icon-done); }
+.nav-file-title-content:is([data-link-status="failed"], [data-link-condition="dead"]) { --lk-mark: var(--lk-icon-failed); }

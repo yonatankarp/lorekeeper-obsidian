@@ -53,3 +53,43 @@ test("every marked value is one the dropdowns offer", () => {
     .selectors.map((s) => [s.name, s.options]));
   for (const m of css.matchAll(/\[data-link-(status|condition|attitude)="([^"]+)"\]/g)) assert.ok(sel[m[1]].includes(m[2]), m[0]);
 });
+
+const rules = () => [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+  .map(([, sel, body]) => ({ selectors: topLevelSplit(sel), body }));
+
+function topLevelSplit(sel) {
+  const out = [];
+  let depth = 0;
+  let cur = "";
+  for (const ch of sel) {
+    if (ch === "(") depth++;
+    if (ch === ")") depth--;
+    if (ch === "," && depth === 0) { out.push(cur.trim()); cur = ""; } else cur += ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
+
+test("status marks are drawn only in the file list", () => {
+  for (const { selectors } of rules()) {
+    for (const sel of selectors)
+      if (sel.endsWith("::before") && sel.includes("data-link"))
+        assert.ok(sel.startsWith(".nav-file-title-content"), sel);
+  }
+});
+
+test("file-list colours use the sidebar's tokens", () => {
+  for (const { selectors, body } of rules()) {
+    if (!selectors.some((s) => s.includes(".nav-file-title-content[data-link-") || s.includes(".nav-file-title-content:is(")))
+      continue;
+    if (/(^|[\s;{])color:/.test(body)) assert.match(body, /--lk-side-/, selectors.join(", "));
+  }
+});
+
+test("page link colours leave the file list to its own rules", () => {
+  for (const { selectors } of rules()) {
+    for (const sel of selectors)
+      if (sel.includes("[data-link-") && !sel.includes(".nav-file-title-content"))
+        assert.ok(sel.includes(":not(.nav-file-title-content)"), sel);
+  }
+});
