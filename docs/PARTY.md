@@ -34,8 +34,9 @@ Details worth knowing:
 
 - Quick note opens a line in the editor, so a `~` line typed there stays where it is until you run **Make line private**. A lone `~` isn't a note, and `~~text~~` is strikethrough, not private.
 - If ⌘⇧P (Ctrl+Shift+P) does nothing after updating, set **Make line private** in **Settings > Hotkeys**.
-- **Make line private** on a session page sends the lines to that session's private file. On any other page it uses the latest session and adds a link to the page first, so the note keeps its context. It refuses the properties at the top of a page.
-- **Make private** refuses `Sessions/`, `Templates/` and Lorekeeper's own files.
+- **Make line private** on a session page sends the lines to that session's private file. On any other page it uses the latest session and adds a link to the page first, so the note keeps its context. It refuses the properties at the top of a page, and a teammate's file in a session: only they can make their notes private.
+- **Make private** refuses `Sessions/`, `Templates/` and Lorekeeper's own files. `PCs/`, **Home**, the **Cheat Sheet** and `docs/` have to stay shared too.
+- Create private pages with **New page > Private**: clicking a link to a page that doesn't exist yet makes a shared page.
 - If a page was already pushed to a shared git history (the **Git** backup, for example), making it private doesn't remove it from that history.
 - **Your own** private notes show in the session view with a padlock and no name. The **DM** sees players' private notes with their names and a padlock, when the sync puts those folders on the DM's device. On any other device, another player's `Private/` folder means the sync is set up wrong: the session view hides those notes and shows a warning.
 - Obsidian's backlinks panel lists any file that links a page, private ones included, but only on devices that hold those files.
@@ -66,7 +67,7 @@ Obsidian Sync shares the whole vault, so **`Private/` is not private** unless yo
 | End-to-end encrypted | No, on Relay's cloud hosting (self-hosting keeps notes off Relay's servers) | Yes, by default for new vaults |
 | Conflicts | Edits merge live | Obsidian merges, or keeps both copies |
 
-Because each player writes their own file, conflicts are rare. They happen on shared pages such as NPCs, where two people editing the same page at once is the sync's job to merge.
+Because each player writes their own file, conflicts are rare. They happen on shared pages such as NPCs, where two people editing the same page at once is the sync's job to merge. A sync conflict copy inside a session's folder shows up as an extra author in that session: keep the right one and delete the copy.
 
 ## Not here
 

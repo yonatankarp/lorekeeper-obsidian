@@ -390,11 +390,11 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/make-line-private.js": {
-      "sha256": "ac31b4169f2c2a4d766623770d5aa53623552ffd1add126d5ee7b0eeef2782a5",
+      "sha256": "a846f1d1fa80db6569378ca1485c8da3f05cee6af68c49702b28fb48c9486405",
       "kind": "managed"
     },
     "_lorekeeper/scripts/make-private.js": {
-      "sha256": "c974d4509831eaa0f1454cfb9c2b659f6ff68307d85a313fd07824e5d3b52a8a",
+      "sha256": "a930c432c355cead37b3dc1858bd3e72fa842c09e4274e12d56d146e7a5d00fb",
       "kind": "managed"
     },
     "_lorekeeper/scripts/make-shared.js": {
@@ -418,7 +418,7 @@
       "kind": "managed"
     },
     "_lorekeeper/scripts/pick-character.js": {
-      "sha256": "2522726de9c0f339819b56219a99d3ee375d239271df5b3ea9a49a0a3ce9e335",
+      "sha256": "d8ba65a10e0af9b136232a871b9b23390ee5281839a7d6146437f07025ae0b38",
       "kind": "managed"
     },
     "_lorekeeper/scripts/private-note.js": {
@@ -462,7 +462,7 @@
       "kind": "managed"
     },
     "docs/PARTY.md": {
-      "sha256": "00127924b94a0514c7f1b0b337f7619daf95b066b0e8bbe5db99ff8bb62edc06",
+      "sha256": "e382bdd0f42eb5e30805ada77bfc751284858311fafc9af4105d66d5a8a2fc44",
       "kind": "managed"
     }
   }

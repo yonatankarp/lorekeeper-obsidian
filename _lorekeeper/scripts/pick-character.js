@@ -5,7 +5,7 @@ module.exports = async ({ app, quickAddApi, obsidian }) => {
   const lk = await m.exports(app);
   const DM = "I'm the DM (no character)";
   const SOLO = "Play solo";
-  const names = (await lk.io.list("PCs")).filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3)).sort();
+  const names = (await lk.io.list("PCs")).filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3)).filter(lk.party.canPick).sort();
   const choice = await quickAddApi.suggester([...names, DM, SOLO], [...names, DM, SOLO]).catch(() => null); // Esc
   if (!choice) return;
   const name = choice === DM ? lk.party.DM : choice === SOLO ? "" : choice;

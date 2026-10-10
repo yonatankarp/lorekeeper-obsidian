@@ -545,3 +545,25 @@ test("private-note adds the line through the editor when the file is already ope
   assert.match(r.openEditor.lines.at(-1), /^- \d{2}:\d{2} $/);
   assert.deepEqual(r.openEditor.lines.slice(0, 2), ["# mine", "- 20:00 old"]);
 });
+
+test("make-line-private refuses a teammate's session file", async () => {
+  const r = privateRun({ doc: ["- 20:14 theirs"], from: [0, 0], to: [0, 0], path: "Sessions/Session 2/Ivo.md", type: "" });
+  assert.deepEqual(await runPrivate(r), ["That's Ivo's notes: only they can make them private."]);
+  assert.deepEqual(r.editor.lines, ["- 20:14 theirs"]);
+  assert.deepEqual(r.log, []);
+});
+
+test("make-private refuses PCs, Home, the cheat sheet and docs", async () => {
+  for (const path of ["PCs/Vex.md", "Home.md", "Cheat Sheet.md", "docs/PARTY.md"]) {
+    const r = pageApp({ path });
+    assert.deepEqual(await runScript("make-private.js", r), ["That page has to stay shared."], path);
+    assert.deepEqual(r.renamed, []);
+  }
+  const nested = pageApp({ path: "Lore/Home.md" });
+  assert.deepEqual(await runScript("make-private.js", nested), ["Home is now private."]);
+});
+
+test("pick-character leaves a PC page named DM out of the list", async () => {
+  const { shown } = await pick(() => null, { files: ["Vex.md", "DM.md"] });
+  assert.deepEqual(shown[0], ["Vex", "I'm the DM (no character)", "Play solo"]);
+});

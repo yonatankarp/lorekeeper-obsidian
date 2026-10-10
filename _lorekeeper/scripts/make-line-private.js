@@ -11,6 +11,8 @@ module.exports = async ({ app, obsidian }) => {
   if (!editor || !file || file.extension !== "md") return new obsidian.Notice("Open a note and put the cursor on a line first.");
 
   if (file.path.startsWith("Private/")) return new obsidian.Notice("This page is already private.");
+  const author = (file.path.match(/^Sessions\/Session \d+\/([^/]+)\.md$/) || [])[1];
+  if (author && author !== name) return new obsidian.Notice(`That's ${author}'s notes: only they can make them private.`);
 
   // Selected lines; a selection ending at the start of a line doesn't include that line.
   const sel = editor.listSelections()[0];
