@@ -29,7 +29,10 @@ test("styles every class the session view emits", () => {
   const view = fs.readFileSync(path.join(ROOT, "_lorekeeper/scripts/session.js"), "utf8");
   const classes = new Set([...view.matchAll(/lk-[a-z-]+/g)].map((m) => m[0]).filter((c) => !c.endsWith("-")));
   assert.ok(classes.size >= 10, "found the view's classes");
-  for (const cls of classes) assert.ok(css.includes(`.${cls}`), cls);
+  const hasClass = (cls) => new RegExp("\\." + cls + "(?![\\w-])").test(css);
+  for (const cls of classes) assert.ok(hasClass(cls), cls);
+  const template = fs.readFileSync(path.join(ROOT, "_lorekeeper/templates/session.md"), "utf8");
+  for (const cls of template.match(/^cssclasses:\n((?:\s+- .+\n)+)/m)[1].matchAll(/- (\S+)/g)) assert.ok(hasClass(cls[1]), cls[1]);
   for (const kind of ["event", "npc", "loot", "quest", "mystery", "quote"]) assert.ok(css.includes(`.lk-kind-${kind}`), kind);
 });
 

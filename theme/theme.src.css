@@ -101,6 +101,7 @@ button.mod-cta {
 }
 
 /* The session view. */
+.lk-session .inline-title { margin-bottom: 0.2em; }
 .lk-session-view { margin-bottom: 1.5em; }
 .lk-session-title { font-family: var(--lk-font-display); font-size: 1.4em; color: var(--lk-accent-text); margin-bottom: 0.4em; }
 .lk-rubric { font-family: var(--lk-font-display); color: var(--lk-accent-text); font-size: 1.15em; margin: 0.8em 0 0.3em; }
