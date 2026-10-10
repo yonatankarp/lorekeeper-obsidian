@@ -139,6 +139,86 @@
           }
         ]
       }
+    },
+    {
+      "id": "lk-dnd-import",
+      "name": "Import from D&D Beyond",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-dnd-import-macro",
+        "name": "Import from D&D Beyond",
+        "commands": [
+          {
+            "id": "lk-dnd-import-script",
+            "name": "dndbeyond-import",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/dndbeyond-import.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-dnd-refresh",
+      "name": "Refresh from D&D Beyond",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-dnd-refresh-macro",
+        "name": "Refresh from D&D Beyond",
+        "commands": [
+          {
+            "id": "lk-dnd-refresh-script",
+            "name": "dndbeyond-refresh",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/dndbeyond-refresh.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-dnd-signin",
+      "name": "Sign in to D&D Beyond",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-dnd-signin-macro",
+        "name": "Sign in to D&D Beyond",
+        "commands": [
+          {
+            "id": "lk-dnd-signin-script",
+            "name": "dndbeyond-signin",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/dndbeyond-signin.js",
+            "settings": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "lk-dnd-signout",
+      "name": "Sign out of D&D Beyond",
+      "type": "Macro",
+      "command": true,
+      "runOnStartup": false,
+      "macro": {
+        "id": "lk-dnd-signout-macro",
+        "name": "Sign out of D&D Beyond",
+        "commands": [
+          {
+            "id": "lk-dnd-signout-script",
+            "name": "dndbeyond-signout",
+            "type": "UserScript",
+            "path": "_lorekeeper/scripts/dndbeyond-signout.js",
+            "settings": {}
+          }
+        ]
+      }
     }
   ],
   "migrations": {

@@ -162,7 +162,7 @@
       "kind": "managed"
     },
     ".obsidian/plugins/quickadd/data.json": {
-      "sha256": "a3295c9c5b044cb8bfac7bbf9d59deb34840d1e570b17fc6d46b59eba93e4fca",
+      "sha256": "2e1bcae67a9660347fe8276f9a3e1440c202e07ace052e88b338b5962eac3004",
       "kind": "shared",
       "keys": [
         "choices",
@@ -325,7 +325,7 @@
       "kind": "managed"
     },
     "_lorekeeper/lib/load.js": {
-      "sha256": "320af1b64de7a2884ac74188b8a4610425afc473274ffd320a6db3f60c069037",
+      "sha256": "adb5e242d00361a588466acca89316bd195fb82c7d5cbae6adff5650db164a8f",
       "kind": "managed"
     },
     "_lorekeeper/lib/notes.js": {
@@ -348,6 +348,10 @@
       "sha256": "a1677333355f524270d134d7eb705724b70f7dbd4130155dfaf9c4b944aadd7e",
       "kind": "managed"
     },
+    "_lorekeeper/lib/signin.js": {
+      "sha256": "8b114fed552f1e4d1285ef4c7fb6a1cde646bdf1939d1043b5fd423233f78e99",
+      "kind": "managed"
+    },
     "_lorekeeper/lib/update.js": {
       "sha256": "f52d3139d63c1e8c4a327bba25d408b75b9b149e0cacd3d4176521bb3823b3f3",
       "kind": "managed"
@@ -358,6 +362,22 @@
     },
     "_lorekeeper/scripts/check-backup.js": {
       "sha256": "b2cbaad331b9acff68ad3bcfd079a49e3b5121f11334f03d1fdccf3f7fbe5dab",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/dndbeyond-import.js": {
+      "sha256": "e683bd294a834789416fdad16d36cf88ed7c52e0ba8d1cf9673e7e193e3e8fb9",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/dndbeyond-refresh.js": {
+      "sha256": "9c5b148808a7e6b4b608c338db96cafd2ed30f96a978141e21490c33cbcb3d5e",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/dndbeyond-signin.js": {
+      "sha256": "4b2596c17936771ae855dbd01619b417c848119e55a62428a6b2bea36d271bf6",
+      "kind": "managed"
+    },
+    "_lorekeeper/scripts/dndbeyond-signout.js": {
+      "sha256": "4cf661d6028cbee2bed678b865276d4f98aa17bf2aaa10ca4c72721b6ba135b0",
       "kind": "managed"
     },
     "_lorekeeper/scripts/new-page.js": {
@@ -402,6 +422,10 @@
     },
     "docs/CAPTURE.md": {
       "sha256": "018b4f65f74197b03dd1a7a196039f7318a5c2507bf65558922bfbe5826185b2",
+      "kind": "managed"
+    },
+    "docs/DNDBEYOND.md": {
+      "sha256": "24db853044793281eac67f9b4cf78bb360105fea306bd54945030f3707a7acbd",
       "kind": "managed"
     }
   }
